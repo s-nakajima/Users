@@ -1,0 +1,31 @@
+{
+    "name":        "netcommons/users",
+    "description": "Users Plugin for CakePHP",
+    "type":        "cakephp-plugin",
+    "keywords":    ["cakephp", "user"],
+    "homepage":    "http://www.netcommons.org/",
+    "license":     "NetCommons License",
+    "authors": [
+        {
+            "name":     "NetCommons Community",
+            "homepage": "https://github.com/NetCommons3/Users/graphs/contributors"
+        }
+    ],
+    "require": {
+        "cakephp/cakephp":        "~2.4.0",
+        "cakephp/debug_kit":      "~2.2.0",
+        "cakedc/migrations":      "~2.2.0",
+        "twbs/bootstrap":         "~3.1.0",
+        "components/jquery":      "~2.1.0"
+    },
+    "require-dev": {
+        "netcommons/auth":        "dev-master",
+        "satooshi/php-coveralls": "dev-master"
+    },
+    "bin": [
+        "lib/Cake/Console/cake"
+    ],
+    "config": {
+        "vendor-dir": "vendors"
+    }
+}
