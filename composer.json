@@ -22,9 +22,6 @@
         "netcommons/auth":        "dev-master",
         "satooshi/php-coveralls": "dev-master"
     },
-    "bin": [
-        "lib/Cake/Console/cake"
-    ],
     "config": {
         "vendor-dir": "vendors"
     }
