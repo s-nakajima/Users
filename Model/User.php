@@ -2,14 +2,13 @@
 /**
  * User Model
  *
- * @property Authority $Authority
- * @property CommunityInvitation $CommunityInvitation
- * @property PageSumView $PageSumView
- * @property PageUserLink $PageUserLink
- * @property Passport $Passport
- * @property Upload $Upload
- * @property UserGroupLink $UserGroupLink
- * @property UserItemLink $UserItemLink
+ * @property Role $Role
+ * @property CreatedUser $CreatedUser
+ * @property ModifiedUser $ModifiedUser
+ * @property Group $Group
+ * @property LanguagesUserAttribute $LanguagesUserAttribute
+ * @property UserAttribute $UserAttribute
+ * @property UserSelectAttribute $UserSelectAttribute
  *
  * @author   Jun Nishikawa <topaz2@m0n0m0n0.com>
  * @link     http://www.netcommons.org NetCommons Project
@@ -29,119 +28,9 @@ class User extends AppModel {
  * @var array
  */
 	public $validate = array(
-		'handle' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'authority_id' => array(
+		'role_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'is_active' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'permalink' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'myportal_page' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'private_page' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'lang' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'timezone_offset' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'email' => array(
-			'email' => array(
-				'rule' => array('email'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'mobile_email' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'created_user_name' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-		'modified_user_name' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -159,9 +48,23 @@ class User extends AppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Authority' => array(
-			'className' => 'Authority',
-			'foreignKey' => 'authority_id',
+		'Role' => array(
+			'className' => 'Role',
+			'foreignKey' => 'role_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'CreatedUser' => array(
+			'className' => 'CreatedUser',
+			'foreignKey' => 'created_user_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'ModifiedUser' => array(
+			'className' => 'ModifiedUser',
+			'foreignKey' => 'modified_user_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
@@ -169,101 +72,62 @@ class User extends AppModel {
 	);
 
 /**
- * hasMany associations
+ * hasAndBelongsToMany associations
  *
  * @var array
  */
-	public $hasMany = array(
-		'CommunityInvitation' => array(
-			'className' => 'CommunityInvitation',
+	public $hasAndBelongsToMany = array(
+		'Group' => array(
+			'className' => 'Group',
+			'joinTable' => 'groups_users',
 			'foreignKey' => 'user_id',
-			'dependent' => false,
+			'associationForeignKey' => 'group_id',
+			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
 			'offset' => '',
-			'exclusive' => '',
 			'finderQuery' => '',
-			'counterQuery' => ''
 		),
-		'PageSumView' => array(
-			'className' => 'PageSumView',
+		'LanguagesUserAttribute' => array(
+			'className' => 'LanguagesUserAttribute',
+			'joinTable' => 'languages_user_attributes_users',
 			'foreignKey' => 'user_id',
-			'dependent' => false,
+			'associationForeignKey' => 'languages_user_attribute_id',
+			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
 			'offset' => '',
-			'exclusive' => '',
 			'finderQuery' => '',
-			'counterQuery' => ''
 		),
-		'PageUserLink' => array(
-			'className' => 'PageUserLink',
+		'UserAttribute' => array(
+			'className' => 'UserAttribute',
+			'joinTable' => 'user_attributes_users',
 			'foreignKey' => 'user_id',
-			'dependent' => false,
+			'associationForeignKey' => 'user_attribute_id',
+			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
 			'offset' => '',
-			'exclusive' => '',
 			'finderQuery' => '',
-			'counterQuery' => ''
 		),
-		'Passport' => array(
-			'className' => 'Passport',
+		'UserSelectAttribute' => array(
+			'className' => 'UserSelectAttribute',
+			'joinTable' => 'user_select_attributes_users',
 			'foreignKey' => 'user_id',
-			'dependent' => false,
+			'associationForeignKey' => 'user_select_attribute_id',
+			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
 			'order' => '',
 			'limit' => '',
 			'offset' => '',
-			'exclusive' => '',
 			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'Upload' => array(
-			'className' => 'Upload',
-			'foreignKey' => 'user_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'UserGroupLink' => array(
-			'className' => 'UserGroupLink',
-			'foreignKey' => 'user_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'UserItemLink' => array(
-			'className' => 'UserItemLink',
-			'foreignKey' => 'user_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
 		)
 	);
 
