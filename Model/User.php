@@ -134,7 +134,6 @@ class User extends AppModel {
 /**
  * beforeSave
  *
- * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
  * @param array $options options
  * @return boolean
  */
