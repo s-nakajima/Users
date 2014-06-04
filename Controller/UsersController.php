@@ -32,8 +32,8 @@ class UsersController extends UsersAppController {
 /**
  * view method
  *
+ * @param string $id id
  * @throws NotFoundException
- * @param string $id
  * @return void
  */
 	public function view($id = null) {
@@ -66,8 +66,8 @@ class UsersController extends UsersAppController {
 /**
  * edit method
  *
+ * @param string $id id
  * @throws NotFoundException
- * @param string $id
  * @return void
  */
 	public function edit($id = null) {
@@ -92,8 +92,8 @@ class UsersController extends UsersAppController {
 /**
  * delete method
  *
+ * @param string $id id
  * @throws NotFoundException
- * @param string $id
  * @return void
  */
 	public function delete($id = null) {

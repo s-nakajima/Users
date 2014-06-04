@@ -131,12 +131,18 @@ class User extends AppModel {
 		)
 	);
 
+/**
+ * beforeSave
+ *
+ * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
+ * @return boolean
+ */
 	public function beforeSave($options = array()) {
 		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 		if (isset($this->data[$this->alias]['password'])) {
 			$passwordHasher = new SimplePasswordHasher();
 			$this->data[$this->alias]['password'] = $passwordHasher->hash(
-						$this->data[$this->alias]['password']
+				$this->data[$this->alias]['password']
 			);
 		}
 		return true;
