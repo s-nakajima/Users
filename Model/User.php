@@ -132,6 +132,17 @@ class User extends AppModel {
 	);
 
 /**
+ * Schema
+ *
+ * @var array
+ */
+	protected $_schema = array(
+		'role_id' => array(
+			'default' => 1,
+		),
+	);
+
+/**
  * beforeSave
  *
  * @param array $options options
