@@ -58,6 +58,15 @@ class User extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
+		'password_again' => array(
+			'equalToField' => array(
+				'rule' => array('equalToField', 'password'),
+				'message' => 'Password does not match',
+				'allowEmpty' => false,
+				'required' => true,
+				//'last' => false, // Stop validation after this rule
+			)
+		),
 	);
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
@@ -75,20 +84,6 @@ class User extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'CreatedUser' => array(
-			'className' => 'CreatedUser',
-			'foreignKey' => 'created_user_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'ModifiedUser' => array(
-			'className' => 'ModifiedUser',
-			'foreignKey' => 'modified_user_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		)
 	);
 
 /**
@@ -114,7 +109,7 @@ class User extends AppModel {
 			'className' => 'LanguagesUserAttribute',
 			'joinTable' => 'languages_user_attributes_users',
 			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'languages_user_attribute_id',
+			'associationForeignKey' => 'user_attributes_id',
 			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
@@ -163,6 +158,17 @@ class User extends AppModel {
 	);
 
 /**
+ * Check field1 matches field2
+ *
+ * @param array $field1 field1 parameters
+ * @param string $field2 field2 key
+ * @return boolean
+ */
+	public function equalToField($field1, $field2) {
+		return $this->data[$this->name][$field2] === $this->data[$this->name][array_pop(array_keys($field1))];
+	}
+
+/**
  * beforeSave
  *
  * @param array $options options
@@ -176,6 +182,70 @@ class User extends AppModel {
 				$this->data[$this->alias]['password']
 			);
 		}
+		return true;
+	}
+
+/**
+ * Save admin user
+ *
+ * @param array $data data
+ * @return boolean
+ */
+	public function saveAdmin($data = array()) {
+		$this->User = ClassRegistry::init('User');
+		$this->UserAttribute = ClassRegistry::init('UserAttribute');
+		$this->UserAttributesUser = ClassRegistry::init('UserAttributesUser');
+		$this->LanguageUserAttribute = ClassRegistry::init('LanguageUserAttribute');
+		$this->LanguageUserAttributesUser = ClassRegistry::init('LanguageUserAttributesUser');
+
+		$con = $this->getDatasource();
+		$con->begin();
+		try {
+			$admin = $this->User->find('first', array(
+				'conditions' => array(
+					'User.username' => $data[$this->alias]['username']
+				),
+			));
+
+			if ($admin) {
+				$this->User->set($admin['User']);
+				$this->User->save();
+				foreach ($admin['UserAttribute'] as $userAttribute) {
+					$this->UserAttribute->set($userAttribute);
+					$this->UserAttribute->save();
+					$this->UserAttributesUser->set($userAttribute['UserAttributesUser']);
+					$this->UserAttributesUser->save();
+				}
+			} else {
+				$this->User->set($data);
+				$this->User->save();
+				$this->UserAttribute->set(array(
+					'type' => 1,
+					'required' => true,
+					'is_each_language' => true,
+					'can_read_self' => true,
+					'can_edit_self' => true,
+					'position' => 1,
+					'created_user_id' => $this->User->id,
+					'modified_user_id' => $this->User->id,
+				));
+				$this->UserAttribute->save();
+				$this->UserAttributesUser->set(array(
+					'user_id' => $this->User->id,
+					'value' => $data[$this->alias]['handlename'],
+					'created_user_id' => $this->User->id,
+					'modified_user_id' => $this->User->id,
+					'user_attribute_id' => $this->UserAttribute->id
+				));
+				$this->UserAttributesUser->save();
+			}
+			$con->commit();
+		} catch(Exception $e) {
+			CakeLog::error($e->getMessage());
+			$con->rollback();
+			return false;
+		}
+
 		return true;
 	}
 }
