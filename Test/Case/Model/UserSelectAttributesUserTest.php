@@ -24,8 +24,6 @@ class UserSelectAttributesUserTest extends CakeTestCase {
 		'plugin.users.user',
 		'plugin.users.user_select_attribute',
 		'plugin.users.user_attribute',
-		'app.created_user',
-		'app.modified_user',
 		'app.language',
 		'app.languages_user_attribute',
 		'app.role',
@@ -40,7 +38,6 @@ class UserSelectAttributesUserTest extends CakeTestCase {
 		'app.groups_language',
 		'app.groups_user',
 		'app.space',
-		'app.top_page',
 		'app.block',
 		'app.blocks_language',
 		'app.boxes_page',
@@ -74,4 +71,13 @@ class UserSelectAttributesUserTest extends CakeTestCase {
 		parent::tearDown();
 	}
 
+/**
+ * test mock
+ *
+ * @return void
+ *
+ * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
+ */
+	public function test() {
+	}
 }
