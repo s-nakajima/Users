@@ -217,7 +217,11 @@ class User extends AppModel {
 					$this->UserAttributesUser->save();
 				}
 			} else {
-				$this->User->set($data);
+				$this->User->set(array_merge_recursive(array(
+					'User' => array(
+						'role_id' => 1
+					)
+				), $data));
 				$this->User->save();
 				$this->UserAttribute->set(array(
 					'type' => 1,
