@@ -165,7 +165,8 @@ class User extends AppModel {
  * @return boolean
  */
 	public function equalToField($field1, $field2) {
-		return $this->data[$this->name][$field2] === $this->data[$this->name][array_pop(array_keys($field1))];
+		$keys = array_keys($field1);
+		return $this->data[$this->name][$field2] === $this->data[$this->name][array_pop($keys)];
 	}
 
 /**
