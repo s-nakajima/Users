@@ -207,7 +207,6 @@ class User extends AppModel {
 					'User.username' => $data[$this->alias]['username']
 				),
 			));
-			echo 1;
 
 			if ($admin) {
 				$this->User->set($admin['User']);
