@@ -72,11 +72,12 @@ class UserTest extends CakeTestCase {
 	}
 
 /**
- * test saveAdmin()
+ * Test saveAdmin()
  *
  * @return void
  */
 	public function testSaveAdmin() {
+		// Test saveAdmin() creates admin user
 		$this->User->saveAdmin(array(
 			'User' => array(
 				'username' => 'admin',
@@ -86,9 +87,22 @@ class UserTest extends CakeTestCase {
 			)
 		));
 		$this->assertTrue(is_numeric($this->User->id));
+
+		// Test saveAdmin() updates previous admin user for the second attempt
+		$id = $this->User->id;
+		$this->User->saveAdmin(array(
+			'User' => array(
+				'username' => 'admin',
+				'handlename' => 'admin2',
+				'password_again' => 'password',
+				'password' => 'password',
+			)
+		));
+		$this->assertTrue($id === $this->User->id);
 	}
+
 /**
- * test saveAdmin()
+ * Test saveAdmin()
  *
  * @return void
  */
