@@ -199,7 +199,6 @@ class User extends AppModel {
 		$this->LanguageUserAttributesUser = ClassRegistry::init('LanguageUserAttributesUser');
 
 		$con = $this->getDatasource();
-		var_dump($con);
 		$con->begin();
 		try {
 			$admin = $this->User->find('first', array(
@@ -246,8 +245,7 @@ class User extends AppModel {
 			}
 			$con->commit();
 		} catch (Exception $e) {
-			var_dump($e->getMessage());
-			CakeLog::error($e->getMessage());
+			CakeLog::error($e->getTraceAsString());
 			$con->rollback();
 			return false;
 		}
