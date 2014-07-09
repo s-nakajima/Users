@@ -193,13 +193,19 @@ class User extends AppModel {
  * @return boolean
  */
 	public function saveAdmin($data = array()) {
-		$this->User = ClassRegistry::init('User');
-		$this->UserAttribute = ClassRegistry::init('UserAttribute');
-		$this->UserAttributesUser = ClassRegistry::init('UserAttributesUser');
-		$this->LanguageUserAttribute = ClassRegistry::init('LanguageUserAttribute');
-		$this->LanguageUserAttributesUser = ClassRegistry::init('LanguageUserAttributesUser');
+		$models = array(
+			'User',
+			'UserAttribute',
+			'UserAttributesUser',
+			'LanguageUserAttribute',
+			'LanguageUserAttributesUser',
+		);
+		foreach ($models as $model) {
+			$this->$model = ClassRegistry::init('Users.' . $model);
+			$this->$model->setDataSource('master');
+		}
 
-		$con = $this->getDatasource();
+		$con = $this->getDataSource();
 		$con->begin();
 		try {
 			$admin = $this->User->find('first', array(
