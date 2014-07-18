@@ -109,7 +109,7 @@ class User extends AppModel {
 			'className' => 'LanguagesUserAttribute',
 			'joinTable' => 'languages_user_attributes_users',
 			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'user_attributes_id',
+			'associationForeignKey' => 'user_attribute_id',
 			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
@@ -190,7 +190,7 @@ class User extends AppModel {
  * Save admin user
  *
  * @param array $data data
- * @return boolean
+ * @return mixed On success Model::$data, false on failure
  */
 	public function saveAdmin($data = array()) {
 		$models = array(
@@ -257,6 +257,6 @@ class User extends AppModel {
 			return false;
 		}
 
-		return true;
+		return $this->data;
 	}
 }

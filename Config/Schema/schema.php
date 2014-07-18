@@ -42,7 +42,7 @@ class UserSchema extends CakeSchema {
 	public $languages_user_attributes_users = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
 		'user_id' => array('type' => 'integer', 'null' => false),
-		'user_attributes_id' => array('type' => 'integer', 'null' => false),
+		'user_attribute_id' => array('type' => 'integer', 'null' => false),
 		'language_id' => array('type' => 'integer', 'null' => false),
 		'value' => array('type' => 'text', 'null' => true, 'length' => 1073741824),
 		'created_user_id' => array('type' => 'integer', 'null' => true),
