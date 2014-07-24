@@ -215,7 +215,7 @@ class User extends AppModel {
 			));
 
 			if ($admin) {
-				$this->User->set($admin['User']);
+				$this->User->set($data[$this->alias]);
 				$this->User->save();
 				foreach ($admin['UserAttribute'] as $userAttribute) {
 					$this->UserAttribute->set($userAttribute);
@@ -257,6 +257,6 @@ class User extends AppModel {
 			return false;
 		}
 
-		return $this->data;
+		return $this->{$this->alias};
 	}
 }

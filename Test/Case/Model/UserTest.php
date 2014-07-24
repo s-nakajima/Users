@@ -86,23 +86,42 @@ class UserTest extends CakeTestCase {
 				'password' => 'password',
 			)
 		));
+		$created = $this->User->find('all', array(
+			'conditions' => array(
+				'User.username' => 'admin'
+			),
+		));
+
+		// Expect only one admin record exist
+		$this->assertEqual(count($created), 1);
+		// Expect User#saveAdmin() succeed
 		$this->assertTrue(is_numeric($this->User->id));
 
 		// Test saveAdmin() updates previous admin user for the second attempt
-		$id = $this->User->id;
 		$this->User->saveAdmin(array(
 			'User' => array(
 				'username' => 'admin',
 				'handlename' => 'admin2',
-				'password_again' => 'password',
-				'password' => 'password',
+				'password_again' => 'password2',
+				'password' => 'password2',
 			)
 		));
-		$this->assertTrue($id === $this->User->id);
+		$updated = $this->User->find('all', array(
+			'conditions' => array(
+				'User.username' => 'admin'
+			),
+		));
+
+		// Expect only one admin record exist
+		$this->assertEqual(count($updated), 1);
+		// Expect created user and updated user to have same id
+		$this->assertEqual($created[0]['User']['id'], $updated[0]['User']['id']);
+		// Expect password changed
+		$this->assertNotEqual($created[0]['User']['password'], $updated[0]['User']['password']);
 	}
 
 /**
- * Test saveAdmin()
+ * Test saveAdmin() w/ invalid request
  *
  * @return void
  */
