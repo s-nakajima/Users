@@ -1,5 +1,10 @@
 <?php
+/**
+ * Users Controller
+ */
+
 App::uses('AppController', 'Controller');
+
 /**
  * Users Controller
  *
