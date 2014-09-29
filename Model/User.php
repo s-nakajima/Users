@@ -162,7 +162,7 @@ class User extends AppModel {
  *
  * @param array $field1 field1 parameters
  * @param string $field2 field2 key
- * @return boolean
+ * @return bool
  */
 	public function equalToField($field1, $field2) {
 		$keys = array_keys($field1);
@@ -173,7 +173,7 @@ class User extends AppModel {
  * beforeSave
  *
  * @param array $options options
- * @return boolean
+ * @return bool
  */
 	public function beforeSave($options = array()) {
 		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
