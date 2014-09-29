@@ -6,4 +6,4 @@ Users
 
 | dependencies | status |
 | ------------ | ------ |
-| composer.json | [![Dependency Status](https://www.versioneye.com/user/projects/5305d1e0ec1375c09e000149/badge.png)](https://www.versioneye.com/user/projects/5305d1e0ec1375c09e000149) |
+| composer.json | [![Dependency Status](https://www.versioneye.com/user/projects/5428e45d820067cf31000082/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5428e45d820067cf31000082) |
