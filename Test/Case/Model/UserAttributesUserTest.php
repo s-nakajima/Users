@@ -25,7 +25,6 @@ class UserAttributesUserTest extends CakeTestCase {
 		'plugin.users.user_attribute',
 		'plugin.users.user_select_attribute',
 		'app.language',
-		'app.languages_user_attribute',
 		'app.role',
 		'app.languages_role',
 		'app.plugin',
@@ -46,7 +45,6 @@ class UserAttributesUserTest extends CakeTestCase {
 		'app.frames_language',
 		'app.roles_plugin',
 		'app.roles_user_attribute',
-		'app.languages_user_attributes_user'
 	);
 
 /**

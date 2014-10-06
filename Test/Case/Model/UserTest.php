@@ -43,8 +43,6 @@ class UserTest extends CakeTestCase {
 		'app.roles_plugin',
 		'plugin.users.user_attribute',
 		'app.roles_user_attribute',
-		'app.languages_user_attribute',
-		'app.languages_user_attributes_user',
 		'plugin.users.user_attributes_user',
 		'plugin.users.user_select_attribute',
 		'plugin.users.user_select_attributes_user'

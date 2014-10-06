@@ -70,19 +70,6 @@ class UserAttribute extends AppModel {
  * @var array
  */
 	public $hasAndBelongsToMany = array(
-		'Language' => array(
-			'className' => 'Language',
-			'joinTable' => 'languages_user_attributes',
-			'foreignKey' => 'user_attribute_id',
-			'associationForeignKey' => 'language_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		),
 		'Role' => array(
 			'className' => 'Role',
 			'joinTable' => 'roles_user_attributes',

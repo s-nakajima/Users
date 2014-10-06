@@ -24,52 +24,6 @@ class UserSchema extends CakeSchema {
 		'tableParameters' => array()
 	);
 
-	public $languages_user_attributes = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'user_attribute_id' => array('type' => 'integer', 'null' => false),
-		'language_id' => array('type' => 'integer', 'null' => false),
-		'name' => array('type' => 'string', 'null' => true, 'default' => null),
-		'created_user' => array('type' => 'integer', 'null' => true),
-		'created' => array('type' => 'datetime', 'null' => true),
-		'modified_user' => array('type' => 'integer', 'null' => true),
-		'modified' => array('type' => 'datetime', 'null' => true),
-		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
-		),
-		'tableParameters' => array()
-	);
-
-	public $languages_user_attributes_users = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'user_id' => array('type' => 'integer', 'null' => false),
-		'user_attribute_id' => array('type' => 'integer', 'null' => false),
-		'language_id' => array('type' => 'integer', 'null' => false),
-		'value' => array('type' => 'text', 'null' => true, 'length' => 1073741824),
-		'created_user' => array('type' => 'integer', 'null' => true),
-		'created' => array('type' => 'datetime', 'null' => true),
-		'modified_user' => array('type' => 'integer', 'null' => true),
-		'modified' => array('type' => 'datetime', 'null' => true),
-		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
-		),
-		'tableParameters' => array()
-	);
-
-	public $languages_user_select_attributes = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
-		'user_select_attribute_id' => array('type' => 'integer', 'null' => false),
-		'language_id' => array('type' => 'integer', 'null' => false),
-		'name' => array('type' => 'string', 'null' => true, 'default' => null),
-		'created_user' => array('type' => 'integer', 'null' => true),
-		'created' => array('type' => 'datetime', 'null' => true),
-		'modified_user' => array('type' => 'integer', 'null' => true),
-		'modified' => array('type' => 'datetime', 'null' => true),
-		'indexes' => array(
-			'PRIMARY' => array('unique' => true, 'column' => 'id')
-		),
-		'tableParameters' => array()
-	);
-
 	public $roles_user_attributes = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 11, 'key' => 'primary'),
 		'role_id' => array('type' => 'integer', 'null' => false),

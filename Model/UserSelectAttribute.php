@@ -55,19 +55,6 @@ class UserSelectAttribute extends AppModel {
  * @var array
  */
 	public $hasAndBelongsToMany = array(
-		'Language' => array(
-			'className' => 'Language',
-			'joinTable' => 'languages_user_select_attributes',
-			'foreignKey' => 'user_select_attribute_id',
-			'associationForeignKey' => 'language_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		),
 		'User' => array(
 			'className' => 'User',
 			'joinTable' => 'user_select_attributes_users',
