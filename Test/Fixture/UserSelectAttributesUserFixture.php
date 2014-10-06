@@ -22,9 +22,9 @@ class UserSelectAttributesUserFixture extends CakeTestFixture {
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null),
 		'user_select_attribute_id' => array('type' => 'integer', 'null' => false, 'default' => null),
 		'value' => array('type' => 'integer', 'null' => true, 'default' => null),
-		'created_user_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'modified_user_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1)
@@ -43,9 +43,9 @@ class UserSelectAttributesUserFixture extends CakeTestFixture {
 			'user_id' => 1,
 			'user_select_attribute_id' => 1,
 			'value' => 1,
-			'created_user_id' => 1,
+			'created_user' => 1,
 			'created' => '2014-06-02 16:18:07',
-			'modified_user_id' => 1,
+			'modified_user' => 1,
 			'modified' => '2014-06-02 16:18:07'
 		),
 	);

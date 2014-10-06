@@ -6,7 +6,6 @@
  * @property CreatedUser $CreatedUser
  * @property ModifiedUser $ModifiedUser
  * @property Group $Group
- * @property LanguagesUserAttribute $LanguagesUserAttribute
  * @property UserAttribute $UserAttribute
  * @property UserSelectAttribute $UserSelectAttribute
  *
@@ -105,19 +104,6 @@ class User extends AppModel {
 			'offset' => '',
 			'finderQuery' => '',
 		),
-		'LanguagesUserAttribute' => array(
-			'className' => 'LanguagesUserAttribute',
-			'joinTable' => 'languages_user_attributes_users',
-			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'user_attribute_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		),
 		'UserAttribute' => array(
 			'className' => 'UserAttribute',
 			'joinTable' => 'user_attributes_users',
@@ -197,8 +183,6 @@ class User extends AppModel {
 			'User',
 			'UserAttribute',
 			'UserAttributesUser',
-			'LanguageUserAttribute',
-			'LanguageUserAttributesUser',
 		);
 		foreach ($models as $model) {
 			$this->$model = ClassRegistry::init('Users.' . $model);
@@ -237,15 +221,15 @@ class User extends AppModel {
 					'can_read_self' => true,
 					'can_edit_self' => true,
 					'position' => 1,
-					'created_user_id' => $this->User->id,
-					'modified_user_id' => $this->User->id,
+					'created_user' => $this->User->id,
+					'modified_user' => $this->User->id,
 				));
 				$this->UserAttribute->save();
 				$this->UserAttributesUser->set(array(
 					'user_id' => $this->User->id,
 					'value' => $data[$this->alias]['handlename'],
-					'created_user_id' => $this->User->id,
-					'modified_user_id' => $this->User->id,
+					'created_user' => $this->User->id,
+					'modified_user' => $this->User->id,
 					'user_attribute_id' => $this->UserAttribute->id
 				));
 				$this->UserAttributesUser->save();

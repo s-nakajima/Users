@@ -25,9 +25,9 @@ class UserAttributeFixture extends CakeTestFixture {
 		'can_read_self' => array('type' => 'boolean', 'null' => true, 'default' => null),
 		'can_edit_self' => array('type' => 'boolean', 'null' => true, 'default' => null),
 		'position' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'created_user_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'modified_user_id' => array('type' => 'integer', 'null' => true, 'default' => null),
+		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1)
@@ -49,9 +49,9 @@ class UserAttributeFixture extends CakeTestFixture {
 			'can_read_self' => 1,
 			'can_edit_self' => 1,
 			'position' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-			'created_user_id' => 1,
+			'created_user' => 1,
 			'created' => '2014-06-02 16:18:06',
-			'modified_user_id' => 1,
+			'modified_user' => 1,
 			'modified' => '2014-06-02 16:18:06'
 		),
 	);

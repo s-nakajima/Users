@@ -29,14 +29,14 @@ class UserAttribute extends AppModel {
 	public $belongsTo = array(
 		'CreatedUser' => array(
 			'className' => 'CreatedUser',
-			'foreignKey' => 'created_user_id',
+			'foreignKey' => 'created_user',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
 		'ModifiedUser' => array(
 			'className' => 'ModifiedUser',
-			'foreignKey' => 'modified_user_id',
+			'foreignKey' => 'modified_user',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
