@@ -1,6 +1,6 @@
 Users
 =====
-A
+
 [![Build Status](https://travis-ci.org/NetCommons3/Users.png?branch=master)](https://travis-ci.org/NetCommons3/Users)
 [![Coverage Status](https://coveralls.io/repos/NetCommons3/Users/badge.png?branch=master)](https://coveralls.io/r/NetCommons3/Users?branch=master)
 
