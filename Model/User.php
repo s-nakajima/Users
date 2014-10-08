@@ -27,16 +27,6 @@ class User extends AppModel {
  * @var array
  */
 	public $validate = array(
-		'role_id' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
 		'username' => array(
 			'regex' => array(
 				'rule' => array('custom', '/[\w]+/'),
@@ -78,8 +68,8 @@ class User extends AppModel {
 	public $belongsTo = array(
 		'Role' => array(
 			'className' => 'Role',
-			'foreignKey' => 'role_id',
-			'conditions' => '',
+			'foreignKey' => false,
+			'conditions' => array('User.role_key = Role.key', 'Role.type = 1'),
 			'fields' => '',
 			'order' => ''
 		),
@@ -138,8 +128,8 @@ class User extends AppModel {
  * @var array
  */
 	protected $_schema = array(
-		'role_id' => array(
-			'default' => 1,
+		'role_key' => array(
+			'default' => 'system_administrator',
 		),
 	);
 
@@ -210,7 +200,7 @@ class User extends AppModel {
 			} else {
 				$this->User->set(array_merge_recursive(array(
 					'User' => array(
-						'role_id' => 1
+						'role_key' => 'system_administrator'
 					)
 				), $data));
 				$this->User->save();

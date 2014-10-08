@@ -74,7 +74,7 @@ class UserAttribute extends AppModel {
 			'className' => 'Role',
 			'joinTable' => 'roles_user_attributes',
 			'foreignKey' => 'user_attribute_id',
-			'associationForeignKey' => 'role_id',
+			'associationForeignKey' => 'role_key',
 			'unique' => 'keepExisting',
 			'conditions' => '',
 			'fields' => '',
