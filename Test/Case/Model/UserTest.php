@@ -21,9 +21,8 @@ class UserTest extends CakeTestCase {
  */
 	public $fixtures = array(
 		'plugin.users.user',
-		'app.role',
+		'plugin.roles.role',
 		'app.language',
-		'app.languages_role',
 		'app.plugin',
 		'app.frame',
 		'app.box',
@@ -35,11 +34,9 @@ class UserTest extends CakeTestCase {
 		'app.groups_user',
 		'app.space',
 		'app.block',
-		'app.blocks_language',
 		'app.boxes_page',
 		'app.containers_page',
 		'app.languages_page',
-		'app.frames_language',
 		'app.roles_plugin',
 		'plugin.users.user_attribute',
 		'app.roles_user_attribute',

@@ -2,9 +2,9 @@
 /**
  * UserFixture
  *
- * @author   Jun Nishikawa <topaz2@m0n0m0n0.com>
- * @link     http://www.netcommons.org NetCommons Project
- * @license  http://www.netcommons.org/license.txt NetCommons License
+ * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
  */
 
 /**
@@ -21,7 +21,7 @@ class UserFixture extends CakeTestFixture {
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
 		'username' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'role_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'role_key' => array('type' => 'string', 'null' => true, 'default' => null),
 		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null),
@@ -42,7 +42,17 @@ class UserFixture extends CakeTestFixture {
 			'id' => 1,
 			'username' => 'Lorem ipsum dolor sit amet',
 			'password' => 'Lorem ipsum dolor sit amet',
-			'role_id' => 1,
+			'role_key' => 'system_administrator',
+			'created_user' => 1,
+			'created' => '2014-06-02 16:18:08',
+			'modified_user' => 1,
+			'modified' => '2014-06-02 16:18:08'
+		),
+		array(
+			'id' => 2,
+			'username' => 'Lorem ipsum dolor sit amet',
+			'password' => 'Lorem ipsum dolor sit amet',
+			'role_key' => '',
 			'created_user' => 1,
 			'created' => '2014-06-02 16:18:08',
 			'modified_user' => 1,

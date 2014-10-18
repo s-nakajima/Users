@@ -1,4 +1,18 @@
 <?php
+/**
+ * Users migration
+ *
+ * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ */
+
+/**
+ * Users migration
+ *
+ * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
+ * @package NetCommons\Users\Config\Migration
+ */
 class Init extends CakeMigration {
 
 /**
@@ -28,7 +42,7 @@ class Init extends CakeMigration {
 /**
  * Before migration callback
  *
- * @param string $direction, up or down direction of migration process
+ * @param string $direction up or down direction of migration process
  * @return bool Should process continue
  */
 	public function before($direction) {
@@ -38,7 +52,7 @@ class Init extends CakeMigration {
 /**
  * After migration callback
  *
- * @param string $direction, up or down direction of migration process
+ * @param string $direction up or down direction of migration process
  * @return bool Should process continue
  */
 	public function after($direction) {
