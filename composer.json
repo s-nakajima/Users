@@ -25,6 +25,7 @@
     },
     "require-dev": {
         "netcommons/auth":        "dev-master",
+        "netcommons/roles":       "dev-master",
         "mustangostang/spyc":     "dev-master",
         "satooshi/php-coveralls": "dev-master"
     },
