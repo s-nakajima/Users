@@ -217,6 +217,8 @@ class User extends AppModel {
 				$this->UserAttribute->save();
 				$this->UserAttributesUser->set(array(
 					'user_id' => $this->User->id,
+					'language_id' => 2,
+					'key' => 'nickname',
 					'value' => $data[$this->alias]['handlename'],
 					'created_user' => $this->User->id,
 					'modified_user' => $this->User->id,
