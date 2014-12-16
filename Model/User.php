@@ -123,17 +123,6 @@ class User extends AppModel {
 	);
 
 /**
- * Schema
- *
- * @var array
- */
-	protected $_schema = array(
-		'role_key' => array(
-			'default' => 'system_administrator',
-		),
-	);
-
-/**
  * Check field1 matches field2
  *
  * @param array $field1 field1 parameters
