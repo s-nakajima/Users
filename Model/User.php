@@ -183,7 +183,7 @@ class User extends AppModel {
 					$this->UserAttributesUser->save();
 				}
 			} else {
-				$this->User->set(data);
+				$this->User->set($data);
 				$this->User->save();
 				$this->UserAttribute->set(array(
 					'type' => 1,
