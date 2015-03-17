@@ -157,16 +157,12 @@ class User extends AppModel {
  * @param array $data data
  * @return mixed On success Model::$data, false on failure
  */
-	public function saveAdmin($data = array()) {
-		$models = array(
-			'User',
-			'UserAttribute',
-			'UserAttributesUser',
-		);
-		foreach ($models as $model) {
-			$this->$model = ClassRegistry::init('Users.' . $model);
-			$this->$model->setDataSource('master');
-		}
+	public function saveUser($data = array()) {
+		$this->loadModels([
+			'User' => 'Users.User',
+			'UserAttribute' => 'Users.UserAttribute',
+			'UserAttributesUser' => 'Users.UserAttributesUser',
+		]);
 
 		$con = $this->getDataSource();
 		$con->begin();
@@ -187,11 +183,7 @@ class User extends AppModel {
 					$this->UserAttributesUser->save();
 				}
 			} else {
-				$this->User->set(array_merge_recursive(array(
-					'User' => array(
-						'role_key' => 'system_administrator'
-					)
-				), $data));
+				$this->User->set(data);
 				$this->User->save();
 				$this->UserAttribute->set(array(
 					'type' => 1,

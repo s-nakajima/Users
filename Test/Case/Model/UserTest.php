@@ -67,13 +67,13 @@ class UserTest extends CakeTestCase {
 	}
 
 /**
- * Test saveAdmin()
+ * Test saveUser()
  *
  * @return void
  */
-	public function testSaveAdmin() {
-		// Test saveAdmin() creates admin user
-		$this->User->saveAdmin(array(
+	public function testSaveUser() {
+		// Test saveUser() creates admin user
+		$this->User->saveUser(array(
 			'User' => array(
 				'username' => 'admin',
 				'handlename' => 'admin',
@@ -89,11 +89,11 @@ class UserTest extends CakeTestCase {
 
 		// Expect only one admin record exist
 		$this->assertEqual(count($created), 1);
-		// Expect User#saveAdmin() succeed
+		// Expect User#saveUser() succeed
 		$this->assertTrue(is_numeric($this->User->id));
 
-		// Test saveAdmin() updates previous admin user for the second attempt
-		$this->User->saveAdmin(array(
+		// Test saveUser() updates previous admin user for the second attempt
+		$this->User->saveUser(array(
 			'User' => array(
 				'username' => 'admin',
 				'handlename' => 'admin2',
@@ -116,12 +116,12 @@ class UserTest extends CakeTestCase {
 	}
 
 /**
- * Test saveAdmin() w/ invalid request
+ * Test saveUser() w/ invalid request
  *
  * @return void
  */
-	public function testSaveAdminInvalid() {
-		$this->User->saveAdmin(array(
+	public function testSaveUserInvalid() {
+		$this->User->saveUser(array(
 			'User' => array(
 				'username' => 'admin',
 				'handlename' => 'admin',
