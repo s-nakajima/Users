@@ -187,23 +187,23 @@ class User extends AppModel {
 			} else {
 				$this->User->set($data);
 				$this->User->save();
-				$this->RolesRoomsUser->create(array(
-					'roles_room_id' => 1,
-					'user_id' => $this->User->id,
-					/* 'created_user' => $this->User->id, */
-					/* 'modified_user' => $this->User->id, */
-				));
-				$this->RolesRoomsUser->save();
-				foreach (RoomRolePermission::$DEFAULT_PERMISSIONS[$data[$this->alias]['role_key']] as $permission => $boolean) {
-					$this->RoomRolePermission->create(array(
-						'roles_room_id' => $this->RolesRoom->id,
-						'permission' => $permission,
-						'value' => $boolean,
-						/* 'created_user' => $this->User->id, */
-						/* 'modified_user' => $this->User->id, */
-					));
-					$this->RoomRolePermission->save();
-				}
+				/* $this->RolesRoomsUser->create(array( */
+				/* 	'roles_room_id' => 1, */
+				/* 	'user_id' => $this->User->id, */
+				/* 	/\* 'created_user' => $this->User->id, *\/ */
+				/* 	/\* 'modified_user' => $this->User->id, *\/ */
+				/* )); */
+				/* $this->RolesRoomsUser->save(); */
+				/* foreach (RoomRolePermission::$DEFAULT_PERMISSIONS[$data[$this->alias]['role_key']] as $permission => $boolean) { */
+				/* 	$this->RoomRolePermission->create(array( */
+				/* 		'roles_room_id' => $this->RolesRoom->id, */
+				/* 		'permission' => $permission, */
+				/* 		'value' => $boolean, */
+				/* 		/\* 'created_user' => $this->User->id, *\/ */
+				/* 		/\* 'modified_user' => $this->User->id, *\/ */
+				/* 	)); */
+				/* 	$this->RoomRolePermission->save(); */
+				/* } */
 				$this->UserAttribute->set(array(
 					'type' => 1,
 					'required' => true,
