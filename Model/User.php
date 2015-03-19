@@ -159,6 +159,8 @@ class User extends AppModel {
  */
 	public function saveUser($data = array()) {
 		$this->loadModels([
+			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
+			'RoomRolePermission' => 'Rooms.RoomRolePermission',
 			'User' => 'Users.User',
 			'UserAttribute' => 'Users.UserAttribute',
 			'UserAttributesUser' => 'Users.UserAttributesUser',
@@ -167,16 +169,16 @@ class User extends AppModel {
 		$con = $this->getDataSource();
 		$con->begin();
 		try {
-			$admin = $this->User->find('first', array(
+			$stored = $this->User->find('first', array(
 				'conditions' => array(
 					'User.username' => $data[$this->alias]['username']
 				),
 			));
 
-			if ($admin) {
+			if ($stored) {
 				$this->User->set($data[$this->alias]);
 				$this->User->save();
-				foreach ($admin['UserAttribute'] as $userAttribute) {
+				foreach ($stored['UserAttribute'] as $userAttribute) {
 					$this->UserAttribute->set($userAttribute);
 					$this->UserAttribute->save();
 					$this->UserAttributesUser->set($userAttribute['UserAttributesUser']);
@@ -185,6 +187,23 @@ class User extends AppModel {
 			} else {
 				$this->User->set($data);
 				$this->User->save();
+				$this->RolesRoomsUser->create(array(
+					'roles_room_id' => 1,
+					'user_id' => $this->User->id,
+					/* 'created_user' => $this->User->id, */
+					/* 'modified_user' => $this->User->id, */
+				));
+				$this->RolesRoomsUser->save();
+				foreach (RoomRolePermission::$DEFAULT_PERMISSIONS[$data[$this->alias]['role_key']] as $permission => $boolean) {
+					$this->RoomRolePermission->create(array(
+						'roles_room_id' => $this->RolesRoom->id,
+						'permission' => $permission,
+						'value' => $boolean,
+						/* 'created_user' => $this->User->id, */
+						/* 'modified_user' => $this->User->id, */
+					));
+					$this->RoomRolePermission->save();
+				}
 				$this->UserAttribute->set(array(
 					'type' => 1,
 					'required' => true,
@@ -192,8 +211,8 @@ class User extends AppModel {
 					'can_read_self' => true,
 					'can_edit_self' => true,
 					'position' => 1,
-					'created_user' => $this->User->id,
-					'modified_user' => $this->User->id,
+					/* 'created_user' => $this->User->id, */
+					/* 'modified_user' => $this->User->id, */
 				));
 				$this->UserAttribute->save();
 				$this->UserAttributesUser->set(array(
@@ -201,8 +220,8 @@ class User extends AppModel {
 					'language_id' => 2,
 					'key' => 'nickname',
 					'value' => $data[$this->alias]['handlename'],
-					'created_user' => $this->User->id,
-					'modified_user' => $this->User->id,
+					/* 'created_user' => $this->User->id, */
+					/* 'modified_user' => $this->User->id, */
 					'user_attribute_id' => $this->UserAttribute->id
 				));
 				$this->UserAttributesUser->save();
