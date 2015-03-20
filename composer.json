@@ -24,10 +24,11 @@
         "components/jquery":      "~2.1"
     },
     "require-dev": {
-        "netcommons/auth":        "dev-master",
-        "netcommons/roles":       "dev-master",
-        "mustangostang/spyc":     "dev-master",
-        "satooshi/php-coveralls": "dev-master"
+        "netcommons/auth":        "@dev",
+        "netcommons/roles":       "@dev",
+        "netcommons/rooms":       "@dev",
+        "mustangostang/spyc":     "@dev",
+        "satooshi/php-coveralls": "@dev"
     },
     "config": {
         "vendor-dir": "vendors"
