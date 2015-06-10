@@ -19,8 +19,11 @@ class UserAttributesUserFixture extends CakeTestFixture {
  */
 	public $fields = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
+		'language_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 6),
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null),
 		'user_attribute_id' => array('type' => 'integer', 'null' => false, 'default' => null),
+		'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Key to identify record meaning.
+e.g.) nickname, age, ', 'charset' => 'utf8'),
 		'value' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
 		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
@@ -40,8 +43,10 @@ class UserAttributesUserFixture extends CakeTestFixture {
 	public $records = array(
 		array(
 			'id' => 1,
+			'language_id' => 2,
 			'user_id' => 1,
 			'user_attribute_id' => 1,
+			'key' => 'nickname',
 			'value' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
 			'created_user' => 1,
 			'created' => '2014-06-02 16:18:06',
