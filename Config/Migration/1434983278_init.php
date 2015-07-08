@@ -30,6 +30,21 @@ class Init extends CakeMigration {
 	public $migration = array(
 		'up' => array(
 			'create_table' => array(
+				'roles_user_attributes' => array(
+					'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
+					'role_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+					'user_attribute_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+					'can_read' => array('type' => 'boolean', 'null' => true, 'default' => null),
+					'can_edit' => array('type' => 'boolean', 'null' => true, 'default' => null),
+					'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+					'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
+					'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+					'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
+					'indexes' => array(
+						'PRIMARY' => array('column' => 'id', 'unique' => 1),
+					),
+					'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'),
+				),
 				'user_attributes' => array(
 					'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 					'language_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 6, 'unsigned' => false),
@@ -115,7 +130,7 @@ e.g.) 0, 1, 5, 10'),
 		),
 		'down' => array(
 			'drop_table' => array(
-				'user_attributes', 'user_attributes_users', 'user_select_attributes', 'user_select_attributes_users', 'users'
+				'roles_user_attributes', 'user_attributes', 'user_attributes_users', 'user_select_attributes', 'user_select_attributes_users', 'users'
 			),
 		),
 	);
