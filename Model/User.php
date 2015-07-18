@@ -67,7 +67,7 @@ class User extends AppModel {
  */
 	public $belongsTo = array(
 		'Role' => array(
-			'className' => 'Role',
+			'className' => 'Roles.Role',
 			'foreignKey' => false,
 			'conditions' => array('User.role_key = Role.key', 'Role.type = 1'),
 			'fields' => '',
@@ -82,7 +82,7 @@ class User extends AppModel {
  */
 	public $hasAndBelongsToMany = array(
 		'Group' => array(
-			'className' => 'Group',
+			'className' => 'Groups.Group',
 			'joinTable' => 'groups_users',
 			'foreignKey' => 'user_id',
 			'associationForeignKey' => 'group_id',
@@ -95,7 +95,7 @@ class User extends AppModel {
 			'finderQuery' => '',
 		),
 		'UserAttribute' => array(
-			'className' => 'UserAttribute',
+			'className' => 'Users.UserAttribute',
 			'joinTable' => 'user_attributes_users',
 			'foreignKey' => 'user_id',
 			'associationForeignKey' => 'user_attribute_id',
@@ -108,7 +108,7 @@ class User extends AppModel {
 			'finderQuery' => '',
 		),
 		'UserSelectAttribute' => array(
-			'className' => 'UserSelectAttribute',
+			'className' => 'Users.UserSelectAttribute',
 			'joinTable' => 'user_select_attributes_users',
 			'foreignKey' => 'user_id',
 			'associationForeignKey' => 'user_select_attribute_id',
@@ -159,8 +159,8 @@ class User extends AppModel {
  */
 	public function saveUser($data = array()) {
 		$this->loadModels([
-			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
-			'RoomRolePermission' => 'Rooms.RoomRolePermission',
+			//'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
+			//'RoomRolePermission' => 'Rooms.RoomRolePermission',
 			'User' => 'Users.User',
 			'UserAttribute' => 'Users.UserAttribute',
 			'UserAttributesUser' => 'Users.UserAttributesUser',
