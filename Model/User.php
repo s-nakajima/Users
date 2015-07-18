@@ -160,7 +160,7 @@ class User extends AppModel {
 	public function saveUser($data = array()) {
 		$this->loadModels([
 			//'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
-			'RoomRolePermission' => 'Rooms.RoomRolePermission',
+			//'RoomRolePermission' => 'Rooms.RoomRolePermission',
 			'User' => 'Users.User',
 			'UserAttribute' => 'Users.UserAttribute',
 			'UserAttributesUser' => 'Users.UserAttributesUser',
