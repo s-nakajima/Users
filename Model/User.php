@@ -81,19 +81,19 @@ class User extends AppModel {
  * @var array
  */
 	public $hasAndBelongsToMany = array(
-		'Group' => array(
-			'className' => 'Groups.Group',
-			'joinTable' => 'groups_users',
-			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'group_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		),
+		//'Group' => array(
+		//	'className' => 'Groups.Group',
+		//	'joinTable' => 'groups_users',
+		//	'foreignKey' => 'user_id',
+		//	'associationForeignKey' => 'group_id',
+		//	'unique' => 'keepExisting',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => '',
+		//	'limit' => '',
+		//	'offset' => '',
+		//	'finderQuery' => '',
+		//),
 		'UserAttribute' => array(
 			'className' => 'Users.UserAttribute',
 			'joinTable' => 'user_attributes_users',
