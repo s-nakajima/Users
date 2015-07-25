@@ -162,7 +162,7 @@ class User extends UsersAppModel {
 			//'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
 			//'RoomRolePermission' => 'Rooms.RoomRolePermission',
 			'User' => 'Users.User',
-			'UserAttribute' => 'Users.UserAttribute',
+			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'UserAttributesUser' => 'Users.UserAttributesUser',
 		]);
 

@@ -27,7 +27,7 @@ class UserSelectAttribute extends AppModel {
  */
 	public $belongsTo = array(
 		'UserAttribute' => array(
-			'className' => 'UserAttribute',
+			'className' => 'UserAttribute.UserAttribute',
 			'foreignKey' => 'user_attribute_id',
 			'conditions' => '',
 			'fields' => '',

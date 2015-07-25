@@ -64,7 +64,7 @@ class UserAttributesUser extends AppModel {
 			'order' => ''
 		),
 		'UserAttribute' => array(
-			'className' => 'UserAttribute',
+			'className' => 'UserAttributes.UserAttribute',
 			'foreignKey' => 'user_attribute_id',
 			'conditions' => '',
 			'fields' => '',
