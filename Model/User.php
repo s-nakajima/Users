@@ -7,19 +7,19 @@
  * @property ModifiedUser $ModifiedUser
  * @property Group $Group
  * @property UserAttribute $UserAttribute
- * @property UserSelectAttribute $UserSelectAttribute
+ * @property UserAttributeChoice $UserAttributeChoice
  *
  * @author   Jun Nishikawa <topaz2@m0n0m0n0.com>
  * @link     http://www.netcommons.org NetCommons Project
  * @license  http://www.netcommons.org/license.txt NetCommons License
  */
 
-App::uses('AppModel', 'Model');
+App::uses('UsersAppModel', 'Users.Model');
 
 /**
- * Summary for User Model
+ * User Model
  */
-class User extends AppModel {
+class User extends UsersAppModel {
 
 /**
  * Validation rules
@@ -132,7 +132,7 @@ class User extends AppModel {
 	public function equalToField($field1, $field2) {
 		$keys = array_keys($field1);
 		return $this->data[$this->name][$field2] === $this->data[$this->name][array_pop($keys)];
-	}
+}
 
 /**
  * beforeSave
