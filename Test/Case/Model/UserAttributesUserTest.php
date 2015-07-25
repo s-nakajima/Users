@@ -40,8 +40,8 @@ class UserAttributesUserTest extends CakeTestCase {
 		//'plugin.rooms.room',
 		'plugin.users.user',
 		'plugin.users.user_attribute',
-		'plugin.users.user_select_attribute',
-		'plugin.users.user_select_attributes_user',
+		//'plugin.users.user_select_attribute',
+		//'plugin.users.user_select_attributes_user',
 		'plugin.users.user_attributes_user'
 	);
 

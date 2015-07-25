@@ -62,13 +62,13 @@ class UserSelectAttributesUser extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'UserSelectAttribute' => array(
-			'className' => 'UserSelectAttribute',
-			'foreignKey' => 'user_select_attribute_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
+		//'UserSelectAttribute' => array(
+		//	'className' => 'UserSelectAttribute',
+		//	'foreignKey' => 'user_select_attribute_id',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => ''
+		//),
 		'CreatedUser' => array(
 			'className' => 'CreatedUser',
 			'foreignKey' => 'created_user',

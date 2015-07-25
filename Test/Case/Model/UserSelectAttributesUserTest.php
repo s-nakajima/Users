@@ -7,7 +7,7 @@
  * @license  http://www.netcommons.org/license.txt NetCommons License
  */
 
-App::uses('UserSelectAttributesUser', 'Model');
+//App::uses('UserSelectAttributesUser', 'Model');
 
 /**
  * Summary for UserSelectAttributesUser Test Case
@@ -40,8 +40,8 @@ class UserSelectAttributesUserTest extends CakeTestCase {
 		//'plugin.rooms.room',
 		'plugin.users.user',
 		'plugin.users.user_attribute',
-		'plugin.users.user_select_attribute',
-		'plugin.users.user_select_attributes_user',
+		//'plugin.users.user_select_attribute',
+		//'plugin.users.user_select_attributes_user',
 		'plugin.users.user_attributes_user'
 	);
 
@@ -52,7 +52,7 @@ class UserSelectAttributesUserTest extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
-		$this->UserSelectAttributesUser = ClassRegistry::init('UserSelectAttributesUser');
+		//$this->UserSelectAttributesUser = ClassRegistry::init('UserSelectAttributesUser');
 	}
 
 /**
@@ -61,7 +61,7 @@ class UserSelectAttributesUserTest extends CakeTestCase {
  * @return void
  */
 	public function tearDown() {
-		unset($this->UserSelectAttributesUser);
+		//unset($this->UserSelectAttributesUser);
 
 		parent::tearDown();
 	}

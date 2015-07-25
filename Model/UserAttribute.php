@@ -48,21 +48,21 @@ class UserAttribute extends AppModel {
  *
  * @var array
  */
-	public $hasMany = array(
-		'UserSelectAttribute' => array(
-			'className' => 'UserSelectAttribute',
-			'foreignKey' => 'user_attribute_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
-	);
+	//public $hasMany = array(
+	//	'UserSelectAttribute' => array(
+	//		'className' => 'UserSelectAttribute',
+	//		'foreignKey' => 'user_attribute_id',
+	//		'dependent' => false,
+	//		'conditions' => '',
+	//		'fields' => '',
+	//		'order' => '',
+	//		'limit' => '',
+	//		'offset' => '',
+	//		'exclusive' => '',
+	//		'finderQuery' => '',
+	//		'counterQuery' => ''
+	//	)
+	//);
 
 /**
  * hasAndBelongsToMany associations
@@ -83,19 +83,19 @@ class UserAttribute extends AppModel {
 			'offset' => '',
 			'finderQuery' => '',
 		),
-		'User' => array(
-			'className' => 'User',
-			'joinTable' => 'user_attributes_users',
-			'foreignKey' => 'user_attribute_id',
-			'associationForeignKey' => 'user_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		)
+		//'User' => array(
+		//	'className' => 'User',
+		//	'joinTable' => 'user_attributes_users',
+		//	'foreignKey' => 'user_attribute_id',
+		//	'associationForeignKey' => 'user_id',
+		//	'unique' => 'keepExisting',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => '',
+		//	'limit' => '',
+		//	'offset' => '',
+		//	'finderQuery' => '',
+		//)
 	);
 
 }

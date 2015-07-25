@@ -54,20 +54,20 @@ class UserSelectAttribute extends AppModel {
  *
  * @var array
  */
-	public $hasAndBelongsToMany = array(
-		'User' => array(
-			'className' => 'User',
-			'joinTable' => 'user_select_attributes_users',
-			'foreignKey' => 'user_select_attribute_id',
-			'associationForeignKey' => 'user_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		)
-	);
+	//public $hasAndBelongsToMany = array(
+	//	'User' => array(
+	//		'className' => 'User',
+	//		'joinTable' => 'user_select_attributes_users',
+	//		'foreignKey' => 'user_select_attribute_id',
+	//		'associationForeignKey' => 'user_id',
+	//		'unique' => 'keepExisting',
+	//		'conditions' => '',
+	//		'fields' => '',
+	//		'order' => '',
+	//		'limit' => '',
+	//		'offset' => '',
+	//		'finderQuery' => '',
+	//	)
+	//);
 
 }
