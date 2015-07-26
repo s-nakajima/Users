@@ -70,20 +70,20 @@ class UserAttributesUser extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'CreatedUser' => array(
-			'className' => 'CreatedUser',
-			'foreignKey' => 'created_user',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'ModifiedUser' => array(
-			'className' => 'ModifiedUser',
-			'foreignKey' => 'modified_user',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		)
+		//'CreatedUser' => array(
+		//	'className' => 'CreatedUser',
+		//	'foreignKey' => 'created_user',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => ''
+		//),
+		//'ModifiedUser' => array(
+		//	'className' => 'ModifiedUser',
+		//	'foreignKey' => 'modified_user',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => ''
+		//)
 	);
 
 /**
