@@ -180,8 +180,8 @@ class User extends UsersAppModel {
 				$this->User->set($data[$this->alias]);
 				$this->User->save();
 				foreach ($stored['UserAttribute'] as $userAttribute) {
-					$this->UserAttribute->set($userAttribute);
-					$this->UserAttribute->save();
+					//$this->UserAttribute->set($userAttribute);
+					//$this->UserAttribute->save();
 					$this->UserAttributesUser->set($userAttribute['UserAttributesUser']);
 					$this->UserAttributesUser->save();
 				}
@@ -205,17 +205,17 @@ class User extends UsersAppModel {
 				/* 	)); */
 				/* 	$this->RoomRolePermission->save(); */
 				/* } */
-				$this->UserAttribute->set(array(
-					'type' => 1,
-					'required' => true,
-					'is_each_language' => true,
-					'can_read_self' => true,
-					'can_edit_self' => true,
-					'position' => 1,
-					/* 'created_user' => $this->User->id, */
-					/* 'modified_user' => $this->User->id, */
-				));
-				$this->UserAttribute->save();
+				//$this->UserAttribute->set(array(
+				//	'type' => 1,
+				//	'required' => true,
+				//	'is_each_language' => true,
+				//	'can_read_self' => true,
+				//	'can_edit_self' => true,
+				//	'position' => 1,
+				//	/* 'created_user' => $this->User->id, */
+				//	/* 'modified_user' => $this->User->id, */
+				//));
+				//$this->UserAttribute->save();
 				$this->UserAttributesUser->set(array(
 					'user_id' => $this->User->id,
 					'language_id' => 2,
