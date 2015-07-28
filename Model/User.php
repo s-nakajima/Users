@@ -179,12 +179,12 @@ class User extends UsersAppModel {
 			if ($stored) {
 				$this->User->set($data[$this->alias]);
 				$this->User->save();
-				foreach ($stored['UserAttribute'] as $userAttribute) {
-					//$this->UserAttribute->set($userAttribute);
-					//$this->UserAttribute->save();
-					$this->UserAttributesUser->set($userAttribute['UserAttributesUser']);
-					$this->UserAttributesUser->save();
-				}
+				//foreach ($stored['UserAttribute'] as $userAttribute) {
+				//	//$this->UserAttribute->set($userAttribute);
+				//	//$this->UserAttribute->save();
+				//	$this->UserAttributesUser->set($userAttribute['UserAttributesUser']);
+				//	$this->UserAttributesUser->save();
+				//}
 			} else {
 				$this->User->set($data);
 				$this->User->save();
@@ -223,7 +223,7 @@ class User extends UsersAppModel {
 					'value' => $data[$this->alias]['handlename'],
 					/* 'created_user' => $this->User->id, */
 					/* 'modified_user' => $this->User->id, */
-					'user_attribute_id' => $this->UserAttribute->id
+					'user_attribute_id' => '4', //$this->UserAttribute->id
 				));
 				$this->UserAttributesUser->save();
 			}
