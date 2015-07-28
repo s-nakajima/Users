@@ -132,7 +132,7 @@ class User extends UsersAppModel {
 	public function equalToField($field1, $field2) {
 		$keys = array_keys($field1);
 		return $this->data[$this->name][$field2] === $this->data[$this->name][array_pop($keys)];
-}
+	}
 
 /**
  * beforeSave
