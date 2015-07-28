@@ -112,9 +112,6 @@ class UserTest extends CakeTestCase {
 		// Expect created user and updated user to have same id
 		$this->assertEqual($created[0]['User']['id'], $updated[0]['User']['id']);
 		// Expect password changed
-
-		var_dump($created[0]['User']['password'], $updated[0]['User']['password']);
-
 		$this->assertNotEqual($created[0]['User']['password'], $updated[0]['User']['password']);
 	}
 
