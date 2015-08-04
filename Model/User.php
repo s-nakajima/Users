@@ -171,6 +171,7 @@ class User extends UsersAppModel {
 		$con->begin();
 		try {
 			$stored = $this->User->find('first', array(
+				'recursive' => -1,
 				'conditions' => array(
 					'User.username' => $data[$this->alias]['username']
 				),
