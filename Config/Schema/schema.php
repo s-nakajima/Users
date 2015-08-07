@@ -50,44 +50,44 @@ class AppSchema extends CakeSchema {
  *
  * @var array
  */
-	public $user_attributes_users = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'language_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 6, 'unsigned' => false),
-		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'user_attribute_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Key to identify record meaning.
-e.g.) nickname, age, ', 'charset' => 'utf8'),
-		'value' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
-		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
-		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
-	);
+	//public $user_attributes_users = array(
+	//	'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
+	//	'language_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 6, 'unsigned' => false),
+	//	'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+	//	'user_attribute_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+	//	'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Key to identify record meaning.
+	//e.g.) nickname, age, ', 'charset' => 'utf8'),
+	//	'value' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+	//	'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+	//	'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
+	//	'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+	//	'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
+	//	'indexes' => array(
+	//		'PRIMARY' => array('column' => 'id', 'unique' => 1)
+	//	),
+	//	'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	//);
 
 /**
  * user_select_attributes_users table
  *
  * @var array
  */
-	public $user_select_attributes_users = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'user_select_attribute_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'value' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => 'Value of the record.
-e.g.) 0, 1, 5, 10'),
-		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
-		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
-		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
-	);
+	//public $user_select_attributes_users = array(
+	//	'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
+	//	'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+	//	'user_select_attribute_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+	//	'value' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => 'Value of the record.
+	//e.g.) 0, 1, 5, 10'),
+	//	'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+	//	'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
+	//	'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+	//	'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
+	//	'indexes' => array(
+	//		'PRIMARY' => array('column' => 'id', 'unique' => 1)
+	//	),
+	//	'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	//);
 
 /**
  * users table
@@ -96,14 +96,13 @@ e.g.) 0, 1, 5, 10'),
  */
 	public $users = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'username' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'ID | ログインID'),
 		'password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Password | パスワード'),
-		'nickname' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Handle | ハンドル'),
-		'is_nickname_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'is_name_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Link identifier | リンク識別子'),
-		'is_key_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'handlename' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Handle | ハンドル'),
+		'is_handlename_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'is_name_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'email' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'E-mail | eメール'),
 		'is_email_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'moblie_mail' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Mobile mail | 携帯メール'),
@@ -124,9 +123,9 @@ e.g.) 0, 1, 5, 10'),
 		'is_modified_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => '0', 'unsigned' => false, 'comment' => 'Updater | 更新者'),
 		'is_modified_user_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'password_modified' => array('type' => 'datetime', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Password has been changed | パスワード変更日時'),
+		'password_modified' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'Password has been changed | パスワード変更日時'),
 		'is_password_modified_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'last_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Last login | 最終ログイン日時'),
+		'last_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'Last login | 最終ログイン日時'),
 		'is_last_login_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_profile_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_search_keywords_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
@@ -146,7 +145,7 @@ e.g.) 0, 1, 5, 10'),
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
 		'language_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 6, 'unsigned' => false),
 		'avatar' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Avatar | アバター'),
-		'avatar_file_id' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'avatar_file_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
 		'name' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Name | 氏名'),
 		'profile' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Profile | プロフィール'),
 		'search_keywords' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Keywords | 検索キーワード'),

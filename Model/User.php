@@ -163,7 +163,7 @@ class User extends UsersAppModel {
 			//'RoomRolePermission' => 'Rooms.RoomRolePermission',
 			'User' => 'Users.User',
 			//'UserAttribute' => 'UserAttributes.UserAttribute',
-			'UserAttributesUser' => 'Users.UserAttributesUser',
+			//'UserAttributesUser' => 'Users.UserAttributesUser',
 		]);
 
 		$this->setDataSource('master');
@@ -217,16 +217,16 @@ class User extends UsersAppModel {
 				//	/* 'modified_user' => $this->User->id, */
 				//));
 				//$this->UserAttribute->save();
-				$this->UserAttributesUser->set(array(
-					'user_id' => $this->User->id,
-					'language_id' => 2,
-					'key' => 'nickname',
-					'value' => $data[$this->alias]['handlename'],
-					/* 'created_user' => $this->User->id, */
-					/* 'modified_user' => $this->User->id, */
-					'user_attribute_id' => '4', //$this->UserAttribute->id
-				));
-				$this->UserAttributesUser->save();
+				//$this->UserAttributesUser->set(array(
+				//	'user_id' => $this->User->id,
+				//	'language_id' => 2,
+				//	'key' => 'nickname',
+				//	'value' => $data[$this->alias]['handlename'],
+				//	/* 'created_user' => $this->User->id, */
+				//	/* 'modified_user' => $this->User->id, */
+				//	'user_attribute_id' => '4', //$this->UserAttribute->id
+				//));
+				//$this->UserAttributesUser->save();
 			}
 			$con->commit();
 		} catch (Exception $e) {
