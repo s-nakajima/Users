@@ -34,7 +34,7 @@ class UserSelectAttributesUserTest extends CakeTestCase {
 		//'plugin.pages.page',
 		//'plugin.plugin_manager.plugin',
 		//'plugin.public_space.space',
-		'plugin.roles.role',
+		//'plugin.roles.role',
 		////'plugin.roles.roles_plugin',
 		////'plugin.roles.roles_user_attribute',
 		//'plugin.rooms.room',
@@ -42,7 +42,7 @@ class UserSelectAttributesUserTest extends CakeTestCase {
 		//'plugin.users.user_select_attribute',
 		//'plugin.users.user_select_attributes_user',
 		'plugin.users.user_attributes_user',
-		'plugin.user_attributes.user_attribute',
+		//'plugin.user_attributes.user_attribute',
 	);
 
 /**
