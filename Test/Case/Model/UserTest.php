@@ -8,11 +8,12 @@
  */
 
 App::uses('User', 'Model');
+App::uses('YACakeTestCase', 'NetCommons.TestSuite');
 
 /**
  * Summary for User Test Case
  */
-class UserTest extends CakeTestCase {
+class UserTest extends YACakeTestCase {
 
 /**
  * Fixtures
