@@ -25,9 +25,7 @@
     },
     "require-dev": {
         "mustangostang/spyc":           "@dev",
-        "netcommons/auth":              "@dev",
-        "netcommons/roles":             "@dev",
-        "netcommons/rooms":             "@dev",
+        "netcommons/net-commons":       "dev-master",
         "satooshi/php-coveralls":       "@dev"
     },
     "config": {

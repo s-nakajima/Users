@@ -64,26 +64,26 @@ class UserAttributesUser extends AppModel {
 			'order' => ''
 		),
 		'UserAttribute' => array(
-			'className' => 'UserAttribute',
+			'className' => 'UserAttributes.UserAttribute',
 			'foreignKey' => 'user_attribute_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		),
-		'CreatedUser' => array(
-			'className' => 'CreatedUser',
-			'foreignKey' => 'created_user',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
-		'ModifiedUser' => array(
-			'className' => 'ModifiedUser',
-			'foreignKey' => 'modified_user',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		)
+		//'CreatedUser' => array(
+		//	'className' => 'CreatedUser',
+		//	'foreignKey' => 'created_user',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => ''
+		//),
+		//'ModifiedUser' => array(
+		//	'className' => 'ModifiedUser',
+		//	'foreignKey' => 'modified_user',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => ''
+		//)
 	);
 
 /**

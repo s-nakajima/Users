@@ -7,19 +7,19 @@
  * @property ModifiedUser $ModifiedUser
  * @property Group $Group
  * @property UserAttribute $UserAttribute
- * @property UserSelectAttribute $UserSelectAttribute
+ * @property UserAttributeChoice $UserAttributeChoice
  *
  * @author   Jun Nishikawa <topaz2@m0n0m0n0.com>
  * @link     http://www.netcommons.org NetCommons Project
  * @license  http://www.netcommons.org/license.txt NetCommons License
  */
 
-App::uses('AppModel', 'Model');
+App::uses('UsersAppModel', 'Users.Model');
 
 /**
- * Summary for User Model
+ * User Model
  */
-class User extends AppModel {
+class User extends UsersAppModel {
 
 /**
  * Validation rules
@@ -94,32 +94,32 @@ class User extends AppModel {
 		//	'offset' => '',
 		//	'finderQuery' => '',
 		//),
-		'UserAttribute' => array(
-			'className' => 'Users.UserAttribute',
-			'joinTable' => 'user_attributes_users',
-			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'user_attribute_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		),
-		'UserSelectAttribute' => array(
-			'className' => 'Users.UserSelectAttribute',
-			'joinTable' => 'user_select_attributes_users',
-			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'user_select_attribute_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		)
+		//'UserAttribute' => array(
+		//	'className' => 'Users.UserAttribute',
+		//	'joinTable' => 'user_attributes_users',
+		//	'foreignKey' => 'user_id',
+		//	'associationForeignKey' => 'user_attribute_id',
+		//	'unique' => 'keepExisting',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => '',
+		//	'limit' => '',
+		//	'offset' => '',
+		//	'finderQuery' => '',
+		//),
+		//'UserSelectAttribute' => array(
+		//	'className' => 'Users.UserSelectAttribute',
+		//	'joinTable' => 'user_select_attributes_users',
+		//	'foreignKey' => 'user_id',
+		//	'associationForeignKey' => 'user_select_attribute_id',
+		//	'unique' => 'keepExisting',
+		//	'conditions' => '',
+		//	'fields' => '',
+		//	'order' => '',
+		//	'limit' => '',
+		//	'offset' => '',
+		//	'finderQuery' => '',
+		//)
 	);
 
 /**
@@ -162,8 +162,8 @@ class User extends AppModel {
 			//'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
 			//'RoomRolePermission' => 'Rooms.RoomRolePermission',
 			'User' => 'Users.User',
-			'UserAttribute' => 'Users.UserAttribute',
-			'UserAttributesUser' => 'Users.UserAttributesUser',
+			//'UserAttribute' => 'UserAttributes.UserAttribute',
+			//'UserAttributesUser' => 'Users.UserAttributesUser',
 		]);
 
 		$this->setDataSource('master');
@@ -171,6 +171,7 @@ class User extends AppModel {
 		$con->begin();
 		try {
 			$stored = $this->User->find('first', array(
+				'recursive' => -1,
 				'conditions' => array(
 					'User.username' => $data[$this->alias]['username']
 				),
@@ -179,12 +180,12 @@ class User extends AppModel {
 			if ($stored) {
 				$this->User->set($data[$this->alias]);
 				$this->User->save();
-				foreach ($stored['UserAttribute'] as $userAttribute) {
-					$this->UserAttribute->set($userAttribute);
-					$this->UserAttribute->save();
-					$this->UserAttributesUser->set($userAttribute['UserAttributesUser']);
-					$this->UserAttributesUser->save();
-				}
+				//foreach ($stored['UserAttribute'] as $userAttribute) {
+				//	//$this->UserAttribute->set($userAttribute);
+				//	//$this->UserAttribute->save();
+				//	$this->UserAttributesUser->set($userAttribute['UserAttributesUser']);
+				//	$this->UserAttributesUser->save();
+				//}
 			} else {
 				$this->User->set($data);
 				$this->User->save();
@@ -205,27 +206,27 @@ class User extends AppModel {
 				/* 	)); */
 				/* 	$this->RoomRolePermission->save(); */
 				/* } */
-				$this->UserAttribute->set(array(
-					'type' => 1,
-					'required' => true,
-					'is_each_language' => true,
-					'can_read_self' => true,
-					'can_edit_self' => true,
-					'position' => 1,
-					/* 'created_user' => $this->User->id, */
-					/* 'modified_user' => $this->User->id, */
-				));
-				$this->UserAttribute->save();
-				$this->UserAttributesUser->set(array(
-					'user_id' => $this->User->id,
-					'language_id' => 2,
-					'key' => 'nickname',
-					'value' => $data[$this->alias]['handlename'],
-					/* 'created_user' => $this->User->id, */
-					/* 'modified_user' => $this->User->id, */
-					'user_attribute_id' => $this->UserAttribute->id
-				));
-				$this->UserAttributesUser->save();
+				//$this->UserAttribute->set(array(
+				//	'type' => 1,
+				//	'required' => true,
+				//	'is_each_language' => true,
+				//	'can_read_self' => true,
+				//	'can_edit_self' => true,
+				//	'position' => 1,
+				//	/* 'created_user' => $this->User->id, */
+				//	/* 'modified_user' => $this->User->id, */
+				//));
+				//$this->UserAttribute->save();
+				//$this->UserAttributesUser->set(array(
+				//	'user_id' => $this->User->id,
+				//	'language_id' => 2,
+				//	'key' => 'nickname',
+				//	'value' => $data[$this->alias]['handlename'],
+				//	/* 'created_user' => $this->User->id, */
+				//	/* 'modified_user' => $this->User->id, */
+				//	'user_attribute_id' => '4', //$this->UserAttribute->id
+				//));
+				//$this->UserAttributesUser->save();
 			}
 			$con->commit();
 		} catch (Exception $e) {
