@@ -22,7 +22,6 @@ class UserTest extends YACakeTestCase {
  */
 	public $fixtures = array(
 		'plugin.users.user',
-		'plugin.users.user_attributes_user',
 	);
 
 /**
