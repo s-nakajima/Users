@@ -19,8 +19,7 @@ class UsersControllerTest extends ControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array(
-	);
+	public $fixtures = array();
 
 /**
  * testIndex method
