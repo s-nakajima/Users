@@ -6,15 +6,20 @@
  * @property RolesRoom $RolesRoom
  * @property Language $Language
  *
- * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('UsersAppModel', 'Users.Model');
 
 /**
  * User Model
+ *
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @package NetCommons\Users\Model
  */
 class User extends UsersAppModel {
 
@@ -157,35 +162,6 @@ class User extends UsersAppModel {
 	}
 
 /**
- * Check field1 matches field2
- *
- * @param array $field1 field1 parameters
- * @param string $field2 field2 key
- * @return bool
- */
-	public function equalToField($field1, $field2) {
-		$keys = array_keys($field1);
-		return $this->data[$this->name][$field2] === $this->data[$this->name][array_pop($keys)];
-}
-
-/**
- * beforeSave
- *
- * @param array $options options
- * @return bool
- */
-	public function beforeSave($options = array()) {
-		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-		if (isset($this->data[$this->alias]['password'])) {
-			$passwordHasher = new SimplePasswordHasher();
-			$this->data[$this->alias]['password'] = $passwordHasher->hash(
-				$this->data[$this->alias]['password']
-			);
-		}
-		return true;
-	}
-
-/**
  * Save user
  *
  * @param array $data data
@@ -202,6 +178,13 @@ class User extends UsersAppModel {
 		$this->setDataSource('master');
 		$dataSource = $this->getDataSource();
 		$dataSource->begin();
+
+		//パスワードの設定
+		if (isset($data[$this->alias]['password'])) {
+			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
+			$passwordHasher = new SimplePasswordHasher();
+			$data[$this->alias]['password'] = $passwordHasher->hash($data[$this->alias]['password']);
+		}
 
 		//バリデーション
 		if (! $this->validateUser($data['User'])) {
@@ -230,8 +213,6 @@ class User extends UsersAppModel {
 			}
 
 			$dataSource->commit();
-			//$dataSource->rollback();
-			//return false;
 
 		} catch (Exception $ex) {
 			$dataSource->rollback();

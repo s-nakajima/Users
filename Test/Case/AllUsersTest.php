@@ -1,14 +1,19 @@
 <?php
 /**
  * All test suite
+ *
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 /**
  * All test suite
  *
- * @author   Jun Nishikawa <topaz2@m0n0m0n0.com>
- * @link     http://www.netcommons.org NetCommons Project
- * @license  http://www.netcommons.org/license.txt NetCommons License
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @package NetCommons\Users\Test\Case
  */
 class AllUsersTest extends CakeTestSuite {
 
@@ -22,7 +27,20 @@ class AllUsersTest extends CakeTestSuite {
 	public static function suite() {
 		$plugin = preg_replace('/^All([\w]+)Test$/', '$1', __CLASS__);
 		$suite = new CakeTestSuite(sprintf('All %s Plugin tests', $plugin));
-		$suite->addTestDirectoryRecursive(CakePlugin::path($plugin) . 'Test' . DS . 'Case');
+
+		$directory = CakePlugin::path($plugin) . 'Test' . DS . 'Case';
+		$Folder = new Folder($directory);
+		$exceptions = array(
+			'AnnouncementsControllerTestBase.php',
+			'UsersModelTestBase.php'
+		);
+		$files = $Folder->tree(null, $exceptions, 'files');
+		foreach ($files as $file) {
+			if (substr($file, -4) === '.php') {
+				$suite->addTestFile($file);
+			}
+		}
+
 		return $suite;
 	}
 }
