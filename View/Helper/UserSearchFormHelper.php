@@ -33,8 +33,6 @@ class UserSearchFormHelper extends FormHelper {
  */
 	public function __construct(View $View, $settings = array()) {
 		parent::__construct($View, $settings);
-//		$this->UserRole = ClassRegistry::init('UserRoles.UserRole');
-//		$this->Role = ClassRegistry::init('Roles.Role');
 	}
 
 /**
@@ -47,14 +45,67 @@ class UserSearchFormHelper extends FormHelper {
  */
 	public function userSearchInput($userAttribute, $options = array()) {
 		$html = '';
+		$dataTypeKey = $userAttribute['DataTypeTemplate']['data_type_key'];
+		$dataTypeTemplateKey = $userAttribute['DataTypeTemplate']['key'];
+		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
-		//$html .= '<div class="form-group">';
-		$html .= h($userAttribute['UserAttribute']['name']);
-		if ($userAttribute['UserAttributeSetting']['required']) {
-			$html .= $this->_View->element('NetCommons.required');
+		//パスワードは項目表示しない
+		if ($dataTypeTemplateKey === 'password') {
+			return '';
 		}
-		//form-inline
-		//$html .= '</div>';
+
+		if ($dataTypeKey === 'img') {
+			//あり、なし、指定なしのラジオボタン
+			$dataTypeKey = 'radio';
+			$options = array(
+
+			);
+		} elseif ($dataTypeKey === 'radio' || $dataTypeKey === 'checkbox' || $dataTypeKey === 'select') {
+			//ラジオボタン、チェックボタン、セレクトボタン
+			$options = Hash::combine($userAttribute, 'UserAttributeChoice.{n}.key', 'UserAttributeChoice.{n}.name');
+		}
+
+		if ($userAttributeKey === 'password_modified' || $userAttributeKey === 'last_login') {
+			$dataTypeKey = 'datetime';
+		}
+
+		//$html .= '<ul class="user-attribute-edit">';
+		//$html .= '<li class="list-group-item form-group">';
+		$html .= '<div class="form-group">';
+
+		switch ($dataTypeKey) {
+			case 'radio':
+				$html .= '<strong>' . h($userAttribute['UserAttribute']['name']) . '</strong>';
+				break;
+
+			case 'checkbox':
+				$html .= '<strong>' . h($userAttribute['UserAttribute']['name']) . '</strong>';
+				break;
+
+			case 'select':
+				$html .= '<strong>' . h($userAttribute['UserAttribute']['name']) . '</strong>';
+				break;
+
+			case 'datetime':
+				if ($userAttributeKey === 'last_login') {
+					//最終ログイン日時の場合、ラベル変更(○日以上ログインしていない、○日以内ログインしている)
+				} else {
+					//○日以上前、○日以内
+				}
+				$html .= '<strong>' . h($userAttribute['UserAttribute']['name']) . '</strong>';
+				break;
+
+			default:
+				$html .= $this->Form->input($userAttribute['UserAttribute']['key'], array(
+					'type' => 'text',
+					'label' => $userAttribute['UserAttribute']['name'],
+					'class' => 'form-control',
+				));
+		}
+
+		//$html .= '</li>';
+		//$html .= '</ul>';
+		$html .= '</div>';
 
 		return $html;
 	}

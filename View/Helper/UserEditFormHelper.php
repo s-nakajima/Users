@@ -35,21 +35,59 @@ class UserEditFormHelper extends FormHelper {
  */
 	public function __construct(View $View, $settings = array()) {
 		parent::__construct($View, $settings);
-//		$this->UserRole = ClassRegistry::init('UserRoles.UserRole');
-//		$this->Role = ClassRegistry::init('Roles.Role');
+		$this->User = ClassRegistry::init('Users.User');
+		$this->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
 	}
 
 /**
  * Generates a form input element complete with label and wrapper div
  *
+ * @param string $fieldName This should be "Modelname.fieldname"
  * @param array $userAttribute user_attribute data
- * @param array $options Each type of input takes different options.
  * @return string Completed form widget.
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/form.html#creating-form-elements
  */
-	public function userEditInput($userAttribute, $options = array()) {
-
+	public function userEditInput($userAttribute) {
 		$html = '';
+var_dump($userAttribute);
+
+		//必須項目ラベルの設定
+		if ($userAttribute['UserAttributeSetting']['required']) {
+			$requireLabel = $this->_View->element('NetCommons.required');
+		} else {
+			$requireLabel = '';
+		}
+
+		$fieldName = '';
+		if ($this->User) {
+
+		}
+
+
+		$html .= '<ul class="user-attribute-edit">';
+		$html .= '<li class="list-group-item form-group">';
+
+
+
+
+
+		$dataTypeKey = $userAttribute['DataTypeTemplate']['data_type_key'];
+		switch ($dataTypeKey) {
+			case 'text':
+//				$this->Form->input('UserRole.' . $index . '.name', array(
+//					'type' => 'text',
+//					'label' => __d('user_roles', 'User role name') . $requireLabel,
+//					'class' => 'form-control',
+//				));
+
+				break;
+		}
+
+		//$html .= h($userAttribute['UserAttribute']['name']);
+
+		$html .= '</li>';
+		$html .= '</ul>';
+
 
 		return $html;
 	}

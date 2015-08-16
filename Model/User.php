@@ -168,7 +168,7 @@ class User extends UsersAppModel {
  * @param bool $created True is created(add action), false is updated(edit action)
  * @return mixed On success Model::$data, false on failure
  */
-	public function saveUser($data, $created) {
+	public function saveUser($data, $created = true) {
 		$this->loadModels([
 			'User' => 'Users.User',
 			'UsersLanguage' => 'Users.UsersLanguage',
@@ -184,6 +184,7 @@ class User extends UsersAppModel {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
 			$data[$this->alias]['password'] = $passwordHasher->hash($data[$this->alias]['password']);
+			$data[$this->alias]['password_again'] = $passwordHasher->hash($data[$this->alias]['password_again']);
 		}
 
 		//バリデーション
