@@ -25,7 +25,7 @@ class UserEditFormHelper extends FormHelper {
  *
  * @var array
  */
-	public $helpers = array('Form');
+	public $helpers = array('Form', 'DataTypes.DataTypeForm');
 
 /**
  * Default Constructor
@@ -42,14 +42,46 @@ class UserEditFormHelper extends FormHelper {
 /**
  * Generates a form input element complete with label and wrapper div
  *
- * @param string $fieldName This should be "Modelname.fieldname"
  * @param array $userAttribute user_attribute data
  * @return string Completed form widget.
- * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/form.html#creating-form-elements
  */
 	public function userEditInput($userAttribute) {
 		$html = '';
-var_dump($userAttribute);
+//var_dump($userAttribute);
+
+		$userAttributeKey = $userAttribute['UserAttribute']['key'];
+
+		if ($this->User->hasField($userAttributeKey)) {
+			$html .= '<div class="form-group">';
+			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
+			$html .= '</div>';
+		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
+			foreach ($this->_View->request->data['UsersLanguage'] as $index => $usersLanguage) {
+				$html .= '<div class="form-group"' . ' ng-show="activeLangId === \''. $usersLanguage['language_id'] .'\'" ng-cloak>';
+				$html .= $this->__input('UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute);
+				$html .= '</div>';
+			}
+
+		} else {
+			$html .= h($userAttribute['UserAttribute']['name']);
+			return $html;
+		}
+
+		return $html;
+	}
+
+/**
+ * Generates a form input element complete with label and wrapper div
+ *
+ * @param string $fieldName This should be "Modelname.fieldname"
+ * @param array $userAttribute user_attribute data
+ * @return string Completed form widget.
+ */
+	private function __input($fieldName, $userAttribute) {
+		$html = '';
+
+		$dataTypeTemplateKey = $userAttribute['DataTypeTemplate']['key'];
+		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
 		//必須項目ラベルの設定
 		if ($userAttribute['UserAttributeSetting']['required']) {
@@ -58,36 +90,21 @@ var_dump($userAttribute);
 			$requireLabel = '';
 		}
 
-		$fieldName = '';
-		if ($this->User) {
+		$attributes = array();
 
+		//選択肢の設定
+		if (isset($userAttribute['UserAttributeChoice'])) {
+			$attributes['options'] = Hash::combine($userAttribute['UserAttributeChoice'], '{n}.key', '{n}.name');
+			if (! $userAttribute['UserAttributeSetting']['required']) {
+				$attributes['empty'] = ! $userAttribute['UserAttributeSetting']['required'];
+			}
 		}
 
-
-		$html .= '<ul class="user-attribute-edit">';
-		$html .= '<li class="list-group-item form-group">';
-
-
-
-
-
-		$dataTypeKey = $userAttribute['DataTypeTemplate']['data_type_key'];
-		switch ($dataTypeKey) {
-			case 'text':
-//				$this->Form->input('UserRole.' . $index . '.name', array(
-//					'type' => 'text',
-//					'label' => __d('user_roles', 'User role name') . $requireLabel,
-//					'class' => 'form-control',
-//				));
-
-				break;
-		}
-
-		//$html .= h($userAttribute['UserAttribute']['name']);
-
-		$html .= '</li>';
-		$html .= '</ul>';
-
+		$html .= $this->DataTypeForm->inputDataType(
+				$dataTypeTemplateKey,
+				$fieldName,
+				$userAttribute['UserAttribute']['name'] . $requireLabel,
+				$attributes);
 
 		return $html;
 	}
