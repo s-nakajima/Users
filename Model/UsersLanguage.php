@@ -51,7 +51,7 @@ class UsersLanguage extends UsersAppModel {
 			'foreignKey' => 'language_id',
 			'conditions' => '',
 			'fields' => '',
-			'order' => ''
+			'order' => array('Language.weight' => 'asc')
 		),
 	);
 

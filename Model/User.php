@@ -24,6 +24,13 @@ App::uses('UsersAppModel', 'Users.Model');
 class User extends UsersAppModel {
 
 /**
+ * language data.
+ *
+ * @var array
+ */
+	public $languages = null;
+
+/**
  * use behaviors
  *
  * @var array
@@ -56,6 +63,27 @@ class User extends UsersAppModel {
 			'fields' => '',
 			'order' => ''
 		),
+	);
+
+/**
+ * hasMany associations
+ *
+ * @var array
+ */
+	public $hasMany = array(
+		'UsersLanguage' => array(
+			'className' => 'Users.UsersLanguage',
+			'foreignKey' => 'user_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
 	);
 
 /**
@@ -134,9 +162,9 @@ class User extends UsersAppModel {
 				'notBlank' => array(
 					'rule' => array('notBlank'),
 					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'password')),
-					'required' => true
+					'required' => true,
 					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
+					'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 				'regex' => array(
 					'rule' => array('custom', '/[\w]+/'),
@@ -162,17 +190,68 @@ class User extends UsersAppModel {
 	}
 
 /**
- * Return readable rooms
+ * Create user
  *
- * @param int $userId users.id
- * @param int $languageId languages.id
  * @return array
  */
-	public function getUser($userId, $languageId = null) {
+	public function createUser() {
+		$this->UserRole = ClassRegistry::init('UserRoles.UserRole');
 
+		if (! isset($this->languages)) {
+			$this->languages = $this->Language->find('list', array(
+				'recursive' => -1,
+				'fields' => array('Language.id', 'Language.code'),
+				'order' => 'weight'
+			));
+		}
 
+		$results['UsersLanguage'] = array();
+		foreach (array_keys($this->languages) as $langId) {
+			$index = count($results['UsersLanguage']);
 
-		return $room;
+			$usersLanguage = $this->UsersLanguage->create(array(
+				'id' => null,
+				'language_id' => $langId,
+			));
+			$results['UsersLanguage'][$index] = $usersLanguage['UsersLanguage'];
+		}
+		$results = Hash::merge($results,
+			$this->create(array(
+				'id' => null,
+				'role_key' => UserRole::USER_ROLE_KEY_COMMON_USER
+			))
+		);
+
+		return $results;
+	}
+
+/**
+ * Get user
+ *
+ * @param int $userId users.id
+ * @return array
+ */
+	public function getUser($userId) {
+		$user = $this->find('first', array(
+			'recursive' => -1,
+			'conditions' => array(
+				'id' => $userId
+			),
+		));
+		unset($user['User']['password']);
+
+		$usersLanguage = $this->UsersLanguage->find('all', array(
+			'recursive' => 0,
+			'fields' => array(
+				'UsersLanguage.*'
+			),
+			'conditions' => array(
+				'UsersLanguage.user_id' => $userId
+			),
+		));
+		$user['UsersLanguage'] = Hash::extract($usersLanguage, '{n}.UsersLanguage');
+
+		return $user;
 	}
 
 /**
@@ -194,6 +273,9 @@ class User extends UsersAppModel {
 		$dataSource->begin();
 
 		//パスワードの設定
+		if (! $created && $data[$this->alias]['password'] === '') {
+			unset($data[$this->alias]['password'], $data[$this->alias]['password_again']);
+		}
 		if (isset($data[$this->alias]['password'])) {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
