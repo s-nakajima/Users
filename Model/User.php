@@ -164,7 +164,7 @@ class User extends UsersAppModel {
 					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'password')),
 					'required' => true,
 					//'last' => false, // Stop validation after this rule
-					'on' => 'create', // Limit validation to 'create' or 'update' operations
+					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 				'regex' => array(
 					'rule' => array('custom', '/[\w]+/'),
@@ -172,7 +172,7 @@ class User extends UsersAppModel {
 					'allowEmpty' => false,
 					'required' => true,
 					//'last' => false, // Stop validation after this rule
-					'on' => 'create', // Limit validation to 'create' or 'update' operations
+					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 			),
 			'password_again' => array(
@@ -182,7 +182,7 @@ class User extends UsersAppModel {
 					'allowEmpty' => false,
 					'required' => true,
 					//'last' => false, // Stop validation after this rule
-					'on' => 'create', // Limit validation to 'create' or 'update' operations
+					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				)
 			),
 		));
@@ -274,6 +274,9 @@ class User extends UsersAppModel {
 		$dataSource->begin();
 
 		//パスワードの設定
+		//if (! $created && $data[$this->alias]['password'] === '') {
+		//	unset($data[$this->alias]['password'], $data[$this->alias]['password_again']);
+		//}
 		if (isset($data[$this->alias]['password'])) {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
