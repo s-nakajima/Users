@@ -162,6 +162,20 @@ class User extends UsersAppModel {
 	}
 
 /**
+ * Return readable rooms
+ *
+ * @param int $userId users.id
+ * @param int $languageId languages.id
+ * @return array
+ */
+	public function getUser($userId, $languageId = null) {
+
+
+
+		return $room;
+	}
+
+/**
  * Save user
  *
  * @param array $data data
