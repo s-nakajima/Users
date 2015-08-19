@@ -17,7 +17,7 @@ App::uses('Component', 'Controller');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Controller\Component
  */
-class UsersSearchComponent extends Component {
+class UserSearchComponent extends Component {
 
 /**
  * Called before the Controller::beforeFilter().
@@ -27,12 +27,12 @@ class UsersSearchComponent extends Component {
  * @link http://book.cakephp.org/2.0/en/controllers/components.html#Component::initialize
  */
 	public function initialize(Controller $controller) {
-		$this->controller = $controller;
-		$this->controller->Paginator = $this->controller->Components->load('Paginator');
-
-		//Modelの呼び出し
-		$this->User = ClassRegistry::init('Users.User');
-		$this->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
+		//$this->controller = $controller;
+		//$this->controller->Paginator = $this->controller->Components->load('Paginator');
+		//
+		////Modelの呼び出し
+		//$this->User = ClassRegistry::init('Users.User');
+		//$this->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
 	}
 
 /**
@@ -41,29 +41,18 @@ class UsersSearchComponent extends Component {
  * @param array $conditions Searchable conditions
  * @return array Return search
  */
-	public function search($conditions = array()) {
-		$result = array();
-
-//		$default = array(
-//			'Language.id' => Configure::read('Config.languageId'),
-//		);
-//		$conditions = array_merge($default, $conditions);
-//
-//		$joins = array(
-//
-//		);
-//
-//
-//
-//		//ルームデータ取得
-//		$this->controller->Paginator->settings = array(
-//			'recursive' => -1,
-//			'conditions' => $conditions,
-//			'order' => 'Room.lft'
-//		);
-//		$data = $this->controller->Paginator->paginate('User');
-
-		return $result;
+	public function search($fields = array(), $conditions = array()) {
+		////ユーザデータ取得
+		//$this->controller->Paginator->settings = array(
+		//	'recursive' => -1,
+		//	'fields' => $this->User->searchFields($fields),
+		//	'conditions' => $this->User->searchConditions($conditions),
+		//	'joins' => $this->User->searchJoinTables(),
+		//	'order' => array($this->User->alias . '.modified' => 'desc')
+		//);
+		//$result = $this->controller->Paginator->paginate('User');
+		//
+		//return $result;
 	}
 
 }

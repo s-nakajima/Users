@@ -39,6 +39,7 @@ class User extends UsersAppModel {
 		'NetCommons.OriginalKey',
 		'Users.SaveUser',
 		'Users.DeleteUser',
+		'Users.UserSearch',
 	);
 
 /**
