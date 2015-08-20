@@ -15,7 +15,7 @@ msgstr ""
 
 #: UserManager/View/UserManager/index.ctp:27
 msgid "%s of %s (Total: %s)"
-msgstr "%s / %s (総件数: %s件)"
+msgstr "%s / %s ページ (総件数: %s件)"
 
 #: UserManager/View/UserManager/index.ctp:38
 msgid "Search for the members"
