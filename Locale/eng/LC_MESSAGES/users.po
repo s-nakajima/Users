@@ -29,3 +29,7 @@ msgstr ""
 msgid "password"
 msgstr ""
 
+#: Users/Model/User.php:165;172
+msgid "Non members"
+msgstr ""
+

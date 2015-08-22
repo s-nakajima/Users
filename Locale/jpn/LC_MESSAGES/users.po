@@ -29,3 +29,6 @@ msgstr "ログインID"
 msgid "password"
 msgstr "パスワード"
 
+#: Users/Model/User.php:165;172
+msgid "Non members"
+msgstr "不参加"
