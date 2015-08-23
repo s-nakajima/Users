@@ -159,34 +159,39 @@ class User extends UsersAppModel {
 					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 			),
-			'password' => array(
-				'notBlank' => array(
-					'rule' => array('notBlank'),
-					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'password')),
-					'required' => true,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-				'regex' => array(
-					'rule' => array('custom', '/[\w]+/'),
-					'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'password')),
-					'allowEmpty' => false,
-					'required' => true,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				),
-			),
-			'password_again' => array(
-				'equalToField' => array(
-					'rule' => array('equalToField', 'password'),
-					'message' => 'Password does not match. Please try again.',
-					'allowEmpty' => false,
-					'required' => true,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
-				)
-			),
 		));
+
+		if (isset($this->data['User']['password']) || ! isset($this->data['User']['id'])) {
+			$this->validate = Hash::merge($this->validate, array(
+				'password' => array(
+					'notBlank' => array(
+						'rule' => array('notBlank'),
+						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'password')),
+						'required' => true,
+						//'last' => false, // Stop validation after this rule
+						//'on' => 'create', // Limit validation to 'create' or 'update' operations
+					),
+					'regex' => array(
+						'rule' => array('custom', '/[\w]+/'),
+						'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'password')),
+						'allowEmpty' => false,
+						'required' => true,
+						//'last' => false, // Stop validation after this rule
+						//'on' => 'create', // Limit validation to 'create' or 'update' operations
+					),
+				),
+				'password_again' => array(
+					'equalToField' => array(
+						'rule' => array('equalToField', 'password'),
+						'message' => 'Password does not match. Please try again.',
+						'allowEmpty' => false,
+						'required' => true,
+						//'last' => false, // Stop validation after this rule
+						//'on' => 'create', // Limit validation to 'create' or 'update' operations
+					)
+				),
+			));
+		}
 
 		return parent::beforeValidate($options);
 	}
@@ -275,9 +280,9 @@ class User extends UsersAppModel {
 		$dataSource->begin();
 
 		//パスワードの設定
-		//if (! $created && $data[$this->alias]['password'] === '') {
-		//	unset($data[$this->alias]['password'], $data[$this->alias]['password_again']);
-		//}
+		if (! $created && $data[$this->alias]['password'] === '') {
+			unset($data[$this->alias]['password'], $data[$this->alias]['password_again']);
+		}
 		if (isset($data[$this->alias]['password'])) {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
