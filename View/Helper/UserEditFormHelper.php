@@ -25,7 +25,7 @@ class UserEditFormHelper extends FormHelper {
  *
  * @var array
  */
-	public $helpers = array('Form', 'DataTypes.DataTypeForm');
+	public $helpers = array('Html', 'Form', 'DataTypes.DataTypeForm');
 
 /**
  * Default Constructor
@@ -47,7 +47,6 @@ class UserEditFormHelper extends FormHelper {
  */
 	public function userEditInput($userAttribute) {
 		$html = '';
-//var_dump($userAttribute);
 
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
@@ -100,6 +99,10 @@ class UserEditFormHelper extends FormHelper {
 			}
 		}
 
+		if ($userAttributeKey === 'avatar') {
+			$attributes['noimage'] = '/users/img/noimage.gif';
+		}
+		
 		$html .= $this->DataTypeForm->inputDataType(
 				$dataTypeTemplateKey,
 				$fieldName,
