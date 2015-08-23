@@ -50,7 +50,7 @@ class UserSearchComponent extends Component {
 			'fields' => $this->controller->User->searchFields($fields),
 			'conditions' => $this->controller->User->searchConditions($conditions),
 			'joins' => $this->controller->User->searchJoinTables(),
-			'order' => array($this->controller->User->alias . '.modified' => 'desc')
+			'order' => array($this->controller->User->alias . '.id' => 'asc')
 		);
 		$results = $this->controller->Paginator->paginate('User');
 
