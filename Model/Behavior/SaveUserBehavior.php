@@ -1,6 +1,6 @@
 <?php
 /**
- * Users App Model
+ * SaveUser Behavior
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -9,14 +9,14 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('AppModel', 'Model');
+App::uses('ModelBehavior', 'Model');
 
 /**
- * Users App Model
+ * SaveUser Behavior
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
- * @package NetCommons\Users\Model
+ * @package NetCommons\Users\Model\Behavior
  */
-class UsersAppModel extends AppModel {
+class SaveUserBehavior extends ModelBehavior {
 
 }

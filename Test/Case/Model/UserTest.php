@@ -2,27 +2,22 @@
 /**
  * User Test Case
  *
- * @author   Jun Nishikawa <topaz2@m0n0m0n0.com>
- * @link     http://www.netcommons.org NetCommons Project
- * @license  http://www.netcommons.org/license.txt NetCommons License
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('User', 'Model');
-App::uses('YACakeTestCase', 'NetCommons.TestSuite');
+App::uses('UsersModelTestBase', 'Users.Test/Case/Model');
 
 /**
- * Summary for User Test Case
- */
-class UserTest extends YACakeTestCase {
-
-/**
- * Fixtures
+ * User Test Case
  *
- * @var array
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @package NetCommons\Users\Test\Case\Model
  */
-	public $fixtures = array(
-		'plugin.users.user',
-	);
+class UserTest extends UsersModelTestBase {
 
 /**
  * setUp method
@@ -58,7 +53,8 @@ class UserTest extends YACakeTestCase {
 				'handlename' => 'admin',
 				'password_again' => 'password',
 				'password' => 'password',
-			)
+			),
+			'UsersLanguage' => array(),
 		));
 		$created = $this->User->find('all', array(
 			'conditions' => array(
@@ -74,11 +70,13 @@ class UserTest extends YACakeTestCase {
 		// Test saveUser() updates previous admin user for the second attempt
 		$this->User->saveUser(array(
 			'User' => array(
+				'id' => $this->User->id,
 				'username' => 'admin',
 				'handlename' => 'admin2',
 				'password_again' => 'password2',
 				'password' => 'password2',
-			)
+			),
+			'UsersLanguage' => array(),
 		));
 		$updated = $this->User->find('all', array(
 			'conditions' => array(
@@ -100,14 +98,15 @@ class UserTest extends YACakeTestCase {
  * @return void
  */
 	public function testSaveUserInvalid() {
-		$this->User->saveUser(array(
+		$result = $this->User->saveUser(array(
 			'User' => array(
 				'username' => 'admin',
 				'handlename' => 'admin',
 				'password_again' => 'password',
 				'password' => 'wrong_password',
-			)
+			),
+			'UsersLanguage' => array(),
 		));
-		$this->assertFalse($this->User->id);
+		$this->assertFalse($result);
 	}
 }
