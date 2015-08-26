@@ -56,7 +56,7 @@ class UserEditFormHelper extends FormHelper {
 			$html .= '</div>';
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			foreach ($this->_View->request->data['UsersLanguage'] as $index => $usersLanguage) {
-				$html .= '<div class="form-group"' . ' ng-show="activeLangId === \''. $usersLanguage['language_id'] .'\'" ng-cloak>';
+				$html .= '<div class="form-group"' . ' ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
 				$html .= $this->__input('UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute);
 				$html .= '</div>';
 			}
@@ -102,7 +102,7 @@ class UserEditFormHelper extends FormHelper {
 		if ($userAttributeKey === 'avatar') {
 			$attributes['noimage'] = '/users/img/noimage.gif';
 		}
-		
+
 		$html .= $this->DataTypeForm->inputDataType(
 				$dataTypeTemplateKey,
 				$fieldName,

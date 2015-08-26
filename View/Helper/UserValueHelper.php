@@ -77,7 +77,6 @@ class UserValueHelper extends AppHelper {
 /**
  * Output user value
  *
- * @param array $user User data
  * @param string $fieldName Name of user field
  * @return string User value
  */
@@ -89,7 +88,6 @@ class UserValueHelper extends AppHelper {
 /**
  * Output user value
  *
- * @param array $user User data
  * @param string $fieldName Name of user field
  * @return string User value
  */
@@ -102,7 +100,6 @@ class UserValueHelper extends AppHelper {
 		} elseif ($this->UsersLanguage->hasField($fieldName)) {
 			$modelName = $this->UsersLanguage->alias;
 		}
-//var_dump($userAttribute);
 		if ($fieldName === 'handlename') {
 			$value = $this->Html->link($this->user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $this->user['User']['id'] . '/');
 		} elseif (isset($userAttribute['UserAttributeChoice']) && $this->user[$modelName][$fieldName]) {

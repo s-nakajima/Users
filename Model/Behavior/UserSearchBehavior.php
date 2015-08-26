@@ -92,19 +92,19 @@ class UserSearchBehavior extends ModelBehavior {
 		return array_values($fields);
 	}
 
-
 /**
  * Return search fields
  *
  * @param Model $model Model using this behavior
+ * @param string $sessionKey Session key
  * @param array $fields Display fields
  * @return array Return fields
  */
 	public function dispayFields(Model $model, $sessionKey, $fields = array()) {
 		$this->__prepare($model);
 
-		if (! $fields) {
-			$fields = CakeSession::read($sessionKey);
+		//if (! $fields) {
+			//$fields = CakeSession::read($sessionKey);
 			if (! $fields || ! is_array($fields)) {
 				$fields = array(
 					'handlename',
@@ -116,7 +116,7 @@ class UserSearchBehavior extends ModelBehavior {
 				);
 				$fields = array_combine($fields, $fields);
 			}
-		}
+		//}
 
 		$fieldKeys = array_keys($fields);
 		foreach ($fieldKeys as $key) {
@@ -125,7 +125,7 @@ class UserSearchBehavior extends ModelBehavior {
 			}
 		}
 
-		CakeSession::write($sessionKey, $fields);
+		//CakeSession::write($sessionKey, $fields);
 
 		return $fields;
 	}
@@ -158,6 +158,7 @@ class UserSearchBehavior extends ModelBehavior {
  * Return search join tables
  *
  * @param Model $model Model using this behavior
+ * @param array $joinModels Join models
  * @return array Return search joins
  */
 	public function searchJoinTables(Model $model, $joinModels = array()) {

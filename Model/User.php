@@ -161,7 +161,7 @@ class User extends UsersAppModel {
 			),
 		));
 
-		if (isset($this->data['User']['password']) || ! isset($this->data['User']['id'])) {
+		if (isset($this->data['User']['password']) && $this->data['User']['password'] !== '' || ! isset($this->data['User']['id'])) {
 			$this->validate = Hash::merge($this->validate, array(
 				'password' => array(
 					'notBlank' => array(
@@ -267,6 +267,8 @@ class User extends UsersAppModel {
  * @param array $data data
  * @param bool $created True is created(add action), false is updated(edit action)
  * @return mixed On success Model::$data, false on failure
+ * @throws InternalErrorException
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 	public function saveUser($data, $created = true) {
 		$this->loadModels([
@@ -279,11 +281,7 @@ class User extends UsersAppModel {
 		$dataSource = $this->getDataSource();
 		$dataSource->begin();
 
-		//パスワードの設定
-		if (! $created && $data[$this->alias]['password'] === '') {
-			unset($data[$this->alias]['password'], $data[$this->alias]['password_again']);
-		}
-		if (isset($data[$this->alias]['password'])) {
+		if (isset($data[$this->alias]['password']) && $data[$this->alias]['password'] !== '') {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
 			$data[$this->alias]['password'] = $passwordHasher->hash($data[$this->alias]['password']);

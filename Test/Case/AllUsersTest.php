@@ -31,7 +31,7 @@ class AllUsersTest extends CakeTestSuite {
 		$directory = CakePlugin::path($plugin) . 'Test' . DS . 'Case';
 		$Folder = new Folder($directory);
 		$exceptions = array(
-			'AnnouncementsControllerTestBase.php',
+			'UsersControllerTestBase.php',
 			'UsersModelTestBase.php'
 		);
 		$files = $Folder->tree(null, $exceptions, 'files');

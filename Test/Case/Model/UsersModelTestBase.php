@@ -27,6 +27,7 @@ class UsersModelTestBase extends YACakeTestCase {
  */
 	public $fixtures = array(
 		'plugin.users.user',
+		'plugin.users.users_language',
 	);
 
 /**

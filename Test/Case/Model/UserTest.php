@@ -53,7 +53,8 @@ class UserTest extends UsersModelTestBase {
 				'handlename' => 'admin',
 				'password_again' => 'password',
 				'password' => 'password',
-			)
+			),
+			'UsersLanguage' => array(),
 		));
 		$created = $this->User->find('all', array(
 			'conditions' => array(
@@ -69,11 +70,13 @@ class UserTest extends UsersModelTestBase {
 		// Test saveUser() updates previous admin user for the second attempt
 		$this->User->saveUser(array(
 			'User' => array(
+				'id' => $this->User->id,
 				'username' => 'admin',
 				'handlename' => 'admin2',
 				'password_again' => 'password2',
 				'password' => 'password2',
-			)
+			),
+			'UsersLanguage' => array(),
 		));
 		$updated = $this->User->find('all', array(
 			'conditions' => array(
@@ -95,14 +98,15 @@ class UserTest extends UsersModelTestBase {
  * @return void
  */
 	public function testSaveUserInvalid() {
-		$this->User->saveUser(array(
+		$result = $this->User->saveUser(array(
 			'User' => array(
 				'username' => 'admin',
 				'handlename' => 'admin',
 				'password_again' => 'password',
 				'password' => 'wrong_password',
-			)
+			),
+			'UsersLanguage' => array(),
 		));
-		$this->assertFalse($this->User->id);
+		$this->assertFalse($result);
 	}
 }

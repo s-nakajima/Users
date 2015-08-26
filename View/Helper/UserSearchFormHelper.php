@@ -42,8 +42,11 @@ class UserSearchFormHelper extends FormHelper {
  * @param array $options Each type of input takes different options.
  * @return string Completed form widget.
  * @link http://book.cakephp.org/2.0/en/core-libraries/helpers/form.html#creating-form-elements
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	public function userSearchInput($userAttribute, $options = array()) {
+		//後で@SuppressWarnings(PHPMD.CyclomaticComplexity)を消す
+
 		$html = '';
 		$dataTypeKey = $userAttribute['DataTypeTemplate']['data_type_key'];
 		$dataTypeTemplateKey = $userAttribute['DataTypeTemplate']['key'];
@@ -58,7 +61,7 @@ class UserSearchFormHelper extends FormHelper {
 			//あり、なし、指定なしのラジオボタン
 			$dataTypeKey = 'radio';
 			$options = array(
-
+				//未着手
 			);
 		} elseif ($dataTypeKey === 'radio' || $dataTypeKey === 'checkbox' || $dataTypeKey === 'select') {
 			//ラジオボタン、チェックボタン、セレクトボタン

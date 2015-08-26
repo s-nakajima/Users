@@ -26,7 +26,10 @@ class UsersControllerTestBase extends YAControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array();
+	public $fixtures = array(
+		'plugin.users.user',
+		'plugin.users.users_language',
+	);
 
 /**
  * setUp method
