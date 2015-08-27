@@ -81,8 +81,12 @@ class UserValueHelper extends AppHelper {
  * @return string User value
  */
 	public function label($fieldName) {
-		$userAttribute = Hash::extract($this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']');
-		return $this->_View->Paginator->sort($fieldName, $userAttribute[0]['name']);
+		if ($fieldName === 'room_role_key') {
+			return __d('rooms', 'Room role');
+		} else {
+			$userAttribute = Hash::extract($this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']');
+			return $this->_View->Paginator->sort($fieldName, $userAttribute[0]['name']);
+		}
 	}
 
 /**
@@ -92,6 +96,9 @@ class UserValueHelper extends AppHelper {
  * @return string User value
  */
 	public function display($fieldName) {
+		if (! isset($this->userAttributes[$fieldName])) {
+			return '';
+		}
 		$userAttribute = $this->userAttributes[$fieldName];
 
 		$modelName = '';
