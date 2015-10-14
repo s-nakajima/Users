@@ -277,9 +277,7 @@ class User extends UsersAppModel {
 		]);
 
 		//トランザクションBegin
-		$this->setDataSource('master');
-		$dataSource = $this->getDataSource();
-		$dataSource->begin();
+		$this->begin();
 
 		if (isset($data[$this->alias]['password']) && $data[$this->alias]['password'] !== '') {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
@@ -314,12 +312,12 @@ class User extends UsersAppModel {
 				$user['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
 			}
 
-			$dataSource->commit();
+			//トランザクションCommit
+			$this->commit();
 
 		} catch (Exception $ex) {
-			$dataSource->rollback();
-			CakeLog::error($ex);
-			throw $ex;
+			//トランザクションRollback
+			$this->rollback($ex);
 		}
 
 		return $user;
