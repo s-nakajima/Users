@@ -174,7 +174,7 @@ class UserSearchBehavior extends ModelBehavior {
 						'type' => 'INNER',
 						'conditions' => array(
 							$model->UsersLanguage->alias . '.user_id' . ' = ' . $model->alias . '.id',
-							$model->UsersLanguage->alias . '.language_id' => Configure::read('Config.languageId'),
+							$model->UsersLanguage->alias . '.language_id' => Current::read('Language.id'),
 						),
 					);
 

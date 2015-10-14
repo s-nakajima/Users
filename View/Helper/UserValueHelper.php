@@ -54,7 +54,7 @@ class UserValueHelper extends AppHelper {
 
 		if (! isset($settings['userAttributes'])) {
 			$this->UserAttribute = ClassRegistry::init('UserAttributes.UserAttribute');
-			$settings['userAttributes'] = $this->UserAttribute->getUserAttributesForLayout(Configure::read('Config.languageId'));
+			$settings['userAttributes'] = $this->UserAttribute->getUserAttributesForLayout();
 		}
 		//$this->userAttributes = Hash::extract(, '{n}.{n}.{n}');
 		$this->userAttributes = Hash::combine($settings['userAttributes'], '{n}.{n}.{n}.UserAttribute.key', '{n}.{n}.{n}');
