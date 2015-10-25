@@ -13,8 +13,4 @@
  */
 ?>
 
-<div class="col-xs-12 col-sm-<?php echo (12 / $layout['UserAttributeLayout']['col']); ?>">
-	<?php foreach ($userAttributes[$row][$col] as $userAttribute) : ?>
-		<?php echo $this->UserEditForm->userEditInput($userAttribute); ?>
-	<?php endforeach; ?>
-</div>
+<?php echo $this->UserEditForm->userEditInput($userAttribute);

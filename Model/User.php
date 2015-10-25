@@ -131,69 +131,100 @@ class User extends UsersAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
+		//Userモデルのバリデーションルールのセット
 		$this->validate = Hash::merge($this->validate, array(
+			//ログインID
 			'username' => array(
 				'notBlank' => array(
 					'rule' => array('notBlank'),
 					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'username')),
 					'required' => true
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 				'regex' => array(
 					'rule' => array('custom', '/[\w]+/'),
 					'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'username')),
 					'allowEmpty' => false,
 					'required' => true,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 			),
+			//会員権限
 			'role_key' => array(
 				'notBlank' => array(
 					'rule' => array('notBlank'),
 					'message' => __d('net_commons', 'Invalid request.'),
-					//'allowEmpty' => false,
-					//'required' => false,
-					//'last' => false, // Stop validation after this rule
-					//'on' => 'create', // Limit validation to 'create' or 'update' operations
 				),
 			),
 		));
 
+		//パスワード
 		if (isset($this->data['User']['password']) && $this->data['User']['password'] !== '' || ! isset($this->data['User']['id'])) {
+			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
+			$passwordHasher = new SimplePasswordHasher();
+			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
+			$this->data['User']['password_again'] = $passwordHasher->hash($this->data['User']['password_again']);
+
 			$this->validate = Hash::merge($this->validate, array(
 				'password' => array(
 					'notBlank' => array(
 						'rule' => array('notBlank'),
 						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'password')),
 						'required' => true,
-						//'last' => false, // Stop validation after this rule
-						//'on' => 'create', // Limit validation to 'create' or 'update' operations
 					),
 					'regex' => array(
 						'rule' => array('custom', '/[\w]+/'),
 						'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'password')),
 						'allowEmpty' => false,
 						'required' => true,
-						//'last' => false, // Stop validation after this rule
-						//'on' => 'create', // Limit validation to 'create' or 'update' operations
 					),
 				),
 				'password_again' => array(
 					'equalToField' => array(
 						'rule' => array('equalToField', 'password'),
-						'message' => 'Password does not match. Please try again.',
+						'message' => __d('users', 'Password does not match. Please try again.'),
 						'allowEmpty' => false,
 						'required' => true,
-						//'last' => false, // Stop validation after this rule
-						//'on' => 'create', // Limit validation to 'create' or 'update' operations
 					)
 				),
 			));
 		}
 
+		//可変のバリデーションルールは、Users.SaveUserビヘイビアで行う。
+
+		//UsersLanguageのバリデーション実行
+		$usersLanguage = $this->data['UsersLanguage'];
+		if (! $this->UsersLanguage->validateMany($usersLanguage)) {
+			$this->validationErrors = Hash::merge(
+				$this->validationErrors,
+				$this->UsersLanguage->validationErrors
+			);
+			return false;
+		}
+
 		return parent::beforeValidate($options);
+	}
+
+/**
+ * Called after each successful save operation.
+ *
+ * @param bool $created True if this save created a new record
+ * @param array $options Options passed from Model::save().
+ * @return void
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
+ * @see Model::save()
+ */
+	public function afterSave($created, $options = array()) {
+		//UsersLanguage登録
+		if (isset($this->data['UsersLanguage'])) {
+			if ($created) {
+				$this->data = Hash::insert($this->data, 'UsersLanguage.{n}.user_id', $this->data['User']['id']);
+			}
+			foreach ($this->data['UsersLanguage'] as $index => $usersLanguage) {
+				if (! $ret = $this->UsersLanguage->save($usersLanguage, false, false)) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+				$this->data['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
+			}
+		}
 	}
 
 /**
@@ -240,9 +271,9 @@ class User extends UsersAppModel {
  */
 	public function getUser($userId) {
 		$user = $this->find('first', array(
-			'recursive' => -1,
+			'recursive' => 0,
 			'conditions' => array(
-				'id' => $userId
+				$this->alias . '.id' => $userId
 			),
 		));
 		unset($user['User']['password']);
@@ -265,12 +296,10 @@ class User extends UsersAppModel {
  * Save user
  *
  * @param array $data data
- * @param bool $created True is created(add action), false is updated(edit action)
  * @return mixed On success Model::$data, false on failure
  * @throws InternalErrorException
- * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function saveUser($data, $created = true) {
+	public function saveUser($data) {
 		$this->loadModels([
 			'User' => 'Users.User',
 			'UsersLanguage' => 'Users.UsersLanguage',
@@ -279,20 +308,9 @@ class User extends UsersAppModel {
 		//トランザクションBegin
 		$this->begin();
 
-		if (isset($data[$this->alias]['password']) && $data[$this->alias]['password'] !== '') {
-			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-			$passwordHasher = new SimplePasswordHasher();
-			$data[$this->alias]['password'] = $passwordHasher->hash($data[$this->alias]['password']);
-			$data[$this->alias]['password_again'] = $passwordHasher->hash($data[$this->alias]['password_again']);
-		}
-
 		//バリデーション
-		if (! $this->validateUser($data['User'])) {
-			return false;
-		}
-		$usersLanguage = $data['UsersLanguage'];
-		if (! $this->UsersLanguage->validateMany($usersLanguage)) {
-			$this->validationErrors = Hash::merge($this->validationErrors, $this->UsersLanguage->validationErrors);
+		$this->set($data);
+		if (! $this->validates()) {
 			return false;
 		}
 
@@ -300,16 +318,6 @@ class User extends UsersAppModel {
 			//Userデータの登録
 			if (! $user = $this->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-
-			//UsersLanguageデータの登録
-			$data = Hash::insert($data, 'UsersLanguage.{n}.user_id', $user['User']['id']);
-
-			foreach ($data['UsersLanguage'] as $index => $usersLanguage) {
-				if (! $ret = $this->UsersLanguage->save($usersLanguage, false, false)) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-				$user['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
 			}
 
 			//トランザクションCommit
@@ -324,18 +332,15 @@ class User extends UsersAppModel {
 	}
 
 /**
- * Validate of User
+ * Check field1 matches field2
  *
- * @param array $data received post data
- * @return bool True on success, false on validation errors
+ * @param array $field1 field1 parameters
+ * @param string $field2 field2 key
+ * @return bool
  */
-	public function validateUser($data) {
-		$this->set($data);
-		$this->validates();
-		if ($this->validationErrors) {
-			return false;
-		}
-		return true;
+	public function equalToField($field1, $field2) {
+		$keys = array_keys($field1);
+		return $this->data[$this->name][$field2] === $this->data[$this->name][array_pop($keys)];
 	}
 
 }

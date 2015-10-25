@@ -13,5 +13,5 @@
 ?>
 
 <div class="row">
-	<?php echo $this->UserEditForm->renderCol($layout); ?>
+	<?php echo $this->UserAttributeLayout->renderCol('Users.Users/render_edit_col', $layout); ?>
 </div>

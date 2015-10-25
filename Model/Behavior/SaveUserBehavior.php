@@ -19,4 +19,24 @@ App::uses('ModelBehavior', 'Model');
  */
 class SaveUserBehavior extends ModelBehavior {
 
+/**
+ * beforeValidate is called before a model is validated, you can use this callback to
+ * add behavior validation rules into a models validate array. Returning false
+ * will allow you to make the validation fail.
+ *
+ * @param Model $model Model using this behavior
+ * @param array $options Options passed from Model::save().
+ * @return mixed False or null will abort the operation. Any other result will continue.
+ * @see Model::save()
+ */
+	public function beforeValidate(Model $model, $options = array()) {
+//		$model->loadModels([
+//			'User' => 'Users.User',
+//			'UsersLanguage' => 'Users.UsersLanguage',
+//		]);
+
+
+		return true;
+	}
+
 }
