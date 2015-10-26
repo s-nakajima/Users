@@ -31,6 +31,13 @@ class User extends UsersAppModel {
 	public $languages = null;
 
 /**
+ * user attribute data.
+ *
+ * @var array
+ */
+	public $userAttributeData = null;
+
+/**
  * use behaviors
  *
  * @var array
@@ -131,7 +138,12 @@ class User extends UsersAppModel {
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
-		//Userモデルのバリデーションルールのセット
+		$this->loadModels([
+			'UsersLanguage' => 'Users.UsersLanguage',
+		]);
+
+		//Userモデルのバリデーションルールのセットは、ビヘイビアで行う
+
 		$this->validate = Hash::merge($this->validate, array(
 			//ログインID
 			'username' => array(
@@ -145,13 +157,6 @@ class User extends UsersAppModel {
 					'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'username')),
 					'allowEmpty' => false,
 					'required' => true,
-				),
-			),
-			//会員権限
-			'role_key' => array(
-				'notBlank' => array(
-					'rule' => array('notBlank'),
-					'message' => __d('net_commons', 'Invalid request.'),
 				),
 			),
 		));
@@ -178,6 +183,11 @@ class User extends UsersAppModel {
 					),
 				),
 				'password_again' => array(
+					'notBlank' => array(
+						'rule' => array('notBlank'),
+						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'Re-enter')),
+						'required' => true,
+					),
 					'equalToField' => array(
 						'rule' => array('equalToField', 'password'),
 						'message' => __d('users', 'Password does not match. Please try again.'),
@@ -187,8 +197,6 @@ class User extends UsersAppModel {
 				),
 			));
 		}
-
-		//可変のバリデーションルールは、Users.SaveUserビヘイビアで行う。
 
 		//UsersLanguageのバリデーション実行
 		$usersLanguage = $this->data['UsersLanguage'];
@@ -211,6 +219,7 @@ class User extends UsersAppModel {
  * @return void
  * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
  * @see Model::save()
+ * @throws InternalErrorException
  */
 	public function afterSave($created, $options = array()) {
 		//UsersLanguage登録
@@ -300,11 +309,6 @@ class User extends UsersAppModel {
  * @throws InternalErrorException
  */
 	public function saveUser($data) {
-		$this->loadModels([
-			'User' => 'Users.User',
-			'UsersLanguage' => 'Users.UsersLanguage',
-		]);
-
 		//トランザクションBegin
 		$this->begin();
 
@@ -340,7 +344,30 @@ class User extends UsersAppModel {
  */
 	public function equalToField($field1, $field2) {
 		$keys = array_keys($field1);
-		return $this->data[$this->name][$field2] === $this->data[$this->name][array_pop($keys)];
+		return $this->data[$this->alias][$field2] === $this->data[$this->alias][array_pop($keys)];
+	}
+
+/**
+ * 重複チェック
+ *
+ * @param array $check チェック値
+ * @param array $fields フィールドリスト
+ * @return bool
+ */
+	public function notDuplicate($check, $fields) {
+		$value = array_shift($check);
+		$conditions = array();
+		if ($this->data[$this->alias]['id']) {
+			$conditions['id !='] = $this->data[$this->alias]['id'];
+		}
+		foreach ($fields as $field) {
+			$conditions['OR'][$field] = $value;
+		}
+
+		return !(bool)$this->find('count', array(
+			'recursive' => -1,
+			'conditions' => $conditions
+		));
 	}
 
 }

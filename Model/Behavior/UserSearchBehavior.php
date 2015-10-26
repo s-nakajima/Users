@@ -96,7 +96,6 @@ class UserSearchBehavior extends ModelBehavior {
  * 表示フィールドの取得
  *
  * @param Model $model Model ビヘイビア呼び出し前のモデル
- * @param string $sessionKey Sessionキー
  * @param array $fields 表示するフィールドリスト
  * @return array 実際に表示できるフィールドリスト
  */

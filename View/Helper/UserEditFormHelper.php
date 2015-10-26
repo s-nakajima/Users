@@ -28,7 +28,6 @@ class UserEditFormHelper extends AppHelper {
 		'DataTypes.DataTypeForm',
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.NetCommonsForm',
-//		'DataTypes.DataTypeForm'
 	);
 
 /**
@@ -51,7 +50,6 @@ class UserEditFormHelper extends AppHelper {
  */
 	public function userEditInput($userAttribute) {
 		$html = '';
-//var_dump($userAttribute);
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
 		if ($userAttributeKey === 'created_user') {
@@ -104,7 +102,12 @@ class UserEditFormHelper extends AppHelper {
 
 		//選択肢の設定
 		if (isset($userAttribute['UserAttributeChoice'])) {
-			$attributes['options'] = Hash::combine($userAttribute['UserAttributeChoice'], '{n}.key', '{n}.name');
+			if ($userAttributeKey === 'role_key') {
+				$keyPath = '{n}.key';
+			} else {
+				$keyPath = '{n}.code';
+			}
+			$attributes['options'] = Hash::combine($userAttribute['UserAttributeChoice'], $keyPath, '{n}.name');
 			if (! $userAttribute['UserAttributeSetting']['required']) {
 				$attributes['empty'] = !(bool)$userAttribute['UserAttributeSetting']['required'];
 			}

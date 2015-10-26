@@ -32,13 +32,6 @@ class UserSearchHelper extends AppHelper {
  */
 	public $userAttributes;
 
-///**
-// * User data
-// *
-// * @var array
-// */
-//	public $user;
-
 /**
  * Default Constructor
  *
@@ -56,19 +49,8 @@ class UserSearchHelper extends AppHelper {
 	}
 
 /**
- * Set user data
- *
- * @param array $user User data
- * @return void
- */
-//	public function set($user) {
-//		$this->user = $user;
-//	}
-
-/**
  * テーブルヘッダーの出力
  *
- * @param string $fieldName Name of user field
  * @return string User value
  */
 	public function tableHeaders() {
@@ -96,41 +78,37 @@ class UserSearchHelper extends AppHelper {
  * テーブルセルの出力
  *
  * @param array $user ユーザデータ
+ * @param string $fieldName 表示フィールド
  * @return string User value
  */
-	public function tableCells($user) {
-		$output = '';
+	public function tableCells($user, $fieldName) {
+		$modelName = '';
+		if ($this->User->hasField($fieldName)) {
+			$modelName = $this->User->alias;
+		} elseif ($this->UsersLanguage->hasField($fieldName)) {
+			$modelName = $this->UsersLanguage->alias;
+		}
+		$userAttribute = $this->userAttributes[$fieldName];
 
-		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
-			if (! isset($this->userAttributes[$fieldName])) {
-				continue;
-			}
+		if ($fieldName === 'handlename' && $user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+			$value = $this->Html->link($user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $user['User']['id'] . '/');
 
-			$modelName = '';
-			if ($this->User->hasField($fieldName)) {
-				$modelName = $this->User->alias;
-			} elseif ($this->UsersLanguage->hasField($fieldName)) {
-				$modelName = $this->UsersLanguage->alias;
-			}
-			$userAttribute = $this->userAttributes[$fieldName];
-
-			if ($fieldName === 'handlename' && $user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
-				$value = $this->Html->link($user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $user['User']['id'] . '/');
-			} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
+		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
+			if ($fieldName === 'role_key') {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[key=' . $user[$modelName][$fieldName] . ']');
-				if ($values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[key=' . $user[$modelName][$fieldName] . ']')) {
-					$value = h($values[0]['name']);
-				} else {
-					$value = '';
-				}
 			} else {
-				$value = h($user[$modelName][$fieldName]);
+				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[code=' . $user[$modelName][$fieldName] . ']');
 			}
-
-			$output .= '<td>' . $value . '</td>';
+			if ($values) {
+				$value = h($values[0]['name']);
+			} else {
+				$value = '';
+			}
+		} else {
+			$value = h($user[$modelName][$fieldName]);
 		}
 
-		return $output;
+		return '<td>' . $value . '</td>';
 	}
 
 }

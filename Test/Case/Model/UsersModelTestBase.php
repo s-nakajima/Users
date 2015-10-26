@@ -26,8 +26,13 @@ class UsersModelTestBase extends YACakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'plugin.users.user',
+		'plugin.data_types.data_type',
+		'plugin.data_types.data_type_choice',
 		'plugin.users.users_language',
+		'plugin.user_roles.user_attributes_role',
+		'plugin.user_attributes.user_attribute',
+		'plugin.user_attributes.user_attribute_choice',
+		'plugin.user_attributes.user_attribute_setting',
 	);
 
 /**
