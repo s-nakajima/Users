@@ -57,10 +57,6 @@ class UserSearchHelper extends AppHelper {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
-			if (! isset($this->userAttributes[$fieldName])) {
-				continue;
-			}
-
 			$output .= '<th>';
 			if ($fieldName === 'room_role_key') {
 				$output .= __d('rooms', 'Room role');
@@ -82,6 +78,10 @@ class UserSearchHelper extends AppHelper {
  * @return string User value
  */
 	public function tableCells($user, $fieldName) {
+		if (! isset($this->userAttributes[$fieldName])) {
+			return '<td></td>';
+		}
+
 		$modelName = '';
 		if ($this->User->hasField($fieldName)) {
 			$modelName = $this->User->alias;
@@ -90,6 +90,7 @@ class UserSearchHelper extends AppHelper {
 		}
 		$userAttribute = $this->userAttributes[$fieldName];
 
+		$value = '';
 		if ($fieldName === 'handlename' && $user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 			$value = $this->Html->link($user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $user['User']['id'] . '/');
 
@@ -99,11 +100,7 @@ class UserSearchHelper extends AppHelper {
 			} else {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[code=' . $user[$modelName][$fieldName] . ']');
 			}
-			if ($values) {
-				$value = h($values[0]['name']);
-			} else {
-				$value = '';
-			}
+			$value = h($values[0]['name']);
 		} else {
 			$value = h($user[$modelName][$fieldName]);
 		}
