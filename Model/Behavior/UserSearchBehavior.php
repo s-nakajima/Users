@@ -147,8 +147,9 @@ class UserSearchBehavior extends ModelBehavior {
 		}
 
 		if (! isset($this->__readableFields['role_key'])) {
-			$conditions['status'] = 'status_1';
+			$conditions['User.status'] = '1';
 		}
+		$conditions['User.is_deleted'] = false;
 
 		return $conditions;
 	}

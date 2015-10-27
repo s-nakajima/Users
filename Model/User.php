@@ -142,8 +142,6 @@ class User extends UsersAppModel {
 			'UsersLanguage' => 'Users.UsersLanguage',
 		]);
 
-		//Userモデルのバリデーションルールのセットは、ビヘイビアで行う
-
 		$this->validate = Hash::merge($this->validate, array(
 			//ログインID
 			'username' => array(
@@ -198,6 +196,9 @@ class User extends UsersAppModel {
 			));
 		}
 
+		//ログイン、パスワード以外のUserモデルのバリデーションルールのセットは、ビヘイビアで行う
+		//（ログインとパスワードは、インストール時に使用するため）
+
 		//UsersLanguageのバリデーション実行
 		$usersLanguage = $this->data['UsersLanguage'];
 		if (! $this->UsersLanguage->validateMany($usersLanguage)) {
@@ -237,7 +238,7 @@ class User extends UsersAppModel {
 	}
 
 /**
- * Create user
+ * Userの生成
  *
  * @return array
  */
@@ -265,7 +266,8 @@ class User extends UsersAppModel {
 		$results = Hash::merge($results,
 			$this->create(array(
 				'id' => null,
-				'role_key' => UserRole::USER_ROLE_KEY_COMMON_USER
+				'role_key' => UserRole::USER_ROLE_KEY_COMMON_USER,
+				'timezone' => 'Asia/Tokyo', //後でNetCommonsTime使うように修正
 			))
 		);
 
@@ -273,7 +275,7 @@ class User extends UsersAppModel {
 	}
 
 /**
- * Get user
+ * Userの取得
  *
  * @param int $userId users.id
  * @return array
@@ -336,7 +338,42 @@ class User extends UsersAppModel {
 	}
 
 /**
- * Check field1 matches field2
+ * ユーザの削除
+ *
+ * @param array $data data
+ * @return mixed On success Model::$data, false on failure
+ * @throws InternalErrorException
+ */
+	public function deleteUser($data) {
+		//トランザクションBegin
+		$this->begin();
+
+		try {
+			//Userデータの削除->論理削除
+			//※どこまでクリアにするか、要検討
+			$this->id = $data['User']['id'];
+			if (! $this->saveField('is_deleted', true)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			//関連DBの削除
+			$this->deleteUserAssociations($this->id);
+
+			//トランザクションCommit
+			$this->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$this->rollback($ex);
+		}
+
+		return true;
+	}
+
+	//以下、独自バリデーションルール
+
+/**
+ * field1とfield2が同じかチェックする
  *
  * @param array $field1 field1 parameters
  * @param string $field2 field2 key

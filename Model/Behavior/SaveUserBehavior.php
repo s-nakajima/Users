@@ -144,7 +144,7 @@ class SaveUserBehavior extends ModelBehavior {
 			);
 		}
 
-		if ($userAttributeKey === 'username' || $userAttributeKey === 'handlename') {
+		if ($userAttributeKey === 'username' || $userAttributeKey === 'handlename' || $userAttributeKey === 'key') {
 			$validates['notDuplicate'] = array(
 				'rule' => array('notDuplicate', array($userAttributeKey)),
 				'message' => sprintf(__d('net_commons', 'Your request %s already exists. Please try a different one.'), $userAttributeName),
