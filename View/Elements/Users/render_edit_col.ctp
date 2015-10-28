@@ -1,6 +1,9 @@
 <?php
 /**
- * UserAttribute index template
+ * UserAttribute index col template
+ *   - $row: UserAttributeLayout.row
+ *   - $col: UserAttributeLayout.row
+ *   - $layout: UserAttributeLayout
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -8,8 +11,6 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
-
-echo $this->NetCommonsHtml->css('/user_attributes/css/style.css');
 ?>
 
-<?php echo $this->UserAttributeLayout->renderRow('Users/render_edit_row');
+<?php echo $this->UserEditForm->userEditInput($userAttribute);

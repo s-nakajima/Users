@@ -9,8 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('FormHelper', 'View/Helper');
-App::uses('CakeNumber', 'Utility');
+App::uses('AppHelper', 'View/Helper');
 
 /**
  * UserEditForm Helper
@@ -18,14 +17,18 @@ App::uses('CakeNumber', 'Utility');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\View\Helper
  */
-class UserEditFormHelper extends FormHelper {
+class UserEditFormHelper extends AppHelper {
 
 /**
  * Other helpers used by FormHelper
  *
  * @var array
  */
-	public $helpers = array('Html', 'Form', 'DataTypes.DataTypeForm');
+	public $helpers = array(
+		'DataTypes.DataTypeForm',
+		'NetCommons.NetCommonsHtml',
+		'NetCommons.NetCommonsForm',
+	);
 
 /**
  * Default Constructor
@@ -47,10 +50,17 @@ class UserEditFormHelper extends FormHelper {
  */
 	public function userEditInput($userAttribute) {
 		$html = '';
-
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
-		if ($this->User->hasField($userAttributeKey)) {
+		if ($userAttributeKey === 'created_user') {
+			$html .= '<div class="form-group">';
+			$html .= $this->__input('TrackableCreator.handlename', $userAttribute);
+			$html .= '</div>';
+		} elseif ($userAttributeKey === 'modified_user') {
+			$html .= '<div class="form-group">';
+			$html .= $this->__input('TrackableUpdater.handlename', $userAttribute);
+			$html .= '</div>';
+		} elseif ($this->User->hasField($userAttributeKey)) {
 			$html .= '<div class="form-group">';
 			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
 			$html .= '</div>';
@@ -78,8 +88,7 @@ class UserEditFormHelper extends FormHelper {
  */
 	private function __input($fieldName, $userAttribute) {
 		$html = '';
-
-		$dataTypeTemplateKey = $userAttribute['DataTypeTemplate']['key'];
+		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
 		//必須項目ラベルの設定
@@ -93,9 +102,14 @@ class UserEditFormHelper extends FormHelper {
 
 		//選択肢の設定
 		if (isset($userAttribute['UserAttributeChoice'])) {
-			$attributes['options'] = Hash::combine($userAttribute['UserAttributeChoice'], '{n}.key', '{n}.name');
+			if ($userAttributeKey === 'role_key') {
+				$keyPath = '{n}.key';
+			} else {
+				$keyPath = '{n}.code';
+			}
+			$attributes['options'] = Hash::combine($userAttribute['UserAttributeChoice'], $keyPath, '{n}.name');
 			if (! $userAttribute['UserAttributeSetting']['required']) {
-				$attributes['empty'] = ! $userAttribute['UserAttributeSetting']['required'];
+				$attributes['empty'] = !(bool)$userAttribute['UserAttributeSetting']['required'];
 			}
 		}
 
@@ -104,7 +118,7 @@ class UserEditFormHelper extends FormHelper {
 		}
 
 		$html .= $this->DataTypeForm->inputDataType(
-				$dataTypeTemplateKey,
+				$dataTypeKey,
 				$fieldName,
 				$userAttribute['UserAttribute']['name'] . $requireLabel,
 				$attributes);

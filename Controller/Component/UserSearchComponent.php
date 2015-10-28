@@ -20,19 +20,28 @@ App::uses('Component', 'Controller');
 class UserSearchComponent extends Component {
 
 /**
- * Called before the Controller::beforeFilter().
+ * Other Components this component uses.
  *
- * @param Controller $controller Controller with components to initialize
- * @return void
- * @link http://book.cakephp.org/2.0/en/controllers/components.html#Component::initialize
+ * @var array
  */
-	public function initialize(Controller $controller) {
+	public $components = array(
+		'UserAttributes.UserAttributeLayout',
+	);
+
+/**
+ * Called after the Controller::beforeFilter() and before the controller action
+ *
+ * @param Controller $controller Controller with components to startup
+ * @return void
+ */
+	public function startup(Controller $controller) {
 		$this->controller = $controller;
-		$this->controller->Paginator = $this->controller->Components->load('Paginator');
+
+		$controller->Paginator = $controller->Components->load('Paginator');
 
 		//Modelの呼び出し
-		$this->controller->User = ClassRegistry::init('Users.User');
-		$this->controller->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
+		$controller->User = ClassRegistry::init('Users.User');
+		$controller->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
 	}
 
 /**
@@ -47,15 +56,16 @@ class UserSearchComponent extends Component {
 		//ユーザデータ取得
 		$this->controller->Paginator->settings = array(
 			'recursive' => -1,
-			'fields' => $this->controller->User->searchFields($fields),
-			'conditions' => $this->controller->User->searchConditions($conditions),
-			'joins' => $this->controller->User->searchJoinTables(),
+			'fields' => $this->controller->User->getSearchFields($fields),
+			'conditions' => $this->controller->User->getSearchConditions($conditions),
+			'joins' => $this->controller->User->getSearchJoinTables(),
 			'order' => array($this->controller->User->alias . '.id' => 'asc'),
 			//'limit' => 1
 		);
 		$results = $this->controller->Paginator->paginate('User');
 
-		return $results;
+		$this->controller->set('users', $results);
+		$this->controller->set('displayFields', $this->controller->User->getDispayFields());
 	}
 
 }

@@ -55,6 +55,7 @@ class AppSchema extends CakeSchema {
 		'username' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'ID | ログインID'),
 		'password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Password | パスワード'),
 		'key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Link identifier | リンク識別子'),
+		'is_deleted' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'avatar' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Avatar | アバター'),
 		'avatar_file_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
 		'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),

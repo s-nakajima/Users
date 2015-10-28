@@ -27,7 +27,7 @@ class UserSearchBehavior extends ModelBehavior {
 	private $__readableFields = null;
 
 /**
- * Return readable fields
+ * 事前準備
  *
  * @param Model $model Model using this behavior
  * @return void
@@ -70,13 +70,13 @@ class UserSearchBehavior extends ModelBehavior {
 	}
 
 /**
- * Return search fields
+ * 検索フィールドを取得する
  *
- * @param Model $model Model using this behavior
- * @param array $fields Display fields
- * @return array Return fields
+ * @param Model $model Model ビヘイビア呼び出し前のモデル
+ * @param array $fields 表示するフィールドリスト
+ * @return array 実際に検索できるフィールドリスト
  */
-	public function searchFields(Model $model, $fields = array()) {
+	public function getSearchFields(Model $model, $fields = array()) {
 		$this->__prepare($model);
 
 		$fieldKeys = array_keys($fields);
@@ -93,14 +93,13 @@ class UserSearchBehavior extends ModelBehavior {
 	}
 
 /**
- * Return search fields
+ * 表示フィールドの取得
  *
- * @param Model $model Model using this behavior
- * @param string $sessionKey Session key
- * @param array $fields Display fields
- * @return array Return fields
+ * @param Model $model Model ビヘイビア呼び出し前のモデル
+ * @param array $fields 表示するフィールドリスト
+ * @return array 実際に表示できるフィールドリスト
  */
-	public function dispayFields(Model $model, $sessionKey, $fields = array()) {
+	public function getDispayFields(Model $model, $fields = array()) {
 		$this->__prepare($model);
 
 		//if (! $fields) {
@@ -131,13 +130,13 @@ class UserSearchBehavior extends ModelBehavior {
 	}
 
 /**
- * Return search conditions
+ * 条件(Conditions)を取得
  *
- * @param Model $model Model using this behavior
- * @param array $conditions Searchable codtions
- * @return array Return search conditions
+ * @param Model $model Model ビヘイビア呼び出し前のモデル
+ * @param array $conditions 条件(Conditions)リスト
+ * @return array 実際に条件を含められるリスト
  */
-	public function searchConditions(Model $model, $conditions = array()) {
+	public function getSearchConditions(Model $model, $conditions = array()) {
 		$this->__prepare($model);
 
 		$fieldKeys = array_keys($conditions);
@@ -148,20 +147,21 @@ class UserSearchBehavior extends ModelBehavior {
 		}
 
 		if (! isset($this->__readableFields['role_key'])) {
-			$conditions['role_key'] = 'status_1';
+			$conditions['User.status'] = '1';
 		}
+		$conditions['User.is_deleted'] = false;
 
 		return $conditions;
 	}
 
 /**
- * Return search join tables
+ * JOINテーブルを取得
  *
- * @param Model $model Model using this behavior
- * @param array $joinModels Join models
- * @return array Return search joins
+ * @param Model $model Model ビヘイビア呼び出し前のモデル
+ * @param array $joinModels JOINモデルリスト
+ * @return array Findで使用するJOIN配列
  */
-	public function searchJoinTables(Model $model, $joinModels = array()) {
+	public function getSearchJoinTables(Model $model, $joinModels = array()) {
 		$joinModels = array_merge(array('UsersLanguage'), $joinModels);
 
 		$joins = array();
@@ -174,7 +174,7 @@ class UserSearchBehavior extends ModelBehavior {
 						'type' => 'INNER',
 						'conditions' => array(
 							$model->UsersLanguage->alias . '.user_id' . ' = ' . $model->alias . '.id',
-							$model->UsersLanguage->alias . '.language_id' => Configure::read('Config.languageId'),
+							$model->UsersLanguage->alias . '.language_id' => Current::read('Language.id'),
 						),
 					);
 
