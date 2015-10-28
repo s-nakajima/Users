@@ -14,6 +14,7 @@
  */
 
 App::uses('UsersAppModel', 'Users.Model');
+App::uses('NetCommonsTime', 'NetCommons.Utility');
 
 /**
  * User Model
@@ -165,6 +166,9 @@ class User extends UsersAppModel {
 			$passwordHasher = new SimplePasswordHasher();
 			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
 			$this->data['User']['password_again'] = $passwordHasher->hash($this->data['User']['password_again']);
+
+			//パスワード変更日時セット
+			$this->data['User']['password_modified'] = NetCommonsTime::getNowDatetime();
 
 			$this->validate = Hash::merge($this->validate, array(
 				'password' => array(
@@ -350,14 +354,18 @@ class User extends UsersAppModel {
 
 		try {
 			//Userデータの削除->論理削除
-			//※どこまでクリアにするか、要検討
-			$this->id = $data['User']['id'];
-			if (! $this->saveField('is_deleted', true)) {
+			$user = $this->create(array(
+				'id' => $data['User']['id'],
+				'handlename' => $data['User']['handlename'],
+				'is_deleted' => true,
+			));
+
+			if (! $this->save($user, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
 			//関連DBの削除
-			$this->deleteUserAssociations($this->id);
+			$this->deleteUserAssociations($user['User']['id']);
 
 			//トランザクションCommit
 			$this->commit();
@@ -397,6 +405,7 @@ class User extends UsersAppModel {
 		if ($this->data[$this->alias]['id']) {
 			$conditions['id !='] = $this->data[$this->alias]['id'];
 		}
+		$conditions['is_deleted'] = false;
 		foreach ($fields as $field) {
 			$conditions['OR'][$field] = $value;
 		}

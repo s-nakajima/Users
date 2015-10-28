@@ -177,12 +177,10 @@ class SaveUserBehavior extends ModelBehavior {
 			);
 		}
 
-		if ($validates) {
-			if ($model->UsersLanguage->hasField($userAttributeKey)) {
-				$model->UsersLanguage->validate[$userAttributeKey] = $validates;
-			} else {
-				$model->validate[$userAttributeKey] = $validates;
-			}
+		if ($model->UsersLanguage->hasField($userAttributeKey)) {
+			$model->UsersLanguage->validate[$userAttributeKey] = $validates;
+		} else {
+			$model->validate[$userAttributeKey] = $validates;
 		}
 	}
 

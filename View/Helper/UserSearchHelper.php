@@ -71,6 +71,16 @@ class UserSearchHelper extends AppHelper {
 	}
 
 /**
+ * 項目の有無
+ *
+ * @param string $fieldName 表示フィールド
+ * @return string User value
+ */
+	public function hasUserAttribute($fieldName) {
+		return isset($this->userAttributes[$fieldName]);
+	}
+
+/**
  * テーブルセルの出力
  *
  * @param array $user ユーザデータ
@@ -78,10 +88,6 @@ class UserSearchHelper extends AppHelper {
  * @return string User value
  */
 	public function tableCells($user, $fieldName) {
-		if (! isset($this->userAttributes[$fieldName])) {
-			return '<td></td>';
-		}
-
 		$modelName = '';
 		if ($this->User->hasField($fieldName)) {
 			$modelName = $this->User->alias;
@@ -91,7 +97,8 @@ class UserSearchHelper extends AppHelper {
 		$userAttribute = $this->userAttributes[$fieldName];
 
 		$value = '';
-		if ($fieldName === 'handlename' && $user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+		if (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
+				$fieldName === 'handlename' && $user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 			$value = $this->Html->link($user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $user['User']['id'] . '/');
 
 		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {

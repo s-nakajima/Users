@@ -29,7 +29,7 @@ class DeleteUserBehavior extends ModelBehavior {
  */
 	public function deleteUserAssociations(Model $model, $userId) {
 		$models = array(
-			//'UsersLanguage' => 'Users.UsersLanguage',
+			'UsersLanguage' => 'Users.UsersLanguage',
 			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
 		);
 		$model->loadModels($models);
@@ -44,7 +44,7 @@ class DeleteUserBehavior extends ModelBehavior {
 			}
 		}
 
-		////user_idがついているテーブルに対して削除する(必要かな？)
+		////user_idがついているテーブルに対して削除する(必要ない？)
 		//$tables = $model->query('SHOW TABLES');
 		//foreach ($tables as $table) {
 		//	$tableName = array_shift($table['TABLE_NAMES']);
