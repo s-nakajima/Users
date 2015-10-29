@@ -271,7 +271,7 @@ class User extends UsersAppModel {
 			$this->create(array(
 				'id' => null,
 				'role_key' => UserRole::USER_ROLE_KEY_COMMON_USER,
-				'timezone' => 'Asia/Tokyo', //後でNetCommonsTime使うように修正
+				'timezone' => (new NetCommonsTime())->getSiteTimezone(),
 			))
 		);
 
