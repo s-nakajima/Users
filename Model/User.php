@@ -248,6 +248,7 @@ class User extends UsersAppModel {
  */
 	public function createUser() {
 		$this->UserRole = ClassRegistry::init('UserRoles.UserRole');
+		$NetCommonsTime = new NetCommonsTime();
 
 		if (! isset($this->languages)) {
 			$this->languages = $this->Language->find('list', array(
@@ -271,7 +272,7 @@ class User extends UsersAppModel {
 			$this->create(array(
 				'id' => null,
 				'role_key' => UserRole::USER_ROLE_KEY_COMMON_USER,
-				'timezone' => 'Asia/Tokyo', //後でNetCommonsTime使うように修正
+				'timezone' => $NetCommonsTime->getSiteTimezone(),
 			))
 		);
 

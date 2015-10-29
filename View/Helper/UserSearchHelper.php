@@ -97,8 +97,8 @@ class UserSearchHelper extends AppHelper {
 		$userAttribute = $this->userAttributes[$fieldName];
 
 		$value = '';
-		if (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
-				$fieldName === 'handlename' && $user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+		if ($fieldName === 'handlename' && (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
+				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR)) {
 			$value = $this->Html->link($user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $user['User']['id'] . '/');
 
 		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
