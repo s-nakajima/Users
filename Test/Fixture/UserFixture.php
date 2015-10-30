@@ -24,26 +24,27 @@ class UserFixture extends CakeTestFixture {
  */
 	public $fields = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'username' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'ID | ログインID', 'charset' => 'utf8'),
-		'password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Password | パスワード', 'charset' => 'utf8'),
-		'key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Link identifier | リンク識別子', 'charset' => 'utf8'),
+		'username' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'ID | ログインID'),
+		'password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Password | パスワード'),
+		'key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Link identifier | リンク識別子'),
+		'is_deleted' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'avatar' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Avatar | アバター'),
 		'avatar_file_id' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
 		'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'handlename' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Handle | ハンドル', 'charset' => 'utf8'),
+		'handlename' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Handle | ハンドル'),
 		'is_handlename_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_name_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'email' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'E-mail | eメール', 'charset' => 'utf8'),
+		'email' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'E-mail | eメール'),
 		'is_email_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'moblie_mail' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Mobile mail | 携帯メール', 'charset' => 'utf8'),
+		'moblie_mail' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Mobile mail | 携帯メール'),
 		'is_moblie_mail_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'sex' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 4, 'unsigned' => false, 'comment' => 'Sex | 性別'),
+		'sex' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Sex | 性別'),
 		'is_sex_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'timezone' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'TimeZone | タイムゾーン', 'charset' => 'utf8'),
+		'timezone' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'TimeZone | タイムゾーン'),
 		'is_timezone_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'role_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Authority | 権限', 'charset' => 'utf8'),
+		'role_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Authority | 権限'),
 		'is_role_key_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'status' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 4, 'unsigned' => false, 'comment' => 'Status | 状態'),
+		'status' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8', 'comment' => 'Status | 状態'),
 		'is_status_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'Created | 作成日時'),
 		'is_created_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
@@ -60,9 +61,9 @@ class UserFixture extends CakeTestFixture {
 		'is_profile_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_search_keywords_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'),
 	);
 
 /**
