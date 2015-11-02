@@ -81,23 +81,47 @@ class UserSearchHelper extends AppHelper {
 	}
 
 /**
+ * テーブル行の出力
+ *
+ * @param array $user ユーザデータ
+ * @param bool $isEdit 編集の有無
+ * @return string 行のHTMLタグ
+ */
+	public function tableRow($user, $isEdit) {
+		$output = '';
+
+		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
+			if ($this->hasUserAttribute($fieldName)) {
+				$modelName = '';
+				if ($this->User->hasField($fieldName)) {
+					$modelName = $this->User->alias;
+				} elseif ($this->UsersLanguage->hasField($fieldName)) {
+					$modelName = $this->UsersLanguage->alias;
+				}
+				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit);
+			} else {
+				$output .= '<td></td>';
+			}
+		}
+
+		return $output;
+	}
+
+/**
  * テーブルセルの出力
  *
  * @param array $user ユーザデータ
+ * @param string $modelName モデル名
  * @param string $fieldName 表示フィールド
- * @return string User value
+ * @param bool $isEdit 編集の有無
+ * @return string セルのHTMLタグ
  */
-	public function tableCells($user, $fieldName) {
-		$modelName = '';
-		if ($this->User->hasField($fieldName)) {
-			$modelName = $this->User->alias;
-		} elseif ($this->UsersLanguage->hasField($fieldName)) {
-			$modelName = $this->UsersLanguage->alias;
-		}
+	public function tableCell($user, $modelName, $fieldName, $isEdit) {
 		$userAttribute = $this->userAttributes[$fieldName];
 
 		$value = '';
-		if ($fieldName === 'handlename' && (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
+		if ($isEdit && $fieldName === 'handlename' && (
+				Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
 				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR)) {
 			$value = $this->Html->link($user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $user['User']['id'] . '/');
 
