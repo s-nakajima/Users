@@ -1,6 +1,8 @@
 <?php
 /**
- * UserAttribute index template
+ * UserAttribute index row template
+ *   - $row: UserAttributeLayout.row
+ *   - $layout: UserAttributeLayout
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -10,4 +12,6 @@
  */
 ?>
 
-<?php echo $this->UserAttributeLayout->renderRow('Users/render_edit_row');
+<div class="row">
+	<?php echo $this->UserAttributeLayout->renderCol('Users.Users/view_information_col', $layout); ?>
+</div>

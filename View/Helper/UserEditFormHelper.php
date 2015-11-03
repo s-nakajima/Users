@@ -43,6 +43,22 @@ class UserEditFormHelper extends AppHelper {
 	}
 
 /**
+ * After render file callback.
+ * Called after any view fragment is rendered.
+ *
+ * Overridden in subclasses.
+ *
+ * @param string $viewFile The file just be rendered.
+ * @param string $content The content that was rendered.
+ * @return void
+ */
+	public function afterRenderFile($viewFile, $content) {
+		$content = $this->NetCommonsHtml->css('/data_types/css/style.css') . $content;
+
+		parent::afterRenderFile($viewFile, $content);
+	}
+
+/**
  * Generates a form input element complete with label and wrapper div
  *
  * @param array $userAttribute user_attribute data

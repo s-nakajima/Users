@@ -281,10 +281,11 @@ class User extends UsersAppModel {
 /**
  * Userの取得
  *
- * @param int $userId users.id
+ * @param int $userId ユーザID
+ * @param int $languageId 言語ID
  * @return array
  */
-	public function getUser($userId) {
+	public function getUser($userId, $languageId = null) {
 		$user = $this->find('first', array(
 			'recursive' => 0,
 			'conditions' => array(
@@ -293,16 +294,21 @@ class User extends UsersAppModel {
 		));
 		unset($user['User']['password']);
 
+		$conditions = array(
+			$this->UsersLanguage->alias . '.user_id' => $userId
+		);
+		if (isset($languageId)) {
+			$conditions[$this->UsersLanguage->alias . '.language_id'] = $languageId;
+		}
+
 		$usersLanguage = $this->UsersLanguage->find('all', array(
 			'recursive' => 0,
 			'fields' => array(
-				'UsersLanguage.*'
+				$this->UsersLanguage->alias . '.*'
 			),
-			'conditions' => array(
-				'UsersLanguage.user_id' => $userId
-			),
+			'conditions' => $conditions,
 		));
-		$user['UsersLanguage'] = Hash::extract($usersLanguage, '{n}.UsersLanguage');
+		$user[$this->UsersLanguage->alias] = Hash::extract($usersLanguage, '{n}.' . $this->UsersLanguage->alias);
 
 		return $user;
 	}

@@ -10,4 +10,8 @@
  */
 ?>
 
-<?php echo $this->UserAttributeLayout->renderRow('Users/render_edit_row');
+<?php echo $this->SwitchLanguage->tablist('users-'); ?>
+<br>
+<div class="tab-content">
+	<?php echo $this->UserAttributeLayout->renderRow('Users/view_information_row'); ?>
+</div>

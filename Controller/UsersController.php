@@ -23,35 +23,69 @@ App::uses('AppController', 'Controller');
 class UsersController extends UsersAppController {
 
 /**
+ * use model
+ *
+ * @var array
+ */
+	public $uses = array(
+		'Users.User',
+		'Rooms.Space',
+	);
+
+/**
  * Components
  *
  * @var array
  */
-	//public $components = array('Paginator');
+	public $components = array(
+		'M17n.SwitchLanguage',
+		'Rooms.Rooms',
+		'UserAttributes.UserAttributeLayout',
+	);
 
 /**
- * index method
+ * use helpers
  *
- * @return void
+ * @var array
  */
-	public function index() {
-		//$this->User->recursive = 0;
-		//$this->set('users', $this->Paginator->paginate());
-	}
+	public $helpers = array(
+		'UserAttributes.UserAttributeLayout',
+		'Users.UserLayout',
+	);
 
 /**
  * view method
  *
- * @param string $id id
- * @throws NotFoundException
  * @return void
  */
-	public function view($id = null) {
-		//if (!$this->User->exists($id)) {
-		//	throw new NotFoundException(__('Invalid user'));
-		//}
-		//$options = array('conditions' => array('User.' . $this->User->primaryKey => $id));
-		//$this->set('user', $this->User->find('first', $options));
+	public function view() {
+		//ユーザデータ取得
+		$userId = $this->params['pass'][0];
+		$user = $this->User->getUser($userId);
+		$this->set($user);
+
+		//ルームデータ取得
+		$rooms = array();
+		if (! Current::allowSystemPlugin('rooms')) {
+			$conditions = array('Room.active' => true);
+		} else {
+			$conditions = array();
+		}
+		$result = $this->Room->find('all', $this->Room->getReadableRoomsCondtions(Space::PUBLIC_SPACE_ID, $conditions));
+		$rooms = Hash::merge($rooms, Hash::combine($result, '{n}.Room.id', '{n}'));
+
+		$result = $this->Room->find('all', $this->Room->getReadableRoomsCondtions(Space::ROOM_SPACE_ID, $conditions));
+		$rooms = Hash::merge($rooms, Hash::combine($result, '{n}.Room.id', '{n}'));
+		$this->set('rooms', $rooms);
+
+		//Treeリスト取得
+		$roomTreeLists[Space::PUBLIC_SPACE_ID] = $this->Room->generateTreeList(
+				array('Room.space_id' => Space::PUBLIC_SPACE_ID), null, null, Room::$treeParser);
+
+		$roomTreeLists[Space::ROOM_SPACE_ID] = $this->Room->generateTreeList(
+				array('Room.space_id' => Space::ROOM_SPACE_ID), null, null, Room::$treeParser);
+
+		$this->set('roomTreeLists', $roomTreeLists);
 	}
 
 /**

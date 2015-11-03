@@ -1,6 +1,9 @@
 <?php
 /**
- * UserAttribute index template
+ * UserAttribute index col template
+ *   - $row: UserAttributeLayout.row
+ *   - $col: UserAttributeLayout.row
+ *   - $layout: UserAttributeLayout
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -10,4 +13,4 @@
  */
 ?>
 
-<?php echo $this->UserAttributeLayout->renderRow('Users/render_edit_row');
+<?php echo $this->UserLayout->display($userAttribute);
