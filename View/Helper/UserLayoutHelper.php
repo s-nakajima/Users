@@ -65,7 +65,7 @@ class UserLayoutHelper extends AppHelper {
 	public function display($userAttribute) {
 		$html = '';
 
-		if (! $this->hasDisplayable($userAttribute)) {
+		if (! $this->isDisplayable($userAttribute)) {
 			return $html;
 		}
 
@@ -154,7 +154,7 @@ class UserLayoutHelper extends AppHelper {
  * @param array $userAttribute ユーザ属性データ
  * @return bool 表示有無
  */
-	public function hasDisplayable($userAttribute) {
+	public function isDisplayable($userAttribute) {
 		if (! $userAttribute['UserAttributeSetting']['display'] ||
 				$userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_PASSWORD ||
 				(! $userAttribute['UserAttributesRole']['other_readable'] && Current::read('User.id') !== $this->_View->viewVars['User']['id']) ||

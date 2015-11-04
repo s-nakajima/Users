@@ -23,7 +23,10 @@ class UserSearchHelper extends AppHelper {
  *
  * @var array
  */
-	public $helpers = array('Html');
+	public $helpers = array(
+		'NetCommons.NetCommonsHtml',
+		'NetCommons.Date'
+	);
 
 /**
  * UserAttributes data
@@ -120,11 +123,8 @@ class UserSearchHelper extends AppHelper {
 		$userAttribute = $this->userAttributes[$fieldName];
 
 		$value = '';
-		if ($isEdit && $fieldName === 'handlename' && (
-				Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
-				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR)) {
-			$value = $this->Html->link($user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $user['User']['id'] . '/');
-
+		if ($fieldName === 'handlename') {
+			$value = $this->linkHandlename($user, $modelName, $fieldName, $isEdit);
 		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
 			if ($fieldName === 'role_key') {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[key=' . $user[$modelName][$fieldName] . ']');
@@ -132,11 +132,35 @@ class UserSearchHelper extends AppHelper {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[code=' . $user[$modelName][$fieldName] . ']');
 			}
 			$value = h($values[0]['name']);
+		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_DATETIME ||
+				in_array($userAttribute['UserAttribute']['key'], ['created', 'modified', 'last_login', 'password_modified'])) {
+			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
 		} else {
 			$value = h($user[$modelName][$fieldName]);
 		}
 
 		return '<td>' . $value . '</td>';
+	}
+
+/**
+ * ハンドルの出力
+ *
+ * @param array $user ユーザデータ
+ * @param string $modelName モデル名
+ * @param string $fieldName 表示フィールド
+ * @param bool $isEdit 編集の有無
+ * @return string ハンドルのHTMLタグ
+ */
+	public function linkHandlename($user, $modelName, $fieldName, $isEdit) {
+		if (! $isEdit) {
+			return h($user[$modelName][$fieldName]);
+		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
+				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+
+			return $this->NetCommonsHtml->link($user[$modelName][$fieldName],
+				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id'])
+			);
+		}
 	}
 
 }

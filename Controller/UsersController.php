@@ -59,6 +59,12 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function view() {
+		if (Current::isControlPanel($this->request->referer(true))) {
+			$this->ControlPanelLayout = $this->Components->load('ControlPanel.ControlPanelLayout');
+		} else {
+			//$this->PageLayout = $this->Components->load('Pages.PageLayout');
+		}
+
 		//ユーザデータ取得
 		$userId = $this->params['pass'][0];
 		$user = $this->User->getUser($userId);
