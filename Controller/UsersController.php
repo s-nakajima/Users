@@ -59,10 +59,10 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function view() {
-		if (Current::isControlPanel($this->request->referer(true))) {
+		if (Current::isControlPanel()) {
 			$this->ControlPanelLayout = $this->Components->load('ControlPanel.ControlPanelLayout');
 		} else {
-			//$this->PageLayout = $this->Components->load('Pages.PageLayout');
+			$this->PageLayout = $this->Components->load('Pages.PageLayout');
 		}
 
 		//ユーザデータ取得
@@ -92,25 +92,6 @@ class UsersController extends UsersAppController {
 				array('Room.space_id' => Space::ROOM_SPACE_ID), null, null, Room::$treeParser);
 
 		$this->set('roomTreeLists', $roomTreeLists);
-	}
-
-/**
- * add method
- *
- * @return void
- */
-	public function add() {
-		//if ($this->request->is('post')) {
-		//	$this->User->create();
-		//	if ($this->User->save($this->request->data)) {
-		//		$this->Session->setFlash(__('The user has been saved.'));
-		//		return $this->redirect(array('action' => 'index'));
-		//	} else {
-		//		$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
-		//	}
-		//}
-		//$authorities = $this->User->Authority->find('list');
-		//$this->set(compact('authorities'));
 	}
 
 /**
