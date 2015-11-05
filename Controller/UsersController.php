@@ -59,6 +59,7 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function view() {
+		//レイアウトの設定
 		if (Current::isControlPanel()) {
 			$this->ControlPanelLayout = $this->Components->load('ControlPanel.ControlPanelLayout');
 		} else {
@@ -69,6 +70,7 @@ class UsersController extends UsersAppController {
 		$userId = $this->params['pass'][0];
 		$user = $this->User->getUser($userId);
 		$this->set($user);
+		$this->set('title', false);
 
 		//ルームデータ取得
 		$rooms = array();
