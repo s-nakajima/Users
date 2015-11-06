@@ -26,6 +26,7 @@ class UserEditFormHelper extends AppHelper {
  */
 	public $helpers = array(
 		'DataTypes.DataTypeForm',
+		'M17n.SwitchLanguage',
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.NetCommonsForm',
 	);
@@ -83,7 +84,7 @@ class UserEditFormHelper extends AppHelper {
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			foreach ($this->_View->request->data['UsersLanguage'] as $index => $usersLanguage) {
 				$html .= '<div class="form-group"' . ' ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
-				$html .= $this->__input('UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute);
+				$html .= $this->__input('UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute, $usersLanguage['language_id']);
 				$html .= '</div>';
 			}
 
@@ -102,10 +103,12 @@ class UserEditFormHelper extends AppHelper {
  * @param array $userAttribute user_attribute data
  * @return string Completed form widget.
  */
-	private function __input($fieldName, $userAttribute) {
+	private function __input($fieldName, $userAttribute, $languageId = null) {
 		$html = '';
 		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
+
+		$name = $this->SwitchLanguage->inputLabel($userAttribute['UserAttribute']['name'], $languageId);
 
 		//必須項目ラベルの設定
 		if ($userAttribute['UserAttributeSetting']['required']) {
@@ -136,7 +139,7 @@ class UserEditFormHelper extends AppHelper {
 		$html .= $this->DataTypeForm->inputDataType(
 				$dataTypeKey,
 				$fieldName,
-				$userAttribute['UserAttribute']['name'] . $requireLabel,
+				$name . $requireLabel,
 				$attributes);
 
 		return $html;

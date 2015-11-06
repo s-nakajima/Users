@@ -25,6 +25,7 @@ class UserLayoutHelper extends AppHelper {
  * @var array
  */
 	public $helpers = array(
+		'M17n.SwitchLanguage',
 		'NetCommons.NetCommonsHtml',
 	);
 
@@ -86,9 +87,7 @@ class UserLayoutHelper extends AppHelper {
 		$element = $this->userElement($fieldName, $userAttribute);
 		if ($element) {
 			$html .= '<div class="form-group">';
-			if ($userAttribute['UserAttributeSetting']['display_label']) {
-				$html .= '<div class="user-attribute-label">' . h($userAttribute['UserAttribute']['name']) . '</div>';
-			}
+			$html .= $this->userLabelElement($userAttribute);
 			if ($userAttributeKey === 'avatar') {
 				$html .= $element;
 			} else {
@@ -100,6 +99,31 @@ class UserLayoutHelper extends AppHelper {
 		}
 
 		return $html;
+	}
+
+/**
+ * ユーザ属性のラベル表示
+ *
+ * @param array $userAttribute ユーザ属性データ
+ * @return string HTMLタグ
+ */
+	public function userLabelElement($userAttribute) {
+		$element = '';
+		$userAttributeKey = $userAttribute['UserAttribute']['key'];
+
+		if ($userAttribute['UserAttributeSetting']['display_label']) {
+			//言語の表示
+			if ($this->UsersLanguage->hasField($userAttributeKey)) {
+				$element .= $this->SwitchLanguage->label($userAttribute['UserAttribute']['name'], array(
+					'user-attribute-label'
+				));
+			} else {
+				$element .= '<div class="user-attribute-label">' . h($userAttribute['UserAttribute']['name']) . '</div>';
+			}
+		}
+
+
+		return $element;
 	}
 
 /**
