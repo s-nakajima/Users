@@ -17,11 +17,13 @@
 		</a>
 	</li>
 
-	<li>
-		<a href="#user-rooms" aria-controls="user-rooms" role="tab" data-toggle="tab">
-			<?php echo __d('users', 'Rooms'); ?>
-		</a>
-	</li>
+	<?php if (Hash::get($user, 'User.id') === Current::read('User.id')) : ?>
+		<li>
+			<a href="#user-rooms" aria-controls="user-rooms" role="tab" data-toggle="tab">
+				<?php echo __d('users', 'Rooms'); ?>
+			</a>
+		</li>
+	<?php endif; ?>
 </ul>
 <br>
 
@@ -30,7 +32,9 @@
 		<?php echo $this->element('Users/view_information'); ?>
 	</div>
 
-	<div class="tab-pane" id="user-rooms">
-		<?php echo $this->element('Users/view_rooms'); ?>
-	</div>
+	<?php if (Hash::get($user, 'User.id') === Current::read('User.id')) : ?>
+		<div class="tab-pane" id="user-rooms">
+			<?php echo $this->element('Users/view_rooms'); ?>
+		</div>
+	<?php endif; ?>
 </div>

@@ -60,7 +60,10 @@ class UsersController extends UsersAppController {
  */
 	public function view() {
 		//レイアウトの設定
-		if (Current::isControlPanel()) {
+		if ($this->request->is('ajax')) {
+			$this->viewClass = 'View';
+			$this->layout = 'NetCommons.modal';
+		} else if (Current::isControlPanel()) {
 			$this->ControlPanelLayout = $this->Components->load('ControlPanel.ControlPanelLayout');
 		} else {
 			$this->PageLayout = $this->Components->load('Pages.PageLayout');
@@ -69,7 +72,7 @@ class UsersController extends UsersAppController {
 		//ユーザデータ取得
 		$userId = $this->params['pass'][0];
 		$user = $this->User->getUser($userId);
-		$this->set($user);
+		$this->set('user', $user);
 		$this->set('title', false);
 
 		//ルームデータ取得

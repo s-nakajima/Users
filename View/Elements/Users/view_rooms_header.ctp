@@ -14,13 +14,13 @@
 	<th>
 		<?php echo __d('rooms', 'Room name'); ?>
 	</th>
-	<th class="text-center">
+	<th>
 		<?php echo __d('rooms', 'Room role'); ?>
 	</th>
-	<th class="text-center">
+	<th>
 		<?php echo __d('rooms', 'Status'); ?>
 	</th>
-	<th  class="text-right">
+	<th>
 		<?php echo __d('rooms', 'Last access datetime'); ?>
 	</th>
 </tr>

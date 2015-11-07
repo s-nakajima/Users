@@ -15,11 +15,11 @@
 		<?php echo $this->Rooms->roomName($room, $nest); ?>
 	</td>
 
-	<td class="text-center">
+	<td>
 		<?php echo $this->Rooms->roomRoleName($room); ?>
 	</td>
 
-	<td class="text-center">
+	<td>
 		<?php
 			if ($nest !== 0) {
 				echo $this->Rooms->statusLabel($room, '%s', true);
@@ -27,6 +27,6 @@
 		?>
 	</td>
 
-	<td class="text-right">
+	<td>
 	</td>
 </tr>

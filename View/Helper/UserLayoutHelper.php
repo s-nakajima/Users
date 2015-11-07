@@ -91,7 +91,7 @@ class UserLayoutHelper extends AppHelper {
 			if ($userAttributeKey === 'avatar') {
 				$html .= $element;
 			} else {
-				$html .= '<div class="form-control data-type-no-border">';
+				$html .= '<div class="form-control nc-no-border">';
 				$html .= $element;
 				$html .= '</div>';
 			}
@@ -148,22 +148,22 @@ class UserLayoutHelper extends AppHelper {
 
 		} elseif (isset($userAttribute['UserAttributeChoice'])) {
 			if ($userAttributeKey === 'role_key') {
-				$keyPath = '{n}[key=' . Hash::get($this->_View->viewVars, $fieldName) . ']';
+				$keyPath = '{n}[key=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
 			} else {
-				$keyPath = '{n}[code=' . Hash::get($this->_View->viewVars, $fieldName) . ']';
+				$keyPath = '{n}[code=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
 			}
 			$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
 			$element .= $option[0]['name'];
 
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
-			foreach ($this->_View->viewVars['UsersLanguage'] as $index => $usersLanguage) {
+			foreach ($this->_View->viewVars['user']['UsersLanguage'] as $index => $usersLanguage) {
 				$element .= '<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
-				$element .= Hash::get($this->_View->viewVars, sprintf($fieldName, $index));
+				$element .= Hash::get($this->_View->viewVars['user'], sprintf($fieldName, $index));
 				$element .= '</div>';
 			}
 
 		} elseif (isset($fieldName)) {
-			$element .= Hash::get($this->_View->viewVars, $fieldName);
+			$element .= Hash::get($this->_View->viewVars['user'], $fieldName);
 
 		} else {
 			$element .= '';
@@ -181,8 +181,8 @@ class UserLayoutHelper extends AppHelper {
 	public function isDisplayable($userAttribute) {
 		if (! $userAttribute['UserAttributeSetting']['display'] ||
 				$userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_PASSWORD ||
-				(! $userAttribute['UserAttributesRole']['other_readable'] && Current::read('User.id') !== $this->_View->viewVars['User']['id']) ||
-				(! $userAttribute['UserAttributesRole']['self_readable'] && Current::read('User.id') === $this->_View->viewVars['User']['id']) ||
+				(! $userAttribute['UserAttributesRole']['other_readable'] && Current::read('User.id') !== $this->_View->viewVars['user']['User']['id']) ||
+				(! $userAttribute['UserAttributesRole']['self_readable'] && Current::read('User.id') === $this->_View->viewVars['user']['User']['id']) ||
 				$userAttribute['UserAttributeSetting']['only_administrator'] && ! Current::allowSystemPlugin('user_manager')) {
 
 			return false;
