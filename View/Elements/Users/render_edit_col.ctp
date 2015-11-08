@@ -13,4 +13,4 @@
  */
 ?>
 
-<?php echo $this->UserEditForm->userEditInput($userAttribute);
+<?php echo $this->UserEditForm->userInputForSelf($userAttribute);

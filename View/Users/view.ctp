@@ -17,7 +17,7 @@
 		</a>
 	</li>
 
-	<?php if (Hash::get($user, 'User.id') === Current::read('User.id')) : ?>
+	<?php if (isset($rooms)) : ?>
 		<li>
 			<a href="#user-rooms" aria-controls="user-rooms" role="tab" data-toggle="tab">
 				<?php echo __d('users', 'Rooms'); ?>
@@ -28,11 +28,11 @@
 <br>
 
 <div class="tab-content">
-	<div class="tab-pane active" id="user-information">
+	<div class="tab-pane panel panel-default active" id="user-information">
 		<?php echo $this->element('Users/view_information'); ?>
 	</div>
 
-	<?php if (Hash::get($user, 'User.id') === Current::read('User.id')) : ?>
+	<?php if (isset($rooms)) : ?>
 		<div class="tab-pane" id="user-rooms">
 			<?php echo $this->element('Users/view_rooms'); ?>
 		</div>

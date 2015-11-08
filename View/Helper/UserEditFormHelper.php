@@ -60,12 +60,12 @@ class UserEditFormHelper extends AppHelper {
 	}
 
 /**
- * Generates a form input element complete with label and wrapper div
+ * 会員の入力フォームの表示
  *
- * @param array $userAttribute user_attribute data
- * @return string Completed form widget.
+ * @param array $userAttribute UserAttributeデータ
+ * @return string HTMLタグ
  */
-	public function userEditInput($userAttribute) {
+	public function userInput($userAttribute) {
 		$html = '';
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
@@ -97,11 +97,33 @@ class UserEditFormHelper extends AppHelper {
 	}
 
 /**
- * Generates a form input element complete with label and wrapper div
+ * 会員の入力フォームの表示
  *
- * @param string $fieldName This should be "Modelname.fieldname"
- * @param array $userAttribute user_attribute data
- * @return string Completed form widget.
+ * @param array $userAttribute UserAttributeデータ
+ * @return string HTMLタグ
+ */
+	public function userInputForSelf($userAttribute) {
+		$html = '';
+
+		if ($userAttribute['UserAttributeSetting']['only_administrator'] ||
+				Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
+				! $userAttribute['UserAttributesRole']['self_readable'] ||
+				! $userAttribute['UserAttributesRole']['self_editable']) {
+
+			return $html;
+		}
+
+		$html .= $this->userInput($userAttribute);
+		return $html;
+	}
+
+/**
+ * inputタグの生成
+ *
+ * @param string $fieldName フィールド名("Modelname.fieldname"形式)
+ * @param array $userAttribute UserAttributeデータ
+ * @param int $languageId 言語ID
+ * @return string HTMLタグ
  */
 	private function __input($fieldName, $userAttribute, $languageId = null) {
 		$html = '';

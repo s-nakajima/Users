@@ -91,7 +91,7 @@ class UserLayoutHelper extends AppHelper {
 			if ($userAttributeKey === 'avatar') {
 				$html .= $element;
 			} else {
-				$html .= '<div class="form-control nc-no-border">';
+				$html .= '<div class="form-control nc-data-label">';
 				$html .= $element;
 				$html .= '</div>';
 			}
@@ -121,7 +121,6 @@ class UserLayoutHelper extends AppHelper {
 				$element .= '<div class="user-attribute-label">' . h($userAttribute['UserAttribute']['name']) . '</div>';
 			}
 		}
-
 
 		return $element;
 	}
@@ -157,9 +156,12 @@ class UserLayoutHelper extends AppHelper {
 
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			foreach ($this->_View->viewVars['user']['UsersLanguage'] as $index => $usersLanguage) {
-				$element .= '<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
-				$element .= Hash::get($this->_View->viewVars['user'], sprintf($fieldName, $index));
-				$element .= '</div>';
+				$el = Hash::get($this->_View->viewVars['user'], sprintf($fieldName, $index));
+				if ($el) {
+					$element .= '<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
+					$element .= $el;
+					$element .= '</div>';
+				}
 			}
 
 		} elseif (isset($fieldName)) {

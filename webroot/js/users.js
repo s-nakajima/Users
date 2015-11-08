@@ -10,17 +10,17 @@
 NetCommonsApp.factory('User', ['$modal', function($modal) {
   return {
     show: function($scope, url) {
-       $modal.open({
-          templateUrl: url,
-          controller: 'User.modal',
-          //backdrop: 'static',
-          //size: 'lg',
-          animation: false,
-          scope: $scope
-       }).result.then(
+      $modal.open({
+        templateUrl: url,
+        controller: 'User.modal',
+        //backdrop: 'static',
+        //size: 'lg',
+        animation: false,
+        scope: $scope
+      }).result.then(
           function(result) {},
           function(reason) {}
-       );
+      );
     }
   }}]
 );

@@ -140,7 +140,7 @@ class SaveUserBehavior extends ModelBehavior {
 			$validates['notBlank'] = array(
 				'rule' => array('notBlank'),
 				'message' => sprintf(__d('net_commons', 'Please input %s.'), $userAttributeName),
-				'required' => true
+				'required' => false
 			);
 		}
 
