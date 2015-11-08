@@ -151,7 +151,7 @@ class UsersController extends UsersAppController {
 			if ($this->User->saveUser($this->request->data)) {
 				//正常の場合
 				$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
-				$this->redirect('/user_manager/user_manager/index/');
+				$this->redirect('/users/users/view/' . Hash::get($this->viewVars['user'], 'User.id'));
 				return;
 			}
 			$this->NetCommons->handleValidationError($this->User->validationErrors);
@@ -163,43 +163,26 @@ class UsersController extends UsersAppController {
 		}
 
 		$this->set('activeUserId', Hash::get($this->viewVars['user'], 'User.id'));
-
-		//if (!$this->User->exists($id)) {
-		//	throw new NotFoundException(__('Invalid user'));
-		//}
-		//if ($this->request->is(array('post', 'put'))) {
-		//	if ($this->User->save($this->request->data)) {
-		//		$this->Session->setFlash(__('The user has been saved.'));
-		//		return $this->redirect(array('action' => 'index'));
-		//	} else {
-		//		$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
-		//	}
-		//} else {
-		//	$options = array('conditions' => array('User.' . $this->User->primaryKey => $id));
-		//	$this->request->data = $this->User->find('first', $options);
-		//}
-		//$authorities = $this->User->Authority->find('list');
-		//$this->set(compact('authorities'));
 	}
 
 /**
  * delete method
  *
- * @param string $id id
- * @throws NotFoundException
  * @return void
  */
-	public function delete($id = null) {
-		//$this->User->id = $id;
-		//if (!$this->User->exists()) {
-		//	throw new NotFoundException(__('Invalid user'));
-		//}
-		//$this->request->onlyAllow('post', 'delete');
-		//if ($this->User->delete()) {
-		//	$this->Session->setFlash(__('The user has been deleted.'));
-		//} else {
-		//	$this->Session->setFlash(__('The user could not be deleted. Please, try again.'));
-		//}
-		//return $this->redirect(array('action' => 'index'));
+	public function delete() {
+		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
+				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+			$this->setAction('throwBadRequest');
+			return;
+		}
+
+		if (! $this->request->isDelete()) {
+			$this->throwBadRequest();
+			return;
+		}
+
+		$this->User->deleteUser($this->viewVars['user']);
+		$this->redirect('/auth/logout');
 	}
 }
