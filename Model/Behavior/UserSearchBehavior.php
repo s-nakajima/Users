@@ -149,7 +149,7 @@ class UserSearchBehavior extends ModelBehavior {
 			$conditions['User.status'] = '1';
 		}
 		$conditions['User.is_deleted'] = false;
-		$conditions['Room.page_id_top NOT'] = null;
+		//$conditions['Room.page_id_top NOT'] = null;
 
 		return $conditions;
 	}
