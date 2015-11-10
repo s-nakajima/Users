@@ -45,27 +45,24 @@ class UserSearchComponent extends Component {
 	}
 
 /**
- * Search user
+ * 検索処理
  *
- * @return array Return search
+ * @param array $conditions 条件
+ * @param array $joins JOIN時の条件
+ * @return array void
  */
-	public function search() {
-		$fields = array();
-		$conditions = array();
-
+	public function search($conditions = array(), $joins = array()) {
 		//ユーザデータ取得
 		$this->controller->Paginator->settings = array(
 			'recursive' => -1,
-			'fields' => $this->controller->User->getSearchFields($fields),
+			'fields' => $this->controller->User->getSearchFields(),
 			'conditions' => $this->controller->User->getSearchConditions($conditions),
-			'joins' => $this->controller->User->getSearchJoinTables(),
+			'joins' => $this->controller->User->getSearchJoinTables($joins),
 			'order' => array($this->controller->User->alias . '.id' => 'asc'),
 			//'limit' => 1
 		);
 		$results = $this->controller->Paginator->paginate('User');
 
 		$this->controller->set('users', $results);
-		$this->controller->set('displayFields', $this->controller->User->getDispayFields());
 	}
-
 }

@@ -19,13 +19,15 @@ App::uses('AppHelper', 'View/Helper');
 class UserSearchHelper extends AppHelper {
 
 /**
- * Other helpers used by FormHelper
+ * 使用するヘルパー
+ * ただし、Roomヘルパーを使用する場合は、RoomComponentを呼び出している必要がある。
  *
  * @var array
  */
 	public $helpers = array(
 		'NetCommons.NetCommonsHtml',
-		'NetCommons.Date'
+		'NetCommons.Date',
+		'Rooms.Rooms',
 	);
 
 /**
@@ -62,25 +64,15 @@ class UserSearchHelper extends AppHelper {
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
 			$output .= '<th>';
 			if ($fieldName === 'room_role_key') {
-				$output .= __d('rooms', 'Room role');
+				$output .= $this->_View->Paginator->sort('RoomRole.level', __d('rooms', 'Room role'));
 			} else {
 				$userAttribute = Hash::extract($this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']');
-				$output .= $this->_View->Paginator->sort($fieldName, $userAttribute[0]['name']);
+				$output .= $this->_View->Paginator->sort($this->User->getOriginalUserField($fieldName), $userAttribute[0]['name']);
 			}
 			$output .= '</th>';
 		}
 
 		return $output;
-	}
-
-/**
- * 項目の有無
- *
- * @param string $fieldName 表示フィールド
- * @return string User value
- */
-	public function hasUserAttribute($fieldName) {
-		return isset($this->userAttributes[$fieldName]);
 	}
 
 /**
@@ -94,13 +86,16 @@ class UserSearchHelper extends AppHelper {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
-			if ($this->hasUserAttribute($fieldName)) {
-				$modelName = '';
-				if ($this->User->hasField($fieldName)) {
-					$modelName = $this->User->alias;
-				} elseif ($this->UsersLanguage->hasField($fieldName)) {
-					$modelName = $this->UsersLanguage->alias;
-				}
+			$modelName = '';
+			if ($this->User->hasField($fieldName)) {
+				$modelName = $this->User->alias;
+			} elseif ($this->UsersLanguage->hasField($fieldName)) {
+				$modelName = $this->UsersLanguage->alias;
+			} elseif ($fieldName === 'room_role_key') {
+				$modelName = 'RolesRoom';
+			}
+
+			if ($modelName) {
 				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit);
 			} else {
 				$output .= '<td></td>';
@@ -120,11 +115,13 @@ class UserSearchHelper extends AppHelper {
  * @return string セルのHTMLタグ
  */
 	public function tableCell($user, $modelName, $fieldName, $isEdit) {
-		$userAttribute = $this->userAttributes[$fieldName];
+		$userAttribute = Hash::get($this->userAttributes, $fieldName);
 
 		$value = '';
 		if ($fieldName === 'handlename') {
 			$value = $this->linkHandlename($user, $modelName, $fieldName, $isEdit);
+		} elseif ($fieldName === 'room_role_key') {
+			$value = $this->Rooms->roomRoleName($user[$modelName]['role_key']);
 		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
 			if ($fieldName === 'role_key') {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[key=' . $user[$modelName][$fieldName] . ']');
