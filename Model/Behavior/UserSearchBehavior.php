@@ -73,6 +73,7 @@ class UserSearchBehavior extends ModelBehavior {
 				}
 			}
 			self::$readableFields['room_id'] = $model->Room->alias . '.id';
+			self::$readableFields['space_id'] = $model->Room->alias . '.space_id';
 			self::$readableFields['room_role_key'] = $model->RolesRoom->alias . '.role_key';
 		}
 	}
@@ -148,6 +149,7 @@ class UserSearchBehavior extends ModelBehavior {
 			$conditions['User.status'] = '1';
 		}
 		$conditions['User.is_deleted'] = false;
+		$conditions['Room.page_id_top NOT'] = null;
 
 		return $conditions;
 	}

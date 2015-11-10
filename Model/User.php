@@ -239,6 +239,40 @@ class User extends UsersAppModel {
 				$this->data['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
 			}
 		}
+
+		//インストール時は、言語のCurrentデータをセットする
+		if (! Configure::read('NetCommons.installed')) {
+			CurrentControlPanel::setLanguage();
+		}
+
+		if ($created) {
+			//プライベートルームの登録
+			$this->loadModels([
+				'PrivateSpace' => 'PrivateSpace.PrivateSpace',
+				'Room' => 'Rooms.Room',
+			]);
+			$room = $this->PrivateSpace->createRoom();
+			$room['RolesRoomsUser']['user_id'] = $this->data['User']['id'];
+			$this->Room->saveRoom($room);
+
+			//デフォルト参加ルームの登録
+			$rooms = $this->Room->find('all', array(
+				'recursive' => -1,
+				'conditions' => array(
+					'OR' => array(
+						'default_participation' => true,
+						'root_id' => null
+					)
+				),
+			));
+			foreach ($rooms as $room) {
+				$room['RolesRoomsUser']['user_id'] = $this->data['User']['id'];
+				if (! Configure::read('NetCommons.installed')) {
+					$room['Room']['default_role_key'] = ROLE::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
+				}
+				$this->Room->saveDefaultRolesRoomsUser($room, false);
+			}
+		}
 	}
 
 /**
@@ -323,6 +357,12 @@ class User extends UsersAppModel {
 	public function saveUser($data) {
 		//トランザクションBegin
 		$this->begin();
+
+		//プライベートルームの登録
+		$this->loadModels([
+			//'Space' => 'Rooms.Space',
+			'Room' => 'Rooms.Room',
+		]);
 
 		//バリデーション
 		$this->set($data);
