@@ -87,7 +87,7 @@ class UserSearchBehavior extends ModelBehavior {
  */
 	public function getSearchFields(Model $model, $fields = array()) {
 		$this->__prepare($model);
-		return array_values(self::$readableFields);
+		return '*';
 	}
 
 /**
