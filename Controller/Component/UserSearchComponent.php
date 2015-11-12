@@ -51,14 +51,14 @@ class UserSearchComponent extends Component {
  * @param array $joins JOIN時の条件
  * @return array void
  */
-	public function search($conditions = array(), $joins = array()) {
+	public function search($conditions = array(), $joins = array(), $orders = array()) {
 		//ユーザデータ取得
 		$this->controller->Paginator->settings = array(
 			'recursive' => -1,
 			'fields' => $this->controller->User->getSearchFields(),
 			'conditions' => $this->controller->User->getSearchConditions($conditions),
 			'joins' => $this->controller->User->getSearchJoinTables($joins),
-			'order' => array($this->controller->User->alias . '.id' => 'asc'),
+			'order' => Hash::merge($orders, array($this->controller->User->alias . '.id' => 'asc')),
 			//'limit' => 1
 		);
 		$results = $this->controller->Paginator->paginate('User');

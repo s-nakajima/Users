@@ -161,7 +161,7 @@ class User extends UsersAppModel {
 		));
 
 		//パスワード
-		if (isset($this->data['User']['password']) && $this->data['User']['password'] !== '' || ! isset($this->data['User']['id'])) {
+		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
 			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
@@ -175,6 +175,7 @@ class User extends UsersAppModel {
 					'notBlank' => array(
 						'rule' => array('notBlank'),
 						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'password')),
+						'allowEmpty' => false,
 						'required' => true,
 					),
 					'regex' => array(
@@ -187,6 +188,7 @@ class User extends UsersAppModel {
 				'password_again' => array(
 					'notBlank' => array(
 						'rule' => array('notBlank'),
+						'allowEmpty' => false,
 						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'Re-enter')),
 						'required' => true,
 					),
@@ -198,6 +200,8 @@ class User extends UsersAppModel {
 					)
 				),
 			));
+		} elseif (isset($this->data['User']['password'])) {
+			unset($this->data['User']['password']);
 		}
 
 		//ログイン、パスワード以外のUserモデルのバリデーションルールのセットは、ビヘイビアで行う
