@@ -49,6 +49,7 @@ class UserSearchComponent extends Component {
  *
  * @param array $conditions 条件
  * @param array $joins JOIN時の条件
+ * @param array $orders ソート条件
  * @return array void
  */
 	public function search($conditions = array(), $joins = array(), $orders = array()) {
