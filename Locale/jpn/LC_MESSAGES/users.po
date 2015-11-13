@@ -32,3 +32,11 @@ msgstr "パスワード"
 #: Users/Model/User.php:165;172
 msgid "Non members"
 msgstr "不参加"
+
+#: Users/Model/User.php:165;172
+msgid "User information"
+msgstr "会員情報"
+
+#: Users/Model/User.php:165;172
+msgid "Rooms"
+msgstr "参加ルーム"

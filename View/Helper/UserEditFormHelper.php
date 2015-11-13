@@ -26,6 +26,7 @@ class UserEditFormHelper extends AppHelper {
  */
 	public $helpers = array(
 		'DataTypes.DataTypeForm',
+		'M17n.SwitchLanguage',
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.NetCommonsForm',
 	);
@@ -43,12 +44,28 @@ class UserEditFormHelper extends AppHelper {
 	}
 
 /**
- * Generates a form input element complete with label and wrapper div
+ * After render file callback.
+ * Called after any view fragment is rendered.
  *
- * @param array $userAttribute user_attribute data
- * @return string Completed form widget.
+ * Overridden in subclasses.
+ *
+ * @param string $viewFile The file just be rendered.
+ * @param string $content The content that was rendered.
+ * @return void
  */
-	public function userEditInput($userAttribute) {
+	public function afterRenderFile($viewFile, $content) {
+		$content = $this->NetCommonsHtml->css('/data_types/css/style.css') . $content;
+
+		parent::afterRenderFile($viewFile, $content);
+	}
+
+/**
+ * 会員の入力フォームの表示
+ *
+ * @param array $userAttribute UserAttributeデータ
+ * @return string HTMLタグ
+ */
+	public function userInput($userAttribute) {
 		$html = '';
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
@@ -67,7 +84,7 @@ class UserEditFormHelper extends AppHelper {
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			foreach ($this->_View->request->data['UsersLanguage'] as $index => $usersLanguage) {
 				$html .= '<div class="form-group"' . ' ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
-				$html .= $this->__input('UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute);
+				$html .= $this->__input('UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute, $usersLanguage['language_id']);
 				$html .= '</div>';
 			}
 
@@ -80,16 +97,40 @@ class UserEditFormHelper extends AppHelper {
 	}
 
 /**
- * Generates a form input element complete with label and wrapper div
+ * 会員の入力フォームの表示
  *
- * @param string $fieldName This should be "Modelname.fieldname"
- * @param array $userAttribute user_attribute data
- * @return string Completed form widget.
+ * @param array $userAttribute UserAttributeデータ
+ * @return string HTMLタグ
  */
-	private function __input($fieldName, $userAttribute) {
+	public function userInputForSelf($userAttribute) {
+		$html = '';
+
+		if ($userAttribute['UserAttributeSetting']['only_administrator'] ||
+				Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
+				! $userAttribute['UserAttributesRole']['self_readable'] ||
+				! $userAttribute['UserAttributesRole']['self_editable']) {
+
+			return $html;
+		}
+
+		$html .= $this->userInput($userAttribute);
+		return $html;
+	}
+
+/**
+ * inputタグの生成
+ *
+ * @param string $fieldName フィールド名("Modelname.fieldname"形式)
+ * @param array $userAttribute UserAttributeデータ
+ * @param int $languageId 言語ID
+ * @return string HTMLタグ
+ */
+	private function __input($fieldName, $userAttribute, $languageId = null) {
 		$html = '';
 		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
+
+		$name = $this->SwitchLanguage->inputLabel($userAttribute['UserAttribute']['name'], $languageId);
 
 		//必須項目ラベルの設定
 		if ($userAttribute['UserAttributeSetting']['required']) {
@@ -120,7 +161,7 @@ class UserEditFormHelper extends AppHelper {
 		$html .= $this->DataTypeForm->inputDataType(
 				$dataTypeKey,
 				$fieldName,
-				$userAttribute['UserAttribute']['name'] . $requireLabel,
+				$name . $requireLabel,
 				$attributes);
 
 		return $html;

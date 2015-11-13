@@ -1,8 +1,7 @@
 <?php
 /**
- * UserAttribute index col template
+ * UserAttribute index row template
  *   - $row: UserAttributeLayout.row
- *   - $col: UserAttributeLayout.row
  *   - $layout: UserAttributeLayout
  *
  * @author Noriko Arai <arai@nii.ac.jp>
@@ -13,4 +12,6 @@
  */
 ?>
 
-<?php echo $this->UserEditForm->userInputForSelf($userAttribute);
+<div class="row">
+	<?php echo $this->UserAttributeLayout->renderCol('Users.Users/view_information_col', $layout); ?>
+</div>

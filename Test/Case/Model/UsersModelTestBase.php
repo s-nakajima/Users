@@ -10,7 +10,7 @@
  */
 
 App::uses('User', 'Users.Model');
-App::uses('YACakeTestCase', 'NetCommons.TestSuite');
+App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
 
 /**
  * Users App Model Test Case
@@ -18,7 +18,7 @@ App::uses('YACakeTestCase', 'NetCommons.TestSuite');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\Case\Model
  */
-class UsersModelTestBase extends YACakeTestCase {
+class UsersModelTestBase extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
@@ -34,20 +34,4 @@ class UsersModelTestBase extends YACakeTestCase {
 		'plugin.user_attributes.user_attribute_choice',
 		'plugin.user_attributes.user_attribute_setting',
 	);
-
-/**
- * setUp method
- *
- * @return void
- */
-	public function setUp() {
-	}
-
-/**
- * tearDown method
- *
- * @return void
- */
-	public function tearDown() {
-	}
 }

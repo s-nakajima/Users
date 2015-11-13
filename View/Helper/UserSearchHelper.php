@@ -19,11 +19,16 @@ App::uses('AppHelper', 'View/Helper');
 class UserSearchHelper extends AppHelper {
 
 /**
- * Other helpers used by FormHelper
+ * 使用するヘルパー
+ * ただし、Roomヘルパーを使用する場合は、RoomComponentを呼び出している必要がある。
  *
  * @var array
  */
-	public $helpers = array('Html');
+	public $helpers = array(
+		'NetCommons.NetCommonsHtml',
+		'NetCommons.Date',
+		'Rooms.Rooms',
+	);
 
 /**
  * UserAttributes data
@@ -59,10 +64,10 @@ class UserSearchHelper extends AppHelper {
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
 			$output .= '<th>';
 			if ($fieldName === 'room_role_key') {
-				$output .= __d('rooms', 'Room role');
+				$output .= $this->_View->Paginator->sort('RoomRole.level', __d('rooms', 'Room role'));
 			} else {
 				$userAttribute = Hash::extract($this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']');
-				$output .= $this->_View->Paginator->sort($fieldName, $userAttribute[0]['name']);
+				$output .= $this->_View->Paginator->sort($this->User->getOriginalUserField($fieldName), $userAttribute[0]['name']);
 			}
 			$output .= '</th>';
 		}
@@ -71,36 +76,52 @@ class UserSearchHelper extends AppHelper {
 	}
 
 /**
- * 項目の有無
+ * テーブル行の出力
  *
- * @param string $fieldName 表示フィールド
- * @return string User value
+ * @param array $user ユーザデータ
+ * @param bool $isEdit 編集の有無
+ * @return string 行のHTMLタグ
  */
-	public function hasUserAttribute($fieldName) {
-		return isset($this->userAttributes[$fieldName]);
+	public function tableRow($user, $isEdit) {
+		$output = '';
+
+		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
+			$modelName = '';
+			if ($this->User->hasField($fieldName)) {
+				$modelName = $this->User->alias;
+			} elseif ($this->UsersLanguage->hasField($fieldName)) {
+				$modelName = $this->UsersLanguage->alias;
+			} elseif ($fieldName === 'room_role_key') {
+				$modelName = 'RolesRoom';
+			}
+
+			if ($modelName) {
+				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit);
+			} else {
+				$output .= '<td></td>';
+			}
+		}
+
+		return $output;
 	}
 
 /**
  * テーブルセルの出力
  *
  * @param array $user ユーザデータ
+ * @param string $modelName モデル名
  * @param string $fieldName 表示フィールド
- * @return string User value
+ * @param bool $isEdit 編集の有無
+ * @return string セルのHTMLタグ
  */
-	public function tableCells($user, $fieldName) {
-		$modelName = '';
-		if ($this->User->hasField($fieldName)) {
-			$modelName = $this->User->alias;
-		} elseif ($this->UsersLanguage->hasField($fieldName)) {
-			$modelName = $this->UsersLanguage->alias;
-		}
-		$userAttribute = $this->userAttributes[$fieldName];
+	public function tableCell($user, $modelName, $fieldName, $isEdit) {
+		$userAttribute = Hash::get($this->userAttributes, $fieldName);
 
 		$value = '';
-		if ($fieldName === 'handlename' && (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
-				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR)) {
-			$value = $this->Html->link($user[$modelName][$fieldName], '/user_manager/user_manager/edit/' . $user['User']['id'] . '/');
-
+		if ($fieldName === 'handlename') {
+			$value = $this->linkHandlename($user, $modelName, $fieldName, $isEdit);
+		} elseif ($fieldName === 'room_role_key') {
+			$value = $this->Rooms->roomRoleName($user[$modelName]['role_key']);
 		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
 			if ($fieldName === 'role_key') {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[key=' . $user[$modelName][$fieldName] . ']');
@@ -108,11 +129,35 @@ class UserSearchHelper extends AppHelper {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[code=' . $user[$modelName][$fieldName] . ']');
 			}
 			$value = h($values[0]['name']);
+		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_DATETIME ||
+				in_array($userAttribute['UserAttribute']['key'], ['created', 'modified', 'last_login', 'password_modified'])) {
+			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
 		} else {
 			$value = h($user[$modelName][$fieldName]);
 		}
 
 		return '<td>' . $value . '</td>';
+	}
+
+/**
+ * ハンドルの出力
+ *
+ * @param array $user ユーザデータ
+ * @param string $modelName モデル名
+ * @param string $fieldName 表示フィールド
+ * @param bool $isEdit 編集の有無
+ * @return string ハンドルのHTMLタグ
+ */
+	public function linkHandlename($user, $modelName, $fieldName, $isEdit) {
+		if (! $isEdit) {
+			return h($user[$modelName][$fieldName]);
+		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
+				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+
+			return $this->NetCommonsHtml->link($user[$modelName][$fieldName],
+				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id'])
+			);
+		}
 	}
 
 }

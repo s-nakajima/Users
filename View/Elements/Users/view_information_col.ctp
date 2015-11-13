@@ -13,4 +13,4 @@
  */
 ?>
 
-<?php echo $this->UserEditForm->userInputForSelf($userAttribute);
+<?php echo $this->UserLayout->display($userAttribute);

@@ -161,7 +161,7 @@ class User extends UsersAppModel {
 		));
 
 		//パスワード
-		if (isset($this->data['User']['password']) && $this->data['User']['password'] !== '' || ! isset($this->data['User']['id'])) {
+		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
 			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
@@ -175,6 +175,7 @@ class User extends UsersAppModel {
 					'notBlank' => array(
 						'rule' => array('notBlank'),
 						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'password')),
+						'allowEmpty' => false,
 						'required' => true,
 					),
 					'regex' => array(
@@ -187,6 +188,7 @@ class User extends UsersAppModel {
 				'password_again' => array(
 					'notBlank' => array(
 						'rule' => array('notBlank'),
+						'allowEmpty' => false,
 						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'Re-enter')),
 						'required' => true,
 					),
@@ -198,6 +200,8 @@ class User extends UsersAppModel {
 					)
 				),
 			));
+		} elseif (isset($this->data['User']['password'])) {
+			unset($this->data['User']['password']);
 		}
 
 		//ログイン、パスワード以外のUserモデルのバリデーションルールのセットは、ビヘイビアで行う
@@ -237,6 +241,40 @@ class User extends UsersAppModel {
 					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 				}
 				$this->data['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
+			}
+		}
+
+		//インストール時は、言語のCurrentデータをセットする
+		if (! Configure::read('NetCommons.installed')) {
+			CurrentControlPanel::setLanguage();
+		}
+
+		if ($created) {
+			//プライベートルームの登録
+			$this->loadModels([
+				'PrivateSpace' => 'PrivateSpace.PrivateSpace',
+				'Room' => 'Rooms.Room',
+			]);
+			$room = $this->PrivateSpace->createRoom();
+			$room['RolesRoomsUser']['user_id'] = $this->data['User']['id'];
+			$this->Room->saveRoom($room);
+
+			//デフォルト参加ルームの登録
+			$rooms = $this->Room->find('all', array(
+				'recursive' => -1,
+				'conditions' => array(
+					'OR' => array(
+						'default_participation' => true,
+						'root_id' => null
+					)
+				),
+			));
+			foreach ($rooms as $room) {
+				$room['RolesRoomsUser']['user_id'] = $this->data['User']['id'];
+				if (! Configure::read('NetCommons.installed')) {
+					$room['Room']['default_role_key'] = ROLE::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
+				}
+				$this->Room->saveDefaultRolesRoomsUser($room, false);
 			}
 		}
 	}
@@ -281,10 +319,11 @@ class User extends UsersAppModel {
 /**
  * Userの取得
  *
- * @param int $userId users.id
+ * @param int $userId ユーザID
+ * @param int $languageId 言語ID
  * @return array
  */
-	public function getUser($userId) {
+	public function getUser($userId, $languageId = null) {
 		$user = $this->find('first', array(
 			'recursive' => 0,
 			'conditions' => array(
@@ -293,16 +332,21 @@ class User extends UsersAppModel {
 		));
 		unset($user['User']['password']);
 
+		$conditions = array(
+			$this->UsersLanguage->alias . '.user_id' => $userId
+		);
+		if (isset($languageId)) {
+			$conditions[$this->UsersLanguage->alias . '.language_id'] = $languageId;
+		}
+
 		$usersLanguage = $this->UsersLanguage->find('all', array(
 			'recursive' => 0,
 			'fields' => array(
-				'UsersLanguage.*'
+				$this->UsersLanguage->alias . '.*'
 			),
-			'conditions' => array(
-				'UsersLanguage.user_id' => $userId
-			),
+			'conditions' => $conditions,
 		));
-		$user['UsersLanguage'] = Hash::extract($usersLanguage, '{n}.UsersLanguage');
+		$user[$this->UsersLanguage->alias] = Hash::extract($usersLanguage, '{n}.' . $this->UsersLanguage->alias);
 
 		return $user;
 	}
@@ -317,6 +361,12 @@ class User extends UsersAppModel {
 	public function saveUser($data) {
 		//トランザクションBegin
 		$this->begin();
+
+		//プライベートルームの登録
+		$this->loadModels([
+			//'Space' => 'Rooms.Space',
+			'Room' => 'Rooms.Room',
+		]);
 
 		//バリデーション
 		$this->set($data);

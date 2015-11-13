@@ -1,9 +1,6 @@
 <?php
 /**
- * UserAttribute index col template
- *   - $row: UserAttributeLayout.row
- *   - $col: UserAttributeLayout.row
- *   - $layout: UserAttributeLayout
+ * Rooms index template
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -13,4 +10,17 @@
  */
 ?>
 
-<?php echo $this->UserEditForm->userInputForSelf($userAttribute);
+<tr>
+	<th>
+		<?php echo __d('rooms', 'Room name'); ?>
+	</th>
+	<th>
+		<?php echo __d('rooms', 'Room role'); ?>
+	</th>
+	<th>
+		<?php echo __d('rooms', 'Status'); ?>
+	</th>
+	<th>
+		<?php echo __d('rooms', 'Last access datetime'); ?>
+	</th>
+</tr>
