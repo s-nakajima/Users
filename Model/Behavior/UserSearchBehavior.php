@@ -141,8 +141,10 @@ class UserSearchBehavior extends ModelBehavior {
 		foreach ($fieldKeys as $key) {
 			if (isset(self::$readableFields[$key])) {
 				$conditions[self::$readableFields[$key]] = $conditions[$key];
+				unset($conditions[$key]);
+			} else {
+				$conditions[$key] = $conditions[$key];
 			}
-			unset($conditions[$key]);
 		}
 
 		if (! isset(self::$readableFields['role_key'])) {
