@@ -99,18 +99,13 @@ class UsersController extends UsersAppController {
 		}
 
 		//ルームデータ取得
-		$rooms = array();
 		if (! Current::allowSystemPlugin('rooms')) {
 			$conditions = array('Room.active' => true);
 		} else {
 			$conditions = array();
 		}
-		$result = $this->Room->find('all', $this->Room->getReadableRoomsCondtions(Space::PUBLIC_SPACE_ID, $conditions));
-		$rooms = Hash::merge($rooms, Hash::combine($result, '{n}.Room.id', '{n}'));
-
-		$result = $this->Room->find('all', $this->Room->getReadableRoomsCondtions(Space::ROOM_SPACE_ID, $conditions));
-		$rooms = Hash::merge($rooms, Hash::combine($result, '{n}.Room.id', '{n}'));
-		$this->set('rooms', $rooms);
+		$result = $this->Room->find('all', $this->Room->getReadableRoomsCondtions($conditions));
+		$this->set('rooms', Hash::combine($result, '{n}.Room.id', '{n}'));
 
 		//ルームのTreeリスト取得
 		$roomTreeLists[Space::PUBLIC_SPACE_ID] = $this->Room->generateTreeList(
@@ -118,7 +113,6 @@ class UsersController extends UsersAppController {
 
 		$roomTreeLists[Space::ROOM_SPACE_ID] = $this->Room->generateTreeList(
 				array('Room.space_id' => Space::ROOM_SPACE_ID), null, null, Room::$treeParser);
-
 		$this->set('roomTreeLists', $roomTreeLists);
 	}
 
