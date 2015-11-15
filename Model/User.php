@@ -72,6 +72,13 @@ class User extends UsersAppModel {
 			'fields' => '',
 			'order' => ''
 		),
+		'UserRoleSetting' => array(
+			'className' => 'UserRoles.UserRoleSetting',
+			'foreignKey' => false,
+			'conditions' => array('User.role_key = UserRoleSetting.role_key'),
+			'fields' => '',
+			'order' => ''
+		),
 	);
 
 /**
