@@ -279,7 +279,7 @@ class User extends UsersAppModel {
 			foreach ($rooms as $room) {
 				$room['RolesRoomsUser']['user_id'] = $this->data['User']['id'];
 				if (! Configure::read('NetCommons.installed')) {
-					$room['Room']['default_role_key'] = ROLE::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
+					$room['Room']['default_role_key'] = Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
 				}
 				$this->Room->saveDefaultRolesRoomsUser($room, false);
 			}
