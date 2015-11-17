@@ -28,5 +28,6 @@
 	</td>
 
 	<td>
+		<?php echo $this->Rooms->roomAccessed($room); ?>
 	</td>
 </tr>
