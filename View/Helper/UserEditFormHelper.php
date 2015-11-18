@@ -114,6 +114,35 @@ class UserEditFormHelper extends AppHelper {
 		}
 
 		$html .= $this->userInput($userAttribute);
+
+		return $html;
+	}
+
+/**
+ * 会員の入力フォームの表示
+ *
+ * @param array $userAttribute UserAttributeデータ
+ * @return string HTMLタグ
+ */
+	public function userPublicForSelf($userAttribute) {
+		$html = '';
+
+		if (! $userAttribute['UserAttributeSetting']['self_publicity'] ||
+				Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
+				! $userAttribute['UserAttributesRole']['self_readable'] ||
+				! $userAttribute['UserAttributesRole']['self_editable']) {
+
+			return $html;
+		}
+
+		$fieldName = 'User.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
+
+		$html .= '<div class="form-control user-public-type-form-control nc-data-label">';
+		$html .= $this->NetCommonsForm->radio($fieldName, User::$publicTypes, array(
+			'div' => array('class' => 'form-control form-inline'),
+			'separator' => '<span class="radio-separator"></span>'
+		));
+		$html .= '</div>';
 		return $html;
 	}
 
@@ -163,6 +192,8 @@ class UserEditFormHelper extends AppHelper {
 				$fieldName,
 				$name . $requireLabel,
 				$attributes);
+
+		$html .= $this->userPublicForSelf($userAttribute);
 
 		return $html;
 	}
