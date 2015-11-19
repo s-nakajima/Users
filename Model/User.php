@@ -25,6 +25,28 @@ App::uses('NetCommonsTime', 'NetCommons.Utility');
 class User extends UsersAppModel {
 
 /**
+ * 非公開の定数
+ *
+ * @var const
+ */
+	const PUBLIC_TYPE_CONFIDENTIAL = '0';
+
+/**
+ * 公開の定数
+ *
+ * @var const
+ */
+	const PUBLIC_TYPE_DISCLOSE_TO_ALL = '1';
+
+/**
+ * 公開・非公開のリスト
+ * __constructでセットする
+ *
+ * @var array
+ */
+	public static $publicTypes = array();
+
+/**
  * language data.
  *
  * @var array
@@ -135,6 +157,25 @@ class User extends UsersAppModel {
 			'finderQuery' => '',
 		)
 	);
+
+/**
+ * Constructor. Binds the model's database table to the object.
+ *
+ * @param bool|int|string|array $id Set this ID for this model on startup,
+ * can also be an array of options, see above.
+ * @param string $table Name of database table to use.
+ * @param string $ds DataSource connection name.
+ * @see Model::__construct()
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ */
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+
+		self::$publicTypes = array(
+			self::PUBLIC_TYPE_CONFIDENTIAL => __d('users', 'Confidential'),
+			self::PUBLIC_TYPE_DISCLOSE_TO_ALL => __d('users', 'Disclose to all'),
+		);
+	}
 
 /**
  * Called during validation operations, before validation. Please note that custom

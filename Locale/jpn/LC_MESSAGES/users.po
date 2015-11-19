@@ -40,3 +40,11 @@ msgstr "会員情報"
 #: Users/Model/User.php:165;172
 msgid "Rooms"
 msgstr "参加ルーム"
+
+#: Users/Model/User.php:165;172
+msgid "Confidential"
+msgstr "非公開"
+
+#: Users/Model/User.php:165;172
+msgid "Disclose to all"
+msgstr "公開"

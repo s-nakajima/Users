@@ -8,6 +8,8 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+
+echo $this->NetCommonsHtml->css('/users/css/style.css');
 ?>
 
 <ul class="nav nav-tabs" role="tablist">
