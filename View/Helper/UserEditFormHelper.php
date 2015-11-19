@@ -77,6 +77,10 @@ class UserEditFormHelper extends AppHelper {
 			$html .= '<div class="form-group">';
 			$html .= $this->__input('TrackableUpdater.handlename', $userAttribute);
 			$html .= '</div>';
+		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
+			//$html .= '<div class="form-group">';
+			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
+			//$html .= '</div>';
 		} elseif ($this->User->hasField($userAttributeKey)) {
 			$html .= '<div class="form-group">';
 			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
@@ -128,7 +132,7 @@ class UserEditFormHelper extends AppHelper {
 		$html = '';
 
 		if (! $userAttribute['UserAttributeSetting']['self_publicity'] ||
-				Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
+				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
 				! $userAttribute['UserAttributesRole']['self_editable']) {
 
@@ -181,10 +185,6 @@ class UserEditFormHelper extends AppHelper {
 			if (! $userAttribute['UserAttributeSetting']['required']) {
 				$attributes['empty'] = !(bool)$userAttribute['UserAttributeSetting']['required'];
 			}
-		}
-
-		if ($userAttributeKey === 'avatar') {
-			$attributes['noimage'] = '/users/img/noimage.gif';
 		}
 
 		$html .= $this->DataTypeForm->inputDataType(

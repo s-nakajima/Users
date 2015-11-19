@@ -41,6 +41,7 @@ class UsersController extends UsersAppController {
 		'M17n.SwitchLanguage',
 		'Rooms.Rooms',
 		'UserAttributes.UserAttributeLayout',
+		'Files.Download',
 	);
 
 /**
@@ -179,4 +180,35 @@ class UsersController extends UsersAppController {
 		$this->User->deleteUser($this->viewVars['user']);
 		$this->redirect('/auth/logout');
 	}
+
+/**
+ * download method
+ *
+ * @return void
+ */
+	public function download() {
+		$fieldName = $this->params['pass'][1];
+		$fileSetting = Hash::extract(
+			$this->viewVars['userAttributes'],
+			'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
+		);
+		if (! $fileSetting) {
+			throw new NotFoundException();
+		}
+
+		// 以下の条件の場合、noimageを表示する
+		// * 非公開 && 自分以外、
+		// * 個人情報設定で閲覧不可、
+		// * ユーザ項目属性の管理者のみ許可する場合で会員管理が使えない
+
+		//	$this->response->file(Router::url('/users/img/noimage.gif'), array('name' => 'No Image'));
+		//	return $this->response;
+//CakeLog::debug(print_r($this->viewVars['user'], true));
+
+		return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
+			'field' => $this->params['pass'][1],
+			'size' => $this->params['pass'][2])
+		);
+	}
+
 }

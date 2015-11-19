@@ -67,6 +67,7 @@ class User extends UsersAppModel {
  */
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
+		'Files.Attachment',
 		'Users.SaveUser',
 		'Users.DeleteUser',
 		'Users.UserSearch',
