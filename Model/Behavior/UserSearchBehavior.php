@@ -66,11 +66,11 @@ class UserSearchBehavior extends ModelBehavior {
 				if ($model->hasField($fieldKey)) {
 					self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
 				}
-				//Field(xxxx_file_id)のチェック
-				$fieldKey = sprintf(UserAttribute::FILE_FIELD_FORMAT, $field);
-				if ($model->hasField($fieldKey)) {
-					self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
-				}
+				////Field(xxxx_file_id)のチェック
+				//$fieldKey = sprintf(UserAttribute::FILE_FIELD_FORMAT, $field);
+				//if ($model->hasField($fieldKey)) {
+				//	self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
+				//}
 			}
 			self::$readableFields['room_id'] = $model->Room->alias . '.id';
 			self::$readableFields['space_id'] = $model->Room->alias . '.space_id';
