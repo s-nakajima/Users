@@ -30,7 +30,7 @@ echo $this->NetCommonsHtml->css('/users/css/style.css');
 <div class="tab-content">
 	<div class="tab-pane active" id="user-information">
 		<div class="panel panel-default">
-			<?php echo $this->NetCommonsForm->create('User'); ?>
+			<?php echo $this->NetCommonsForm->create('User', array('type' => 'file')); ?>
 
 			<?php echo $this->element('Users.Users/edit_form', array('element' => 'Users.Users/render_edit_row')); ?>
 

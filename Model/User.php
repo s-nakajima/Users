@@ -192,22 +192,24 @@ class User extends UsersAppModel {
 			'UsersLanguage' => 'Users.UsersLanguage',
 		]);
 
-		$this->validate = Hash::merge($this->validate, array(
-			//ログインID
-			'username' => array(
-				'notBlank' => array(
-					'rule' => array('notBlank'),
-					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'username')),
-					'required' => true
+		//ログインID
+		if (! isset($this->data['User']['id'])) {
+			$this->validate = Hash::merge($this->validate, array(
+				'username' => array(
+					'notBlank' => array(
+						'rule' => array('notBlank'),
+						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'username')),
+						'required' => true
+					),
+					'regex' => array(
+						'rule' => array('custom', '/[\w]+/'),
+						'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'username')),
+						'allowEmpty' => false,
+						'required' => true,
+					),
 				),
-				'regex' => array(
-					'rule' => array('custom', '/[\w]+/'),
-					'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'username')),
-					'allowEmpty' => false,
-					'required' => true,
-				),
-			),
-		));
+			));
+		}
 
 		//パスワード
 		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
@@ -417,6 +419,9 @@ class User extends UsersAppModel {
 			'Room' => 'Rooms.Room',
 		]);
 
+		$currentRoom = Current::read('Room');
+		Current::$current['Room'] = null;
+
 		//バリデーション
 		$this->set($data);
 		if (! $this->validates()) {
@@ -436,6 +441,8 @@ class User extends UsersAppModel {
 			//トランザクションRollback
 			$this->rollback($ex);
 		}
+
+		Current::$current['Room'] = $currentRoom;
 
 		return $user;
 	}

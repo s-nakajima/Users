@@ -76,7 +76,8 @@ class UserLayoutHelper extends AppHelper {
 			$fieldName = 'TrackableCreator.handlename';
 		} elseif ($userAttributeKey === 'modified_user') {
 			$fieldName = 'TrackableUpdater.handlename';
-		} elseif ($this->User->hasField($userAttributeKey)) {
+		} elseif ($this->User->hasField($userAttributeKey) ||
+				$userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
 			$fieldName = 'User.' . $userAttributeKey;
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			$fieldName = 'UsersLanguage.%s.' . $userAttributeKey;
@@ -88,7 +89,7 @@ class UserLayoutHelper extends AppHelper {
 		if ($element) {
 			$html .= '<div class="form-group">';
 			$html .= $this->userLabelElement($userAttribute);
-			if ($userAttributeKey === 'avatar') {
+			if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
 				$html .= $element;
 			} else {
 				$html .= '<div class="form-control nc-data-label">';
@@ -136,15 +137,24 @@ class UserLayoutHelper extends AppHelper {
 		$element = '';
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
-		if ($userAttributeKey === 'avatar') {
-			//後で対応
+		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
+			if (Hash::get($this->_View->viewVars['user'], 'UploadFile.' . $userAttributeKey . '.id')) {
+				$imageUrl = NetCommonsUrl::actionUrl(array(
+					'plugin' => 'users',
+					'controller' => 'users',
+					'action' => 'download',
+					'key' => Hash::get($this->_View->viewVars['user'], 'User.id'),
+					Hash::get($this->_View->viewVars['user'], 'UploadFile.' . $userAttributeKey . '.field_name'),
+					'medium',
+				));
+			} else {
+				$imageUrl = $this->NetCommonsHtml->url('/users/img/noimage.gif');
+			}
 			$element .= '<div class="thumbnail">';
-			$element .= $this->NetCommonsHtml->image('/users/img/noimage.gif', array(
+			$element .= $this->NetCommonsHtml->image($imageUrl, array(
 				'class' => 'img-responsive img-rounded',
-				'alt' => 'Avatar',
 			));
 			$element .= '</div>';
-
 		} elseif (isset($userAttribute['UserAttributeChoice'])) {
 			if ($userAttributeKey === 'role_key') {
 				$keyPath = '{n}[key=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';

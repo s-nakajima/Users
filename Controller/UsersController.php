@@ -55,12 +55,12 @@ class UsersController extends UsersAppController {
 	);
 
 /**
- * beforeFilter
+ * アクションの前処理
+ * Controller::beforeFilter()のあと、アクション前に実行する
  *
  * @return void
  */
-	public function beforeFilter() {
-		parent::beforeFilter();
+	private function __prepare() {
 		$this->Auth->deny('index', 'view');
 
 		//ユーザデータ取得
@@ -69,6 +69,16 @@ class UsersController extends UsersAppController {
 		} else {
 			$userId = $this->params['pass'][0];
 		}
+
+		//アバターの設定
+		$uploads = Hash::extract(
+			$this->viewVars['userAttributes'],
+			'{n}.{n}.{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
+		);
+		foreach ($uploads as $upload) {
+			$this->User->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
+		}
+
 		$user = $this->User->getUser($userId);
 		if (! $user || $user['User']['is_deleted']) {
 			$this->setAction('throwBadRequest');
@@ -85,6 +95,8 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function view() {
+		$this->__prepare();
+
 		//レイアウトの設定
 		if ($this->request->is('ajax')) {
 			$this->viewClass = 'View';
@@ -124,6 +136,8 @@ class UsersController extends UsersAppController {
  */
 	public function edit() {
 		$this->helpers[] = 'Users.UserEditForm';
+
+		$this->__prepare();
 
 		if (Current::isControlPanel()) {
 			$this->ControlPanelLayout = $this->Components->load('ControlPanel.ControlPanelLayout');
@@ -166,6 +180,8 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function delete() {
+		$this->__prepare();
+
 		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
 				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 			$this->setAction('throwBadRequest');
@@ -185,8 +201,11 @@ class UsersController extends UsersAppController {
  * download method
  *
  * @return void
+ * @throws NotFoundException
  */
 	public function download() {
+		$this->__prepare();
+
 		$fieldName = $this->params['pass'][1];
 		$fileSetting = Hash::extract(
 			$this->viewVars['userAttributes'],
@@ -203,7 +222,6 @@ class UsersController extends UsersAppController {
 
 		//	$this->response->file(Router::url('/users/img/noimage.gif'), array('name' => 'No Image'));
 		//	return $this->response;
-//CakeLog::debug(print_r($this->viewVars['user'], true));
 
 		return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
 			'field' => $this->params['pass'][1],

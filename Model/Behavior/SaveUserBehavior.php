@@ -66,6 +66,11 @@ class SaveUserBehavior extends ModelBehavior {
 				//パスワードは、呼び出し元で行う
 				continue;
 			}
+
+			$userAttributeKey = $userAttribute['UserAttribute']['key'];
+			if ($model->data[$model->alias]['id'] && ! isset($model->data[$model->alias][$userAttributeKey])) {
+				continue;
+			}
 			$this->__setValidates($model, $userAttribute);
 
 			if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_EMAIL) {

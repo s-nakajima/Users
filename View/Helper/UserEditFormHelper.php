@@ -187,6 +187,21 @@ class UserEditFormHelper extends AppHelper {
 			}
 		}
 
+		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
+			if (Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.id')) {
+				$attributes['url'] = NetCommonsUrl::actionUrl(array(
+					'plugin' => 'users',
+					'controller' => 'users',
+					'action' => 'download',
+					'key' => Hash::get($this->_View->request->data, 'User.id'),
+					Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.field_name'),
+					'medium',
+				));
+			} else {
+				$attributes['url'] = $this->NetCommonsHtml->url('/users/img/noimage.gif');
+			}
+		}
+
 		$html .= $this->DataTypeForm->inputDataType(
 				$dataTypeKey,
 				$fieldName,
