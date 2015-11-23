@@ -48,6 +48,7 @@ class DisplayUserHelper extends AppHelper {
 		$html .= $this->NetCommonsHtml->link($handlename, '#',
 			Hash::merge(array(
 				'escape' => false,
+				'ng-controller' => 'Users.controller',
 				'ng-click' => 'showUser(\'' . Hash::get($user, $model . '.id') . '\')'
 			), $attributes),
 			Hash::merge(array(
@@ -69,7 +70,8 @@ class DisplayUserHelper extends AppHelper {
 	public function handle($user, $attributes = array(), $model = 'TrackableCreator') {
 		$handlename = '';
 		if (Hash::get($attributes, 'avatar')) {
-			$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model);
+			$attributes = Hash::remove($attributes, 'avatar');
+			$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model) . ' ';
 		}
 		$handlename .= h(Hash::get($user, $model . '.handlename'));
 
@@ -81,20 +83,32 @@ class DisplayUserHelper extends AppHelper {
  *
  * @param array $user ユーザデータ
  * @param array $attributes imgタグの属性
- * @param array $model モデル名(TrackableCreatorやTrackableUpdaterなど)
+ * @param bool $asImageTag imgタグとするかのフラグ
  * @return string HTMLタグ
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function avatar($user, $attributes = array(), $model = 'TrackableCreator') {
+	public function avatar($user, $attributes = array(), $asImageTag = true) {
 		$html = '';
 
-		//後で対応する
-		if (! is_array($attributes)) {
-			$attributes = array();
+		$avatar = Hash::get(Hash::extract($user, 'UploadFile.{s}.field_name'), '0');
+		if ($avatar) {
+			$url = NetCommonsUrl::actionUrl(array(
+				'plugin' => 'users',
+				'controller' => 'users',
+				'action' => 'download',
+				'key' => Hash::get($user, 'User.id'),
+				$avatar,
+				'thumb'
+			));
+		} else {
+			$url = '/users/img/avatar.PNG';
 		}
-		if (! Hash::get($user, $model . '.avarar')) {
-			$html .= $this->NetCommonsHtml->image('/users/img/avatar.PNG',
-				Hash::merge(array('alt' => ''), $attributes)
-			);
+
+		if ($asImageTag) {
+			$html .= $this->NetCommonsHtml->image($url,
+					Hash::merge(array('class' => 'user-avatar-xs', 'alt' => ''), $attributes));
+		} else {
+			$html .= $url;
 		}
 
 		return $html;

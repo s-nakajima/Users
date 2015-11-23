@@ -38,10 +38,11 @@ class UsersController extends UsersAppController {
  * @var array
  */
 	public $components = array(
+		'Files.Download',
 		'M17n.SwitchLanguage',
 		'Rooms.Rooms',
 		'UserAttributes.UserAttributeLayout',
-		'Files.Download',
+		'Users.UserSearch',
 	);
 
 /**
@@ -227,6 +228,53 @@ class UsersController extends UsersAppController {
 			'field' => $this->params['pass'][1],
 			'size' => $this->params['pass'][2])
 		);
+	}
+
+/**
+ * search method
+ *
+ * @return void
+ */
+	public function search() {
+		//$this->layout = 'NetCommons.default';
+		$this->viewClass = 'View';
+		$this->view = 'Users.Users/json/search';
+		//$this->__prepare();
+		//
+		//if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
+		//	return;
+		//}
+		//CakeLog::debug('UsersController::search() ' . print_r($this->request->query, true));
+
+		$query = array_map(function ($value) {
+			return '%' . $value . '%';
+		}, $this->request->query);
+		//CakeLog::debug(print_r($query, true));
+
+		$this->UserSearch->search(
+			Hash::merge(array('space_id' => Space::PRIVATE_SPACE_ID), $query),
+			array('Room' => array('Room.page_id_top NOT' => null))
+		);
+		$this->set('displayFields', $this->User->getDispayFields());
+
+		//CakeLog::debug('UsersController::search() ' . print_r($this->viewVars['users'], true));
+	}
+
+/**
+ * select method
+ *
+ * @return void
+ */
+	public function select() {
+		$this->__prepare();
+
+		//レイアウトの設定
+		$this->viewClass = 'View';
+		$this->layout = 'NetCommons.modal';
+
+		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
+			return;
+		}
 	}
 
 }
