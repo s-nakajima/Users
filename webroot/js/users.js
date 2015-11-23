@@ -56,22 +56,6 @@ NetCommonsApp.controller('Users.controller', function(
             $scope.baseUrl + '/users/users/view/' + id + ''
         );
       };
-
-      /**
-       * Show user search method(e.g)
-       *
-       * @param {number} users.id
-       * @return {void}
-       */
-      $scope.showUserSearch = function(id) {
-        return UserSearchByUserSelected($scope, id).result.then(
-            function(result) {
-              console.log(result);
-            },
-            function(reason) {}
-        );
-      };
-
     });
 
 
