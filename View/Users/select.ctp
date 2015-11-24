@@ -9,9 +9,20 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+
+$favoritesJson = array();
+foreach ($favorites as $favorite) {
+	$favoritesJson[] = $this->UserSearch->convertUserArrayByUserSelection($favorite, 'User');
+}
 ?>
 
-<div ng-init="initialize('<?php echo $this->NetCommonsForm->domId('UserSearch.keyword'); ?>')">
+<?php $this->start('title_for_modal'); ?>
+<?php echo __d('users', 'User select'); ?>
+<?php $this->end(); ?>
+
+<div ng-init="initialize('<?php echo $this->NetCommonsForm->domId('UserSearch.keyword'); ?>',
+			<?php echo h(json_encode($favoritesJson)); ?>)">
+
 	<?php echo $this->Form->create('UserSearch', array(
 		'type' => 'get',
 		'onsubmit' => 'return false;'
@@ -57,6 +68,7 @@
 	</div>
 
 	<div ng-if="(!searched && favorites.length)">
+		<br>
 		<div class="pre-scrollable">
 			<ul class="list-group user-selection-list-group">
 				<li class="list-group-item clearfix" ng-repeat="user in favorites track by $index">

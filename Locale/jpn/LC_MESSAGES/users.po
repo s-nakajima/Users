@@ -53,6 +53,12 @@ msgstr "公開"
 msgid "Yes, I receive by e-mail."
 msgstr "配信された情報を受け取る"
 
+#: UserManager/View/Elements/setting_tabs.ctp:30
+msgid "User select"
+msgstr "会員選択"
+
 msgid "Not found the candidate user."
 msgstr "候補が見つかりません。"
 
+msgid "Please enter handle name."
+msgstr "ハンドルを入力して下さい。"

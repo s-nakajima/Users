@@ -90,7 +90,13 @@ class DisplayUserHelper extends AppHelper {
 	public function avatar($user, $attributes = array(), $asImageTag = true) {
 		$html = '';
 
-		$avatar = Hash::get(Hash::extract($user, 'UploadFile.{s}.field_name'), '0');
+		if (Hash::check($user, 'UploadFile.' . User::$avatarField . '.field_name')) {
+			$keyPath = 'UploadFile.' . User::$avatarField . '.field_name';
+		} else {
+			$keyPath = 'UploadFile.field_name';
+		}
+
+		$avatar = Hash::get(Hash::extract($user, $keyPath), '0');
 		if ($avatar) {
 			$url = NetCommonsUrl::actionUrl(array(
 				'plugin' => 'users',

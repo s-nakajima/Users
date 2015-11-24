@@ -28,8 +28,9 @@ class UsersController extends UsersAppController {
  * @var array
  */
 	public $uses = array(
-		'Users.User',
+		'Groups.GroupsUser',
 		'Rooms.Space',
+		'Users.User',
 	);
 
 /**
@@ -266,6 +267,12 @@ class UsersController extends UsersAppController {
 		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
 			return;
 		}
+
+		$users = $this->GroupsUser->getUsersForOwnGroups();
+		if (! $users) {
+			$users = array();
+		}
+		$this->set('favorites', $users);
 	}
 
 }

@@ -47,6 +47,14 @@ class User extends UsersAppModel {
 	public static $publicTypes = array();
 
 /**
+ * アバタとするフィールド
+ * __constructでセットする
+ *
+ * @var array
+ */
+	public static $avatarField = null;
+
+/**
  * language data.
  *
  * @var array
@@ -182,7 +190,6 @@ class User extends UsersAppModel {
 			//インストール時は、アップロードビヘイビアを削除する
 			$this->Behaviors->unload('Files.Attachment');
 		} else {
-			$this->Behaviors->load('Files.Attachment');
 			$this->loadModels([
 				'UserAttribute' => 'UserAttributes.UserAttribute',
 				'DataType' => 'DataTypes.DataType',
@@ -195,6 +202,9 @@ class User extends UsersAppModel {
 			foreach ($uploads as $upload) {
 				$this->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
 			}
+
+			//Userモデル内以外でAssociationやJOINで使用するため
+			self::$avatarField = Hash::get($uploads, '0.user_attribute_key');
 		}
 	}
 

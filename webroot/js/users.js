@@ -42,7 +42,7 @@ NetCommonsApp.factory('UserSearchByUserSelected',
  * Users controller
  */
 NetCommonsApp.controller('Users.controller', function(
-    $scope, NetCommonsModal, UserSearchByUserSelected) {
+    $scope, NetCommonsModal) {
 
       /**
        * Show user information method
@@ -100,9 +100,10 @@ NetCommonsApp.controller('User.search', function(
        *
        * @return {void}
        */
-      $scope.initialize = function(domId, data) {
+      $scope.initialize = function(domId, favorites) {
         $scope.domId = domId;
         $scope.searched = false;
+        $scope.favorites = favorites;
       };
 
       /**
