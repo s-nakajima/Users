@@ -176,6 +176,11 @@ class User extends UsersAppModel {
 			self::PUBLIC_TYPE_CONFIDENTIAL => __d('users', 'Confidential'),
 			self::PUBLIC_TYPE_DISCLOSE_TO_ALL => __d('users', 'Disclose to all'),
 		);
+
+		//インストール時は、アップロードビヘイビアを削除する
+		if (! Configure::read('NetCommons.installed')) {
+			$this->Behaviors->unload('Files.Attachment');
+		}
 	}
 
 /**
