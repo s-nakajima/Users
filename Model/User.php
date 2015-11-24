@@ -177,9 +177,24 @@ class User extends UsersAppModel {
 			self::PUBLIC_TYPE_DISCLOSE_TO_ALL => __d('users', 'Disclose to all'),
 		);
 
-		//インストール時は、アップロードビヘイビアを削除する
+		//アバターの設定
 		if (! Configure::read('NetCommons.installed')) {
+			//インストール時は、アップロードビヘイビアを削除する
 			$this->Behaviors->unload('Files.Attachment');
+		} else {
+			$this->Behaviors->load('Files.Attachment');
+			$this->loadModels([
+				'UserAttribute' => 'UserAttributes.UserAttribute',
+				'DataType' => 'DataTypes.DataType',
+			]);
+			$userAttributes = $this->UserAttribute->getUserAttributesForLayout();
+			$uploads = Hash::extract(
+				$userAttributes,
+				'{n}.{n}.{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
+			);
+			foreach ($uploads as $upload) {
+				$this->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
+			}
 		}
 	}
 

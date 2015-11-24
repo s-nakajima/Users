@@ -71,15 +71,6 @@ class UsersController extends UsersAppController {
 			$userId = $this->params['pass'][0];
 		}
 
-		//アバターの設定
-		$uploads = Hash::extract(
-			$this->viewVars['userAttributes'],
-			'{n}.{n}.{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
-		);
-		foreach ($uploads as $upload) {
-			$this->User->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
-		}
-
 		$user = $this->User->getUser($userId);
 		if (! $user || $user['User']['is_deleted']) {
 			$this->setAction('throwBadRequest');
