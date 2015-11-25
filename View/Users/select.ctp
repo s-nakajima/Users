@@ -1,7 +1,6 @@
 <?php
 /**
- * 後で見直す
- * UserManager index template
+ * User select template
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -34,6 +33,7 @@ foreach ($favorites as $favorite) {
 			'label' => false,
 			'div' => false,
 			'class' => 'form-control input-sm',
+			'ng-keydown' => 'search($event)',
 		)); ?>
 
 		<span class="input-group-btn">
@@ -46,20 +46,7 @@ foreach ($favorites as $favorite) {
 	<div ng-if="searched">
 		<br>
 		<div class="pre-scrollable" ng-if="candidates.length">
-			<ul class="list-group user-selection-list-group">
-				<li class="list-group-item clearfix" ng-repeat="user in candidates track by $index">
-					<div class="pull-left">
-						<?php echo $this->Button->add('', array(
-							'iconSize' => 'btn-xs',
-							'ng-click' => 'selectedFromCandidates($index)'
-						)); ?>
-					</div>
-					<div class="user-selection-avatar-outer">
-						<img ng-src="{{user.avatar}}" class="user-avatar-xs">
-						{{user.handlename}}
-					</div>
-				</li>
-			</ul>
+			<?php echo $this->element('Users/select_users', array('userType' => 'candidates')) ?>
 		</div>
 
 		<div ng-if="!candidates.length">
@@ -70,20 +57,7 @@ foreach ($favorites as $favorite) {
 	<div ng-if="(!searched && favorites.length)">
 		<br>
 		<div class="pre-scrollable">
-			<ul class="list-group user-selection-list-group">
-				<li class="list-group-item clearfix" ng-repeat="user in favorites track by $index">
-					<div class="pull-left">
-						<?php echo $this->Button->add('', array(
-							'iconSize' => 'btn-xs',
-							'ng-click' => 'selectedFromFavorites($index)'
-						)); ?>
-					</div>
-					<div class="user-selection-avatar-outer">
-						<img ng-src="{{user.avatar}}" class="user-avatar-xs">
-						{{user.handlename}}
-					</div>
-				</li>
-			</ul>
+			<?php echo $this->element('Users/select_users', array('userType' => 'favorites')) ?>
 		</div>
 	</div>
 

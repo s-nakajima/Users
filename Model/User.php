@@ -21,6 +21,7 @@ App::uses('NetCommonsTime', 'NetCommons.Utility');
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class User extends UsersAppModel {
 

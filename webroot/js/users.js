@@ -21,13 +21,13 @@
 
 
 /**
- * UserSearchByUserSelected factory
+ * SelectUser factory
  */
-NetCommonsApp.factory('UserSearchByUserSelected',
+NetCommonsApp.factory('SelectUser',
     ['NetCommonsModal', function(NetCommonsModal) {
       return function($scope, id) {
         return NetCommonsModal.show(
-            $scope, 'User.search',
+            $scope, 'User.select',
             $scope.baseUrl + '/users/users/select/' + id,
             {
               backdrop: 'static',
@@ -77,7 +77,7 @@ NetCommonsApp.controller('User.view', function($scope, $modalInstance) {
 /**
  * User search condtion modal controller
  */
-NetCommonsApp.controller('User.search', function(
+NetCommonsApp.controller('User.select', function(
     $scope, $http, $modalInstance) {
 
       /**
@@ -111,7 +111,11 @@ NetCommonsApp.controller('User.search', function(
        *
        * @return {void}
        */
-      $scope.search = function() {
+      $scope.search = function($event) {
+        if ($event && $event.keyCode !== 13) {
+          return;
+        }
+
         var keyword = angular.element('#' + $scope.domId);
         if (! keyword || ! keyword[0].value) {
           $scope.searched = false;
