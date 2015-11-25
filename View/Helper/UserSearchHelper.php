@@ -151,12 +151,13 @@ class UserSearchHelper extends AppHelper {
  */
 	public function linkHandlename($user, $modelName, $fieldName, $isEdit) {
 		if (! $isEdit) {
-			return h($user[$modelName][$fieldName]);
+			return $this->DisplayUser->handle($user, array('avatar' => true), 'User');
 		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
 				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 
-			return $this->NetCommonsHtml->link($user[$modelName][$fieldName],
-				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id'])
+			return $this->NetCommonsHtml->link($this->DisplayUser->handle($user, array('avatar' => true), 'User'),
+				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id']),
+				array('escape' => false)
 			);
 		}
 	}

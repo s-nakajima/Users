@@ -57,6 +57,12 @@ msgstr "配信された情報を受け取る"
 msgid "User select"
 msgstr "会員選択"
 
+msgid "Favorites"
+msgstr "お気に入り"
+
+msgid "Candidates"
+msgstr "候補"
+
 msgid "Not found the candidate user."
 msgstr "候補が見つかりません。"
 

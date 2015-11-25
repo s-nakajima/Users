@@ -45,17 +45,19 @@ foreach ($favorites as $favorite) {
 
 	<div ng-if="searched">
 		<br>
+		<strong ng-if="candidates.length"><?php echo __d('users', 'Candidates'); ?></strong>
 		<div class="pre-scrollable" ng-if="candidates.length">
 			<?php echo $this->element('Users/select_users', array('userType' => 'candidates')) ?>
 		</div>
 
 		<div ng-if="!candidates.length">
-			<p><?php echo __d('users', 'Not found the candidate user.'); ?></p>
+			<?php echo __d('users', 'Not found the candidate user.'); ?>
 		</div>
 	</div>
 
 	<div ng-if="(!searched && favorites.length)">
 		<br>
+		<strong><?php echo __d('users', 'Favorites'); ?></strong>
 		<div class="pre-scrollable">
 			<?php echo $this->element('Users/select_users', array('userType' => 'favorites')) ?>
 		</div>
