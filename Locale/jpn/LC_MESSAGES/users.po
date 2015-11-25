@@ -42,6 +42,10 @@ msgid "Rooms"
 msgstr "参加ルーム"
 
 #: Users/Model/User.php:165;172
+msgid "Groups"
+msgstr "グループ"
+
+#: Users/Model/User.php:165;172
 msgid "Confidential"
 msgstr "非公開"
 
