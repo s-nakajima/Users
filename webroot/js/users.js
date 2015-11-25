@@ -22,6 +22,19 @@
 
 /**
  * SelectUser factory
+ *
+ * #### 結果サンプル
+ *
+ * $modal.open(options).result.then(function(result) {}, function() {})
+ * resultの中身のサンプル
+ *   {
+ *     id: "2",
+ *     handlename: "編集長ユーザ",
+ *     link: "/users/users/view/2",
+ *     avatar: "/users/users/download/2/avatar/thumb",
+ *   }
+ *
+ * @link https://angular-ui.github.io/bootstrap/#/modal
  */
 NetCommonsApp.factory('SelectUser',
     ['NetCommonsModal', function(NetCommonsModal) {
