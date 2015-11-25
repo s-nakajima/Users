@@ -17,7 +17,8 @@
 .user-avatar-xs {
 	margin-right: 2px;
 	height: 20px;
-	weight: 20px;
+	width: 20px;
+	border-radius: 3px;
 }
 
 .user-selection-list-group {
