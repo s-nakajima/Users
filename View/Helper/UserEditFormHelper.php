@@ -77,6 +77,10 @@ class UserEditFormHelper extends AppHelper {
 			$html .= '<div class="form-group">';
 			$html .= $this->__input('TrackableUpdater.handlename', $userAttribute);
 			$html .= '</div>';
+		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
+			//$html .= '<div class="form-group">';
+			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
+			//$html .= '</div>';
 		} elseif ($this->User->hasField($userAttributeKey)) {
 			$html .= '<div class="form-group">';
 			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
@@ -119,7 +123,7 @@ class UserEditFormHelper extends AppHelper {
 	}
 
 /**
- * 会員の入力フォームの表示
+ * 会員の公開非公開の有無ラジオボタンの表示
  *
  * @param array $userAttribute UserAttributeデータ
  * @return string HTMLタグ
@@ -128,7 +132,7 @@ class UserEditFormHelper extends AppHelper {
 		$html = '';
 
 		if (! $userAttribute['UserAttributeSetting']['self_publicity'] ||
-				Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
+				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
 				! $userAttribute['UserAttributesRole']['self_editable']) {
 
@@ -141,6 +145,34 @@ class UserEditFormHelper extends AppHelper {
 		$html .= $this->NetCommonsForm->radio($fieldName, User::$publicTypes, array(
 			'div' => array('class' => 'form-control form-inline'),
 			'separator' => '<span class="radio-separator"></span>'
+		));
+		$html .= '</div>';
+		return $html;
+	}
+
+/**
+ * 会員のメールの受信可否のチェックボックスボタンの表示
+ *
+ * @param array $userAttribute UserAttributeデータ
+ * @return string HTMLタグ
+ */
+	public function userMailReceptionForSelf($userAttribute) {
+		$html = '';
+
+		if ($userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_EMAIL ||
+				! $userAttribute['UserAttributeSetting']['self_email_reception_possibility'] ||
+				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
+				! $userAttribute['UserAttributesRole']['self_readable'] ||
+				! $userAttribute['UserAttributesRole']['self_editable']) {
+
+			return $html;
+		}
+
+		$fieldName = 'User.' . sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
+
+		$html .= '<div class="form-control nc-data-label">';
+		$html .= $this->NetCommonsForm->inlineCheckbox($fieldName, array(
+			'label' => __d('users', 'Yes, I receive by e-mail.')
 		));
 		$html .= '</div>';
 		return $html;
@@ -183,8 +215,19 @@ class UserEditFormHelper extends AppHelper {
 			}
 		}
 
-		if ($userAttributeKey === 'avatar') {
-			$attributes['noimage'] = '/users/img/noimage.gif';
+		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
+			if (Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.id')) {
+				$attributes['url'] = NetCommonsUrl::actionUrl(array(
+					'plugin' => 'users',
+					'controller' => 'users',
+					'action' => 'download',
+					'key' => Hash::get($this->_View->request->data, 'User.id'),
+					Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.field_name'),
+					'medium',
+				));
+			} else {
+				$attributes['url'] = $this->NetCommonsHtml->url('/users/img/noimage.gif');
+			}
 		}
 
 		$html .= $this->DataTypeForm->inputDataType(
@@ -194,6 +237,8 @@ class UserEditFormHelper extends AppHelper {
 				$attributes);
 
 		$html .= $this->userPublicForSelf($userAttribute);
+
+		$html .= $this->userMailReceptionForSelf($userAttribute);
 
 		return $html;
 	}

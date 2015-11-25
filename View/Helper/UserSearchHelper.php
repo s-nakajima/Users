@@ -28,6 +28,7 @@ class UserSearchHelper extends AppHelper {
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.Date',
 		'Rooms.Rooms',
+		'Users.DisplayUser'
 	);
 
 /**
@@ -130,7 +131,7 @@ class UserSearchHelper extends AppHelper {
 			}
 			$value = h($values[0]['name']);
 		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_DATETIME ||
-				in_array($userAttribute['UserAttribute']['key'], ['created', 'modified', 'last_login', 'password_modified'])) {
+				in_array($userAttribute['UserAttribute']['key'], UserAttribute::$typeDatetime, true)) {
 			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
 		} else {
 			$value = h($user[$modelName][$fieldName]);
@@ -150,14 +151,33 @@ class UserSearchHelper extends AppHelper {
  */
 	public function linkHandlename($user, $modelName, $fieldName, $isEdit) {
 		if (! $isEdit) {
-			return h($user[$modelName][$fieldName]);
+			return $this->DisplayUser->handle($user, array('avatar' => true), 'User');
 		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
 				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 
-			return $this->NetCommonsHtml->link($user[$modelName][$fieldName],
-				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id'])
+			return $this->NetCommonsHtml->link($this->DisplayUser->handle($user, array('avatar' => true), 'User'),
+				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id']),
+				array('escape' => false)
 			);
 		}
+	}
+
+/**
+ * ユーザ選択画面でJSONでユーザを表示する
+ *
+ * @param array $user ユーザデータ
+ * @param array $model モデル名(TrackableCreatorやTrackableUpdaterなど)
+ * @return string JSON形式
+ */
+	public function convertUserArrayByUserSelection($user, $model = 'TrackableCreator') {
+		$result = array(
+			'id' => Hash::get($user, $model . '.id'),
+			'handlename' => Hash::get($user, $model . '.handlename'),
+			'avatar' => $this->DisplayUser->avatar($user, array(), false),
+			'link' => NetCommonsUrl::userActionUrl(array('key' => Hash::get($user, $model . '.id'))),
+		);
+
+		return $result;
 	}
 
 }

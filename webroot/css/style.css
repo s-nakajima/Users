@@ -11,5 +11,20 @@
 }
 
 .user-public-type-form-control {
-	margin-top: -13px;
+	margin-top: -15px;
+}
+
+.user-avatar-xs {
+	margin-right: 2px;
+	height: 20px;
+	width: 20px;
+	border-radius: 3px;
+}
+
+.user-selection-list-group {
+	margin-bottom: 0px;
+}
+
+.user-selection-list-group .user-selection-avatar-outer {
+	margin-left: 40px;
 }

@@ -28,8 +28,9 @@ class UsersController extends UsersAppController {
  * @var array
  */
 	public $uses = array(
-		'Users.User',
+		'Groups.GroupsUser',
 		'Rooms.Space',
+		'Users.User',
 	);
 
 /**
@@ -38,9 +39,11 @@ class UsersController extends UsersAppController {
  * @var array
  */
 	public $components = array(
+		'Files.Download',
 		'M17n.SwitchLanguage',
 		'Rooms.Rooms',
 		'UserAttributes.UserAttributeLayout',
+		'Users.UserSearch',
 	);
 
 /**
@@ -54,12 +57,12 @@ class UsersController extends UsersAppController {
 	);
 
 /**
- * beforeFilter
+ * アクションの前処理
+ * Controller::beforeFilter()のあと、アクション前に実行する
  *
  * @return void
  */
-	public function beforeFilter() {
-		parent::beforeFilter();
+	private function __prepare() {
 		$this->Auth->deny('index', 'view');
 
 		//ユーザデータ取得
@@ -68,6 +71,7 @@ class UsersController extends UsersAppController {
 		} else {
 			$userId = $this->params['pass'][0];
 		}
+
 		$user = $this->User->getUser($userId);
 		if (! $user || $user['User']['is_deleted']) {
 			$this->setAction('throwBadRequest');
@@ -84,6 +88,8 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function view() {
+		$this->__prepare();
+
 		//レイアウトの設定
 		if ($this->request->is('ajax')) {
 			$this->viewClass = 'View';
@@ -123,6 +129,8 @@ class UsersController extends UsersAppController {
  */
 	public function edit() {
 		$this->helpers[] = 'Users.UserEditForm';
+
+		$this->__prepare();
 
 		if (Current::isControlPanel()) {
 			$this->ControlPanelLayout = $this->Components->load('ControlPanel.ControlPanelLayout');
@@ -165,6 +173,8 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function delete() {
+		$this->__prepare();
+
 		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
 				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 			$this->setAction('throwBadRequest');
@@ -179,4 +189,90 @@ class UsersController extends UsersAppController {
 		$this->User->deleteUser($this->viewVars['user']);
 		$this->redirect('/auth/logout');
 	}
+
+/**
+ * download method
+ *
+ * @return void
+ * @throws NotFoundException
+ */
+	public function download() {
+		$this->__prepare();
+
+		$fieldName = $this->params['pass'][1];
+		$fileSetting = Hash::extract(
+			$this->viewVars['userAttributes'],
+			'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
+		);
+		if (! $fileSetting) {
+			throw new NotFoundException();
+		}
+
+		// 以下の条件の場合、noimageを表示する
+		// * 非公開 && 自分以外、
+		// * 個人情報設定で閲覧不可、
+		// * ユーザ項目属性の管理者のみ許可する場合で会員管理が使えない
+
+		//	$this->response->file(Router::url('/users/img/noimage.gif'), array('name' => 'No Image'));
+		//	return $this->response;
+
+		return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
+			'field' => $this->params['pass'][1],
+			'size' => $this->params['pass'][2])
+		);
+	}
+
+/**
+ * search method
+ *
+ * @return void
+ */
+	public function search() {
+		//$this->layout = 'NetCommons.default';
+		$this->viewClass = 'View';
+		$this->view = 'Users.Users/json/search';
+		//$this->__prepare();
+		//
+		//if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
+		//	return;
+		//}
+		//CakeLog::debug('UsersController::search() ' . print_r($this->request->query, true));
+
+		$query = array_map(function ($value) {
+			return '%' . $value . '%';
+		}, $this->request->query);
+		//CakeLog::debug(print_r($query, true));
+
+		$this->UserSearch->search(
+			Hash::merge(array('space_id' => Space::PRIVATE_SPACE_ID), $query),
+			array('Room' => array('Room.page_id_top NOT' => null))
+		);
+		$this->set('displayFields', $this->User->getDispayFields());
+
+		//CakeLog::debug('UsersController::search() ' . print_r($this->viewVars['users'], true));
+	}
+
+/**
+ * select method
+ *
+ * @return void
+ */
+	public function select() {
+		$this->__prepare();
+
+		//レイアウトの設定
+		$this->viewClass = 'View';
+		$this->layout = 'NetCommons.modal';
+
+		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
+			return;
+		}
+
+		$users = $this->GroupsUser->getUsersForOwnGroups();
+		if (! $users) {
+			$users = array();
+		}
+		$this->set('favorites', $users);
+	}
+
 }

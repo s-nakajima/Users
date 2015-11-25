@@ -42,9 +42,33 @@ msgid "Rooms"
 msgstr "参加ルーム"
 
 #: Users/Model/User.php:165;172
+msgid "Groups"
+msgstr "グループ"
+
+#: Users/Model/User.php:165;172
 msgid "Confidential"
 msgstr "非公開"
 
 #: Users/Model/User.php:165;172
 msgid "Disclose to all"
 msgstr "公開"
+
+#: Users/Model/User.php:165;172
+msgid "Yes, I receive by e-mail."
+msgstr "配信された情報を受け取る"
+
+#: UserManager/View/Elements/setting_tabs.ctp:30
+msgid "User select"
+msgstr "会員選択"
+
+msgid "Favorites"
+msgstr "お気に入り"
+
+msgid "Candidates"
+msgstr "候補"
+
+msgid "Not found the candidate user."
+msgstr "候補が見つかりません。"
+
+msgid "Please enter handle name."
+msgstr "ハンドルを入力して下さい。"

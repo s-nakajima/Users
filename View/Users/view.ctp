@@ -10,22 +10,26 @@
  */
 ?>
 
-<ul class="nav nav-tabs" role="tablist">
-	<li class="active">
-		<a href="#user-information" aria-controls="user-infomation" role="tab" data-toggle="tab">
-			<?php echo __d('users', 'User information'); ?>
-		</a>
-	</li>
+<?php $this->start('title_for_modal'); ?>
+<?php echo __d('users', 'User information'); ?>
+<?php $this->end(); ?>
 
-	<?php if (isset($rooms)) : ?>
+<?php if (isset($rooms)) : ?>
+	<ul class="nav nav-tabs" role="tablist">
+		<li class="active">
+			<a href="#user-information" aria-controls="user-infomation" role="tab" data-toggle="tab">
+				<?php echo __d('users', 'User information'); ?>
+			</a>
+		</li>
+
 		<li>
 			<a href="#user-rooms" aria-controls="user-rooms" role="tab" data-toggle="tab">
 				<?php echo __d('users', 'Rooms'); ?>
 			</a>
 		</li>
-	<?php endif; ?>
-</ul>
-<br>
+	</ul>
+	<br>
+<?php endif; ?>
 
 <div class="tab-content">
 	<div class="tab-pane panel panel-default active" id="user-information">

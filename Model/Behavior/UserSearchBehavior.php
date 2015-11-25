@@ -42,40 +42,51 @@ class UserSearchBehavior extends ModelBehavior {
 			'RoomRole' => 'Rooms.RoomRole',
 		]);
 
-		if (! isset(self::$readableFields)) {
-			$results = $model->UserAttributesRole->find('list', array(
-				'recursive' => -1,
-				'fields' => array('user_attribute_key', 'user_attribute_key'),
-				'conditions' => array(
-					'role_key' => AuthComponent::user('role_key'),
-					'other_readable' => true,
-				)
-			));
-
-			self::$readableFields = array('id');
-			foreach ($results as $key => $field) {
-				//Fieldのチェック
-				if ($model->hasField($field)) {
-					self::$readableFields[$key] = $model->alias . '.' . $field;
-				}
-				if ($model->UsersLanguage->hasField($field)) {
-					self::$readableFields[$key] = $model->UsersLanguage->alias . '.' . $field;
-				}
-				//Field(is_xxxx_public)のチェック
-				$fieldKey = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $field);
-				if ($model->hasField($fieldKey)) {
-					self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
-				}
-				//Field(xxxx_file_id)のチェック
-				$fieldKey = sprintf(UserAttribute::FILE_FIELD_FORMAT, $field);
-				if ($model->hasField($fieldKey)) {
-					self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
-				}
-			}
-			self::$readableFields['room_id'] = $model->Room->alias . '.id';
-			self::$readableFields['space_id'] = $model->Room->alias . '.space_id';
-			self::$readableFields['room_role_key'] = $model->RolesRoom->alias . '.role_key';
+		if (isset(self::$readableFields)) {
+			return;
 		}
+
+		$userAttributes = $model->UserAttribute->getUserAttributesForLayout();
+		$results = $model->UserAttributesRole->find('list', array(
+			'recursive' => -1,
+			'fields' => array('user_attribute_key', 'user_attribute_key'),
+			'conditions' => array(
+				'role_key' => AuthComponent::user('role_key'),
+				'other_readable' => true,
+			)
+		));
+
+		self::$readableFields = array('id');
+		foreach ($results as $key => $field) {
+			$dataType = Hash::extract($userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $field . ']');
+			$dataType = Hash::get($dataType, '0.data_type_key', '');
+			if (in_array($dataType, [DataType::DATA_TYPE_TEXT, DataType::DATA_TYPE_TEXTAREA, DataType::DATA_TYPE_EMAIL], true)) {
+				$sign = ' LIKE';
+			} else {
+				$sign = '';
+			}
+
+			//Fieldのチェック
+			if ($model->hasField($field)) {
+				self::$readableFields[$key] = $model->alias . '.' . $field . $sign;
+			}
+			if ($model->UsersLanguage->hasField($field)) {
+				self::$readableFields[$key] = $model->UsersLanguage->alias . '.' . $field . $sign;
+			}
+			//Field(is_xxxx_public)のチェック
+			$fieldKey = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $field);
+			if ($model->hasField($fieldKey)) {
+				self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
+			}
+			////Field(xxxx_file_id)のチェック
+			//$fieldKey = sprintf(UserAttribute::FILE_FIELD_FORMAT, $field);
+			//if ($model->hasField($fieldKey)) {
+			//	self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
+			//}
+		}
+		self::$readableFields['room_id'] = $model->Room->alias . '.id';
+		self::$readableFields['space_id'] = $model->Room->alias . '.space_id';
+		self::$readableFields['room_role_key'] = $model->RolesRoom->alias . '.role_key';
 	}
 
 /**

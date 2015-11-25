@@ -21,6 +21,7 @@ App::uses('NetCommonsTime', 'NetCommons.Utility');
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class User extends UsersAppModel {
 
@@ -47,6 +48,14 @@ class User extends UsersAppModel {
 	public static $publicTypes = array();
 
 /**
+ * アバタとするフィールド
+ * __constructでセットする
+ *
+ * @var array
+ */
+	public static $avatarField = null;
+
+/**
  * language data.
  *
  * @var array
@@ -67,6 +76,7 @@ class User extends UsersAppModel {
  */
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
+		'Files.Attachment',
 		'Users.SaveUser',
 		'Users.DeleteUser',
 		'Users.UserSearch',
@@ -175,6 +185,28 @@ class User extends UsersAppModel {
 			self::PUBLIC_TYPE_CONFIDENTIAL => __d('users', 'Confidential'),
 			self::PUBLIC_TYPE_DISCLOSE_TO_ALL => __d('users', 'Disclose to all'),
 		);
+
+		//アバターの設定
+		if (! Configure::read('NetCommons.installed')) {
+			//インストール時は、アップロードビヘイビアを削除する
+			$this->Behaviors->unload('Files.Attachment');
+		} else {
+			$this->loadModels([
+				'UserAttribute' => 'UserAttributes.UserAttribute',
+				'DataType' => 'DataTypes.DataType',
+			]);
+			$userAttributes = $this->UserAttribute->getUserAttributesForLayout();
+			$uploads = Hash::extract(
+				$userAttributes,
+				'{n}.{n}.{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
+			);
+			foreach ($uploads as $upload) {
+				$this->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
+			}
+
+			//Userモデル内以外でAssociationやJOINで使用するため
+			self::$avatarField = Hash::get($uploads, '0.user_attribute_key');
+		}
 	}
 
 /**
@@ -191,22 +223,24 @@ class User extends UsersAppModel {
 			'UsersLanguage' => 'Users.UsersLanguage',
 		]);
 
-		$this->validate = Hash::merge($this->validate, array(
-			//ログインID
-			'username' => array(
-				'notBlank' => array(
-					'rule' => array('notBlank'),
-					'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'username')),
-					'required' => true
+		//ログインID
+		if (! isset($this->data['User']['id'])) {
+			$this->validate = Hash::merge($this->validate, array(
+				'username' => array(
+					'notBlank' => array(
+						'rule' => array('notBlank'),
+						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'username')),
+						'required' => true
+					),
+					'regex' => array(
+						'rule' => array('custom', '/[\w]+/'),
+						'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'username')),
+						'allowEmpty' => false,
+						'required' => true,
+					),
 				),
-				'regex' => array(
-					'rule' => array('custom', '/[\w]+/'),
-					'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'username')),
-					'allowEmpty' => false,
-					'required' => true,
-				),
-			),
-		));
+			));
+		}
 
 		//パスワード
 		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
@@ -416,6 +450,9 @@ class User extends UsersAppModel {
 			'Room' => 'Rooms.Room',
 		]);
 
+		$currentRoom = Current::read('Room');
+		Current::$current['Room'] = null;
+
 		//バリデーション
 		$this->set($data);
 		if (! $this->validates()) {
@@ -435,6 +472,8 @@ class User extends UsersAppModel {
 			//トランザクションRollback
 			$this->rollback($ex);
 		}
+
+		Current::$current['Room'] = $currentRoom;
 
 		return $user;
 	}
