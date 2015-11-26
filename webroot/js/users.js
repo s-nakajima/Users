@@ -5,22 +5,6 @@
 
 
 /**
- * ncHtmlContent filter
- *
- * @param {string} filter name
- * @param {Array} use service
- */
-//NetCommonsApp.filter('handleByUserSelected', ['$sce', function($sce) {
-//  return function(user) {
-//    var html = '';
-//    html += '<img ng-src="' + user.avatar + '" class="user-avatar-xs"> ';
-//    html += user.handlename;
-//    return html;
-//  };
-//}]);
-
-
-/**
  * SelectUser factory
  *
  * #### 結果サンプル

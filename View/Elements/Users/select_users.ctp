@@ -20,8 +20,7 @@
 			)); ?>
 		</div>
 		<div class="user-selection-avatar-outer">
-			<img ng-src="{{user.avatar}}" class="user-avatar-xs">
-			{{user.handlename}}
+			<?php echo $this->DisplayUser->handle(array('ngModel' => 'user'), array('avatar' => true)); ?>
 		</div>
 	</li>
 </ul>

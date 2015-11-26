@@ -42,6 +42,11 @@ class DisplayUserHelper extends AppHelper {
 		$handlename = $this->handle($user, $attributes, $model);
 		$attributes = Hash::remove($attributes, 'avatar');
 
+		if (Hash::get($user, 'ngModel')) {
+			$userId = Hash::get($user, 'ngModel') . '.id';
+		} else {
+			$userId = '\'' . Hash::get($user, $model . '.id') . '\'';
+		}
 		if (! Current::read('User.id')) {
 			$attributes['ng-click'] = null;
 		}
@@ -49,7 +54,7 @@ class DisplayUserHelper extends AppHelper {
 			Hash::merge(array(
 				'escape' => false,
 				'ng-controller' => 'Users.controller',
-				'ng-click' => 'showUser(\'' . Hash::get($user, $model . '.id') . '\')'
+				'ng-click' => 'showUser(' . $userId . ')'
 			), $attributes),
 			Hash::merge(array(
 				'escape' => false
@@ -69,11 +74,20 @@ class DisplayUserHelper extends AppHelper {
  */
 	public function handle($user, $attributes = array(), $model = 'TrackableCreator') {
 		$handlename = '';
-		if (Hash::get($attributes, 'avatar')) {
-			$attributes = Hash::remove($attributes, 'avatar');
-			$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model) . ' ';
+
+		if (Hash::get($user, 'ngModel')) {
+			if (Hash::get($attributes, 'avatar')) {
+				$attributes = Hash::remove($attributes, 'avatar');
+				$handlename .= '<img ng-src="{{' . Hash::get($user, 'ngModel') . '.avatar}}" class="user-avatar-xs"> ';
+			}
+			$handlename .= '{{' . Hash::get($user, 'ngModel') . '.handlename}}';
+		} else {
+			if (Hash::get($attributes, 'avatar')) {
+				$attributes = Hash::remove($attributes, 'avatar');
+				$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model) . ' ';
+			}
+			$handlename .= h(Hash::get($user, $model . '.handlename'));
 		}
-		$handlename .= h(Hash::get($user, $model . '.handlename'));
 
 		return $handlename;
 	}
