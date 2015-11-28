@@ -40,14 +40,6 @@ class SaveUserBehavior extends ModelBehavior {
 			'UsersLanguage' => 'Users.UsersLanguage',
 		]);
 
-		//UserAttributeデータ取得
-		if (! isset($model->userAttributeData)) {
-			$userAttributeData = $model->UserAttribute->getUserAttributesForLayout();
-			$model->userAttributeData = Hash::combine($userAttributeData,
-				'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
-			);
-		}
-
 		//UserAttributesRoleデータ取得
 		$userAttributesRoles = $model->UserAttributesRole->getUserAttributesRole(Current::read('User.role_key'));
 

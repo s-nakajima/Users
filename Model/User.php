@@ -196,6 +196,9 @@ class User extends UsersAppModel {
 				'DataType' => 'DataTypes.DataType',
 			]);
 			$userAttributes = $this->UserAttribute->getUserAttributesForLayout();
+			$this->userAttributeData = Hash::combine($userAttributes,
+				'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
+			);
 			$uploads = Hash::extract(
 				$userAttributes,
 				'{n}.{n}.{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
@@ -434,7 +437,7 @@ class User extends UsersAppModel {
 	}
 
 /**
- * Save user
+ * ユーザの登録処理
  *
  * @param array $data data
  * @return mixed On success Model::$data, false on failure
@@ -510,6 +513,42 @@ class User extends UsersAppModel {
 		} catch (Exception $ex) {
 			//トランザクションRollback
 			$this->rollback($ex);
+		}
+
+		return true;
+	}
+
+/**
+ * インポート処理
+ * 後で、ちゃんと仕様を考えて作る
+ *
+ * @param string $filePath ファイルのパス
+ * @return bool True on success, false on failure
+ */
+	public function importUsers($filePath) {
+		App::uses('CsvFileReader', 'Files.Utility');
+
+		$reader = new CsvFileReader($filePath);
+		foreach ($reader as $i => $row) {
+			if ($i === 0) {
+				$header = $row;
+				continue;
+			}
+			$row = array_combine($header, $row);
+			$row['User.id'] = null;
+			$row['User.password_again'] = $row['User.password'];
+
+			$data = Hash::expand($row);
+			$data = Hash::insert($data, 'UsersLanguage.{n}.id');
+			$data = Hash::insert($data, 'UsersLanguage.0.language_id', '1');
+			$data = Hash::insert($data, 'UsersLanguage.1.language_id', '2');
+
+			CakeLog::debug(var_export($data, true));
+
+			if (! $this->saveUser($data)) {
+				//バリデーションエラーの場合
+				return false;
+			}
 		}
 
 		return true;

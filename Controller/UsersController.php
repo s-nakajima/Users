@@ -147,9 +147,6 @@ class UsersController extends UsersAppController {
 			unset($this->request->data['save'], $this->request->data['active_lang_id']);
 
 			//登録処理
-			$this->User->userAttributeData = Hash::combine($this->viewVars['userAttributes'],
-				'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
-			);
 			if ($this->User->saveUser($this->request->data)) {
 				//正常の場合
 				$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
