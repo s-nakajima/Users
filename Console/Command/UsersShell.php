@@ -55,7 +55,6 @@ class UsersShell extends AppShell {
 			case 'i':
 				$this->Import->execute();
 				return $this->_stop();
-				break;
 			case 'h':
 				$this->out($this->getOptionParser()->help());
 				break;
