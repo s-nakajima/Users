@@ -191,25 +191,34 @@ class User extends UsersAppModel {
 			//インストール時は、アップロードビヘイビアを削除する
 			$this->Behaviors->unload('Files.Attachment');
 		} else {
-			$this->loadModels([
-				'UserAttribute' => 'UserAttributes.UserAttribute',
-				'DataType' => 'DataTypes.DataType',
-			]);
-			$userAttributes = $this->UserAttribute->getUserAttributesForLayout();
-			$this->userAttributeData = Hash::combine($userAttributes,
-				'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
-			);
-			$uploads = Hash::extract(
-				$userAttributes,
-				'{n}.{n}.{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
-			);
-			foreach ($uploads as $upload) {
-				$this->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
-			}
-
-			//Userモデル内以外でAssociationやJOINで使用するため
-			self::$avatarField = Hash::get($uploads, '0.user_attribute_key');
+			$this->prepareUser();
 		}
+	}
+
+/**
+ * UserModelの前準備
+ *
+ * @return void
+ */
+	public function prepareUser() {
+		$this->loadModels([
+			'UserAttribute' => 'UserAttributes.UserAttribute',
+			'DataType' => 'DataTypes.DataType',
+		]);
+		$userAttributes = $this->UserAttribute->getUserAttributesForLayout(true);
+		$this->userAttributeData = Hash::combine($userAttributes,
+			'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
+		);
+		$uploads = Hash::extract(
+			$userAttributes,
+			'{n}.{n}.{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
+		);
+		foreach ($uploads as $upload) {
+			$this->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
+		}
+
+		//Userモデル内以外でAssociationやJOINで使用するため
+		self::$avatarField = Hash::get($uploads, '0.user_attribute_key');
 	}
 
 /**
@@ -528,6 +537,8 @@ class User extends UsersAppModel {
 	public function importUsers($filePath) {
 		App::uses('CsvFileReader', 'Files.Utility');
 
+		//$this->begin();
+
 		$reader = new CsvFileReader($filePath);
 		foreach ($reader as $i => $row) {
 			if ($i === 0) {
@@ -547,9 +558,13 @@ class User extends UsersAppModel {
 
 			if (! $this->saveUser($data)) {
 				//バリデーションエラーの場合
+				//CakeLog::debug(var_export($data, true));
 				return false;
 			}
 		}
+
+		//$this->commit();
+		//$this->rollback();
 
 		return true;
 	}
