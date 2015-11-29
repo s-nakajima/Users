@@ -28,7 +28,7 @@ class UsersController extends UsersAppController {
  * @var array
  */
 	public $uses = array(
-		'Groups.GroupsUser',
+		//'Groups.GroupsUser',
 		'Rooms.Space',
 		'Users.User',
 	);
@@ -265,7 +265,8 @@ class UsersController extends UsersAppController {
 			return;
 		}
 
-		$users = $this->GroupsUser->getUsersForOwnGroups();
+		//$users = $this->GroupsUser->getUsersForOwnGroups();
+		$users = null;
 		if (! $users) {
 			$users = array();
 		}
