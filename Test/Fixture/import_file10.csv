@@ -1,0 +1,11 @@
+User.username,User.password,User.handlename,UsersLanguage.0.name,UsersLanguage.1.name,User.email,User.moblie_mail,User.sex,User.timezone,User.role_key,User.status,UsersLanguage.0.profile,UsersLanguage.1.profile,UsersLanguage.0.search_keywords,UsersLanguage.1.search_keywords
+test001,test001,test001ハンドル,test001氏名【英語】,test001氏名【日本語】,test001@example.com,,no_setting,Asia/Tokyo,common_user,1,test001プロフィール【英語】,test001プロフィール【日本語】,test001キーワード【英語】,test001キーワード【日本語】
+test002,test002,test002ハンドル,test002氏名【英語】,test002氏名【日本語】,test002@example.com,,no_setting,Asia/Tokyo,common_user,1,test002プロフィール【英語】,test002プロフィール【日本語】,test002キーワード【英語】,test002キーワード【日本語】
+test003,test003,test003ハンドル,test003氏名【英語】,test003氏名【日本語】,test003@example.com,,no_setting,Asia/Tokyo,common_user,1,test003プロフィール【英語】,test003プロフィール【日本語】,test003キーワード【英語】,test003キーワード【日本語】
+test004,test004,test004ハンドル,test004氏名【英語】,test004氏名【日本語】,test004@example.com,,no_setting,Asia/Tokyo,common_user,1,test004プロフィール【英語】,test004プロフィール【日本語】,test004キーワード【英語】,test004キーワード【日本語】
+test005,test005,test005ハンドル,test005氏名【英語】,test005氏名【日本語】,test005@example.com,,no_setting,Asia/Tokyo,common_user,1,test005プロフィール【英語】,test005プロフィール【日本語】,test005キーワード【英語】,test005キーワード【日本語】
+test006,test006,test006ハンドル,test006氏名【英語】,test006氏名【日本語】,test006@example.com,,no_setting,Asia/Tokyo,common_user,1,test006プロフィール【英語】,test006プロフィール【日本語】,test006キーワード【英語】,test006キーワード【日本語】
+test007,test007,test007ハンドル,test007氏名【英語】,test007氏名【日本語】,test007@example.com,,no_setting,Asia/Tokyo,common_user,1,test007プロフィール【英語】,test007プロフィール【日本語】,test007キーワード【英語】,test007キーワード【日本語】
+test008,test008,test008ハンドル,test008氏名【英語】,test008氏名【日本語】,test008@example.com,,no_setting,Asia/Tokyo,common_user,1,test008プロフィール【英語】,test008プロフィール【日本語】,test008キーワード【英語】,test008キーワード【日本語】
+test009,test009,test009ハンドル,test009氏名【英語】,test009氏名【日本語】,test009@example.com,,no_setting,Asia/Tokyo,common_user,1,test009プロフィール【英語】,test009プロフィール【日本語】,test009キーワード【英語】,test009キーワード【日本語】
+test010,test010,test010ハンドル,test010氏名【英語】,test010氏名【日本語】,test010@example.com,,no_setting,Asia/Tokyo,common_user,1,test010プロフィール【英語】,test010プロフィール【日本語】,test010キーワード【英語】,test010キーワード【日本語】
