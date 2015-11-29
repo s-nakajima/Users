@@ -191,7 +191,7 @@ class User extends UsersAppModel {
 			//インストール時は、アップロードビヘイビアを削除する
 			$this->Behaviors->unload('Files.Attachment');
 		} else {
-			$this->prepareUser();
+			$this->prepare();
 		}
 	}
 
@@ -200,7 +200,7 @@ class User extends UsersAppModel {
  *
  * @return void
  */
-	public function prepareUser() {
+	public function prepare() {
 		$this->loadModels([
 			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'DataType' => 'DataTypes.DataType',
