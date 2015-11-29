@@ -46,6 +46,25 @@ class UsersSchema extends CakeSchema {
 	}
 
 /**
+ * user_select_counts table
+ *
+ * @var array
+ */
+	public $user_select_counts = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
+		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'select_count' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
+		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	);
+
+/**
  * users table
  *
  * @var array
