@@ -10,17 +10,16 @@
  */
 ?>
 
-<ul class="list-group user-selection-list-group">
-	<li class="list-group-item clearfix" ng-repeat="user in <?php echo $userType; ?> track by $index">
-		<div class="pull-left">
-			<?php echo $this->Button->add('', array(
-				'type' => 'button',
-				'iconSize' => 'btn-xs',
-				'ng-click' => 'selectedFrom' . Inflector::camelize($userType) . '($index)'
-			)); ?>
-		</div>
-		<div class="user-selection-avatar-outer">
+<div class="clearfix">
+	<div class="user-selection-list-group pull-left" ng-repeat="user in <?php echo $userType; ?> track by $index">
+		<?php echo $this->Button->add('', array(
+			'type' => 'button',
+			'iconSize' => 'btn-xs',
+			'ng-click' => 'selectedFrom' . Inflector::camelize($userType) . '($index)'
+		)); ?>
+
+		<span class="user-selection-avatar-outer">
 			<?php echo $this->DisplayUser->handle(array('ngModel' => 'user'), array('avatar' => true)); ?>
-		</div>
-	</li>
-</ul>
+		</span>
+	</div>
+</div>

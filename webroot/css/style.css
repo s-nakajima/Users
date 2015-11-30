@@ -22,9 +22,13 @@
 }
 
 .user-selection-list-group {
-	margin-bottom: 0px;
+	margin: 5px 5px;
+	border: 1px solid #ddd;
+    border-radius: 4px;
+	padding: 5px 10px;
+	max-width: 160px;
 }
 
 .user-selection-list-group .user-selection-avatar-outer {
-	margin-left: 40px;
+	margin-left: 10px;
 }

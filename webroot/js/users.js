@@ -27,8 +27,7 @@ NetCommonsApp.factory('SelectUser',
             $scope, 'User.select',
             $scope.baseUrl + '/users/users/select/' + id,
             {
-              backdrop: 'static',
-              size: 'sm'
+              backdrop: 'static'
             }
         );
       }}]
