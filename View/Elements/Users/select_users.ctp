@@ -10,16 +10,29 @@
  */
 ?>
 
-<div class="clearfix">
-	<div class="user-selection-list-group pull-left" ng-repeat="user in <?php echo $userType; ?> track by $index">
-		<?php echo $this->Button->add('', array(
-			'type' => 'button',
-			'iconSize' => 'btn-xs',
-			'ng-click' => 'selectedFrom' . Inflector::camelize($userType) . '($index)'
-		)); ?>
+
+<div class="row">
+	<div class="col-xs-12 col-sm-5 user-selection-list" ng-repeat="user in <?php echo $userType; ?> track by $index" ng-class="{'col-sm-offset-1': $odd}">
+		<?php if ($userType === 'candidates') : ?>
+			<?php echo $this->Button->add('', array(
+				'type' => 'button',
+				'class' => 'btn btn-success btn-xs user-select-button',
+				'ng-click' => 'select($index)'
+			)); ?>
+		<?php endif; ?>
 
 		<span class="user-selection-avatar-outer">
 			<?php echo $this->DisplayUser->handle(array('ngModel' => 'user'), array('avatar' => true)); ?>
 		</span>
+
+		<?php if ($userType === 'selectors') : ?>
+			<?php echo $this->Button->cancel('', false, array(
+				'type' => 'button',
+				'class' => 'btn btn-default btn-xs pull-right user-delete-button',
+				'ng-click' => 'remove($index)'
+			)); ?>
+		<?php endif; ?>
 	</div>
+
+	<div class="clearfix visible-xs-block" ng-if="$odd"></div>
 </div>

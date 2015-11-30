@@ -270,7 +270,7 @@ class UsersController extends UsersAppController {
 		if (! $users) {
 			$users = array();
 		}
-		$this->set('favorites', $users);
+		$this->set('selectors', $users);
 	}
 
 }

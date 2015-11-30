@@ -21,14 +21,35 @@
 	border-radius: 3px;
 }
 
-.user-selection-list-group {
-	margin: 5px 5px;
+/*.user-selection-list-group {
+	margin-left: 20px;
+	margin-right: 5px;
+}*/
+
+.user-selection-list {
+	/*margin: 5px 10px;*/
+/*	margin-left: 20px;
+	margin-right: 10px;*/
+	margin-bottom: 10px;
 	border: 1px solid #ddd;
     border-radius: 4px;
 	padding: 5px 10px;
-	max-width: 160px;
 }
 
-.user-selection-list-group .user-selection-avatar-outer {
+.user-selection-list-group .user-select-button {
+	margin-right: 10px;
+}
+
+.user-selection-list-group .user-remove-button {
 	margin-left: 10px;
+}
+
+.pre-scrollable.user-selection-list-group {
+/*	padding: 5px;*/
+	max-height: 200px;
+}
+
+.pre-scrollable.user-selection-list-group .row {
+	margin-left: 0;
+	margin-right: 0;
 }

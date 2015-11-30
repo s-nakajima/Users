@@ -9,9 +9,9 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-$favoritesJson = array();
-foreach ($favorites as $favorite) {
-	$favoritesJson[] = $this->UserSearch->convertUserArrayByUserSelection($favorite, 'User');
+$selectorsJson = array();
+foreach ($selectors as $selector) {
+	$selectorsJson[] = $this->UserSearch->convertUserArrayByUserSelection($selector, 'User');
 }
 ?>
 
@@ -20,7 +20,7 @@ foreach ($favorites as $favorite) {
 <?php $this->end(); ?>
 
 <div ng-init="initialize('<?php echo $this->NetCommonsForm->domId('UserSearch.keyword'); ?>',
-			<?php echo h(json_encode($favoritesJson)); ?>)">
+			<?php echo h(json_encode($selectorsJson)); ?>)">
 
 	<?php echo $this->Form->create('UserSearch', array(
 		'type' => 'get',
@@ -43,23 +43,55 @@ foreach ($favorites as $favorite) {
 		</span>
 	</div>
 
+	<br>
+	<div class="panel panel-default">
+		<div class="panel-body pre-scrollable user-selection-list-group">
+			<div ng-if="candidates.length">
+				<?php echo $this->element('Users/select_users', array('userType' => 'candidates')); ?>
+			</div>
+			<div ng-if="!searched">
+				<?php echo __d('users', 'Please search by entering the handle.'); ?>
+			</div>
+			<div ng-if="!candidates.length && searched">
+				<?php echo __d('users', 'Not found the candidate user.'); ?>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-body pre-scrollable user-selection-list-group">
+			<div ng-if="selectors.length">
+				<?php echo $this->element('Users/select_users', array('userType' => 'selectors')); ?>
+			</div>
+			<div ng-if="!selectors.length">
+				<?php echo __d('users', 'Not found the select user.'); ?>
+			</div>
+		</div>
+	</div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
 	<div ng-if="searched">
 		<br>
-		<strong ng-if="candidates.length"><?php echo __d('users', 'Candidates'); ?></strong>
-		<div class="pre-scrollable" ng-if="candidates.length">
-			<?php echo $this->element('Users/select_users', array('userType' => 'candidates')) ?>
-		</div>
 
 		<div ng-if="!candidates.length">
 			<?php echo __d('users', 'Not found the candidate user.'); ?>
 		</div>
 	</div>
 
-	<div ng-if="(!searched && favorites.length)">
+	<div ng-if="(!searched && selectors.length)">
 		<br>
 		<strong><?php echo __d('users', 'Favorites'); ?></strong>
-		<div class="pre-scrollable">
-			<?php echo $this->element('Users/select_users', array('userType' => 'favorites')) ?>
+		<div class="row pre-scrollable">
+			<?php echo $this->element('Users/select_users', array('userType' => 'selectors')) ?>
 		</div>
 	</div>
 

@@ -74,7 +74,7 @@ NetCommonsApp.controller('User.view', function($scope, $modalInstance) {
  * User search condtion modal controller
  */
 NetCommonsApp.controller('User.select', function(
-    $scope, $http, $modalInstance) {
+    $scope, $http, $modalInstance, filterFilter) {
 
       /**
        * Flag searched
@@ -89,17 +89,17 @@ NetCommonsApp.controller('User.select', function(
       /**
        * Favorite users
        */
-      $scope.favorites = [];
+      $scope.selectors = [];
 
       /**
        * Initialize action
        *
        * @return {void}
        */
-      $scope.initialize = function(domId, favorites) {
+      $scope.initialize = function(domId) {
         $scope.domId = domId;
         $scope.searched = false;
-        $scope.favorites = favorites;
+//        $scope.selectors = selectors;
       };
 
       /**
@@ -134,21 +134,27 @@ NetCommonsApp.controller('User.select', function(
       };
 
       /**
-       * Selected user. Dailog close.
+       * Selected user.
        *
        * @return {void}
        */
-      $scope.selectedFromCandidates = function(index) {
-        $modalInstance.close($scope.candidates[index]);
+      $scope.select = function(index) {
+        var result = filterFilter($scope.candidates, $scope.candidates[index]);
+        console.log(result);
+        $scope.selectors.push(result[0]);
+
+        //$modalInstance.close($scope.candidates[index]);
       };
 
       /**
-       * Selected user. Dailog close.
+       * Select removed user
        *
        * @return {void}
        */
-      $scope.selectedFromFavorites = function(index) {
-        $modalInstance.close($scope.favorites[index]);
+      $scope.remove = function(index) {
+        $scope.selectors.splice(index, 1);
+
+        //$modalInstance.close($scope.candidates[index]);
       };
 
       /**
