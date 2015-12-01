@@ -43,22 +43,42 @@ foreach ($selectors as $selector) {
 		</span>
 	</div>
 
-	<br>
-	<div class="panel panel-default">
+	<br ng-if="searched">
+	<div class="panel panel-default" ng-if="searched">
 		<div class="panel-body pre-scrollable user-selection-list-group">
 			<div ng-if="candidates.length">
 				<?php echo $this->element('Users/select_users', array('userType' => 'candidates')); ?>
 			</div>
-			<div ng-if="!searched">
-				<?php echo __d('users', 'Please search by entering the handle.'); ?>
-			</div>
-			<div ng-if="!candidates.length && searched">
+			<div ng-if="!candidates.length">
 				<?php echo __d('users', 'Not found the candidate user.'); ?>
 			</div>
 		</div>
+		<div class="panel-footer text-center user-selection-panel-footer">
+			<nav ng-if="paginator && searched">
+				<ul class="pagination pagination-sm">
+					<li ng-if="paginator.startPage !== 1">
+						<a href="" aria-label="First" ng-click="movePage(1)">
+							<span aria-hidden="true">&laquo;</span>
+						</a>
+					</li>
+
+					<li ng-repeat="page in pages" ng-class="{active: page === paginator.page}">
+						<a href="" ng-click="movePage(page)">
+							{{page}}
+						</a>
+					</li>
+
+					<li ng-if="paginator.endPage !== paginator.pageCount">
+						<a href="" aria-label="Last" ng-click="movePage(paginator.pageCount)">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
 	</div>
 
-	<div class="panel panel-default">
+	<div class="panel panel-default" ng-if="searched">
 		<div class="panel-body pre-scrollable user-selection-list-group">
 			<div ng-if="selectors.length">
 				<?php echo $this->element('Users/select_users', array('userType' => 'selectors')); ?>
@@ -69,40 +89,24 @@ foreach ($selectors as $selector) {
 		</div>
 	</div>
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-
-	<div ng-if="searched">
-		<br>
-
-		<div ng-if="!candidates.length">
-			<?php echo __d('users', 'Not found the candidate user.'); ?>
-		</div>
-	</div>
-
-	<div ng-if="(!searched && selectors.length)">
-		<br>
-		<strong><?php echo __d('users', 'Favorites'); ?></strong>
-		<div class="row pre-scrollable">
-			<?php echo $this->element('Users/select_users', array('userType' => 'selectors')) ?>
-		</div>
-	</div>
-
-	<hr>
-
-	<div class="text-center">
-		<?php echo $this->Button->cancel(__d('net_commons', 'Close'), '', array(
-			'type' => 'button',
-			'ng-click' => 'cancel()'
-		)); ?>
-	</div>
-
 	<?php $this->end(); ?>
 </div>
+
+<?php
+$this->start('footer_for_modal');
+
+echo $this->Button->cancelAndSave(
+	__d('net_commons', 'Cancel'),
+	__d('net_commons', 'Select'),
+	false,
+	array(
+		'type' => 'button',
+		'ng-click' => 'cancel()'
+	),
+	array(
+		'type' => 'button',
+		'ng-click' => 'save()'
+	)
+);
+
+$this->end();

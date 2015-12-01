@@ -22,12 +22,19 @@
  */
 NetCommonsApp.factory('SelectUser',
     ['NetCommonsModal', function(NetCommonsModal) {
-      return function($scope, id) {
+      return function($scope, userId, roomId) {
         return NetCommonsModal.show(
             $scope, 'User.select',
-            $scope.baseUrl + '/users/users/select/' + id,
+            $scope.baseUrl + '/users/users/select/' + userId +
+                    '?room_id=' + roomId,
             {
-              backdrop: 'static'
+              backdrop: 'static',
+              resolve: {
+                options: {
+                  userId: userId,
+                  roomId: roomId
+                }
+              }
             }
         );
       }}]
@@ -74,7 +81,22 @@ NetCommonsApp.controller('User.view', function($scope, $modalInstance) {
  * User search condtion modal controller
  */
 NetCommonsApp.controller('User.select', function(
-    $scope, $http, $modalInstance, filterFilter) {
+    $scope, $http, $modalInstance, filterFilter, options) {
+
+      /**
+       * User id
+       */
+      $scope.userId = options['userId'];
+
+      /**
+       * Room id
+       */
+      $scope.roomId = options['roomId'];
+
+      /**
+       * Keyword
+       */
+      $scope.keyword = null;
 
       /**
        * Flag searched
@@ -85,6 +107,11 @@ NetCommonsApp.controller('User.select', function(
        * Candidate users
        */
       $scope.candidates = [];
+
+      /**
+       * Paginator
+       */
+      $scope.paginator = {};
 
       /**
        * Favorite users
@@ -98,8 +125,49 @@ NetCommonsApp.controller('User.select', function(
        */
       $scope.initialize = function(domId) {
         $scope.domId = domId;
-        $scope.searched = false;
-//        $scope.selectors = selectors;
+      };
+
+      /**
+       * Search action
+       *
+       * @return {void}
+       */
+      var searchUsers = function(keyword, page) {
+        if (! keyword) {
+          return;
+        }
+        var searchUrl = $scope.baseUrl + '/users/users/search';
+        if (page) {
+          searchUrl += '/page:' + page;
+        }
+        var options = {
+          params: {
+            //room_id: $scope.roomId,
+            handlename: keyword
+          },
+          cache: false
+        };
+
+        $http.get(searchUrl, options)
+          .success(function(data) {
+              $scope.candidates = data['users'];
+              $scope.searched = true;
+              $scope.keyword = keyword;
+              $scope.paginator = data['paginator'];
+
+              var startPage = $scope.paginator.startPage;
+              var endPage = $scope.paginator.endPage;
+              $scope.pages = [];
+              for (var i = startPage; i <= endPage; i++) {
+                $scope.pages.push(i);
+              }
+            })
+            .error(function(data, status) {
+              $scope.candidates = [];
+              $scope.keyword = null;
+              $scope.paginator = {};
+              $scope.pages = [];
+            });
       };
 
       /**
@@ -111,39 +179,43 @@ NetCommonsApp.controller('User.select', function(
         if ($event && $event.keyCode !== 13) {
           return;
         }
-
         var keyword = angular.element('#' + $scope.domId);
         if (! keyword || ! keyword[0].value) {
-          $scope.searched = false;
           return;
         }
 
-        var searchUrl = $scope.baseUrl + '/users/users/search.json';
-        var options = {
-          params: {handlename: keyword[0].value},
-          cache: false
-        };
-        $http.get(searchUrl, options)
-          .success(function(data) {
-              $scope.candidates = data['users'];
-              $scope.searched = true;
-            })
-            .error(function(data, status) {
-              $scope.candidates = [];
-            });
+        searchUsers(keyword[0].value);
       };
 
       /**
-       * Selected user.
+       * Move pages
+       *
+       * @return {void}
+       */
+      $scope.movePage = function(page) {
+        searchUsers($scope.keyword, page);
+      };
+
+      /**
+       * Select user.
        *
        * @return {void}
        */
       $scope.select = function(index) {
         var result = filterFilter($scope.candidates, $scope.candidates[index]);
-        console.log(result);
-        $scope.selectors.push(result[0]);
+        if (! $scope.selected(result[0])) {
+          $scope.selectors.push(result[0]);
+        }
+      };
 
-        //$modalInstance.close($scope.candidates[index]);
+      /**
+       * Selected user.
+       *
+       * @return {bool}
+       */
+      $scope.selected = function(obj) {
+        var result = filterFilter($scope.selectors, obj);
+        return !(result.length === 0);
       };
 
       /**
@@ -153,8 +225,26 @@ NetCommonsApp.controller('User.select', function(
        */
       $scope.remove = function(index) {
         $scope.selectors.splice(index, 1);
+      };
 
-        //$modalInstance.close($scope.candidates[index]);
+      /**
+       * Clear select user
+       *
+       * @return {void}
+       */
+      $scope.clear = function() {
+        $scope.selectors = [];
+      };
+
+      /**
+       * Save user. Dailog close.
+       *
+       * @return {void}
+       */
+      $scope.save = function() {
+
+
+        $modalInstance.close($scope.selectors);
       };
 
       /**
