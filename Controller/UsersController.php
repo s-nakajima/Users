@@ -93,14 +93,7 @@ class UsersController extends UsersAppController {
 		}
 		if ($roomId) {
 			//ルームデータ取得
-			if (! Current::allowSystemPlugin('rooms')) {
-				$conditions = array('Room.active' => true);
-			} else {
-				$conditions = array();
-			}
-			$conditions = Hash::merge($conditions, array(
-				'Room.id' => $roomId
-			));
+			$conditions = array('Room.id' => $roomId);
 			$count = $this->Room->find('count', $this->Room->getReadableRoomsCondtions($conditions));
 			if (! $count) {
 				$this->setAction('throwBadRequest');
@@ -133,12 +126,7 @@ class UsersController extends UsersAppController {
 		}
 
 		//ルームデータ取得
-		if (! Current::allowSystemPlugin('rooms')) {
-			$conditions = array('Room.active' => true);
-		} else {
-			$conditions = array();
-		}
-		$result = $this->Room->find('all', $this->Room->getReadableRoomsCondtions($conditions));
+		$result = $this->Room->find('all', $this->Room->getReadableRoomsCondtions());
 		$this->set('rooms', Hash::combine($result, '{n}.Room.id', '{n}'));
 
 		//ルームのTreeリスト取得
