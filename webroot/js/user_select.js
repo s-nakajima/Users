@@ -66,6 +66,11 @@ NetCommonsApp.controller('User.select', function(
       $scope.keyword = null;
 
       /**
+       * 検索フィールドを保持する変数
+       */
+      $scope.field = null;
+
+      /**
        * 検索したかどうかのフラグを保持する変数
        */
       $scope.searched = false;
@@ -95,8 +100,9 @@ NetCommonsApp.controller('User.select', function(
        *
        * @return {void}
        */
-      $scope.initialize = function(domId, searchResults, data) {
+      $scope.initialize = function(domId, searchResults, data, field) {
         $scope.domId = domId;
+        $scope.field = field;
         $scope.data = data;
         if (angular.isArray(searchResults) && searchResults.length > 0) {
           $scope.searched = true;
@@ -216,13 +222,13 @@ NetCommonsApp.controller('User.select', function(
         if (page) {
           searchUrl += '/page:' + page;
         }
+
         var options = {
-          params: {
-            //room_id: $scope.roomId,
-            handlename: keyword
-          },
           cache: false
         };
+        options['params'] = {};
+        options['params'][$scope.field] = keyword;
+        options['params']['room_id'] = $scope.roomId;
 
         $http.get(searchUrl, options)
           .success(function(data) {

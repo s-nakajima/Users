@@ -37,7 +37,8 @@ $data += $tokens;
 
 <div ng-init="initialize('<?php echo $this->NetCommonsForm->domId('UserSearch.keyword'); ?>',
 			<?php echo h(json_encode($searchResultsJson)); ?>,
-			<?php echo h(json_encode($data)); ?>)">
+			<?php echo h(json_encode($data)); ?>,
+			'<?php echo h(UsersController::$displaField); ?>')">
 
 	<?php echo $this->Form->create('UserSearch', array('type' => 'get', 'onsubmit' => 'return false;')); ?>
 		<div class="input-group">

@@ -27,9 +27,7 @@ class UsersController extends UsersAppController {
  *
  * @var const
  */
-	public static $displaFields = array(
-		'handlename',
-	);
+	public static $displaField = 'handlename';
 
 /**
  * use model
@@ -259,8 +257,10 @@ class UsersController extends UsersAppController {
 			return;
 		}
 
+		$query = Hash::remove($this->request->query, 'room_id');
+
 		$this->UserSearch->search(
-			Hash::merge(array('space_id' => Space::PRIVATE_SPACE_ID), $this->request->query),
+			Hash::merge(array('space_id' => Space::PRIVATE_SPACE_ID), $query),
 			array('Room' => array(
 				'conditions' => array(
 					'Room.page_id_top NOT' => null,
@@ -268,7 +268,7 @@ class UsersController extends UsersAppController {
 			))
 		);
 
-		$fields = array_combine(self::$displaFields, self::$displaFields);
+		$fields = array(self::$displaField => self::$displaField);
 		$this->set('displayFields', $this->User->cleanSearchFields($fields));
 
 		//CakeLog::debug('UsersController::search() ' . print_r($this->viewVars['users'], true));
