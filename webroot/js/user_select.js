@@ -212,7 +212,7 @@ NetCommonsApp.controller('User.select', function(
        * @return {void}
        */
       var searchUsers = function(keyword, page) {
-        var searchUrl = $scope.baseUrl + '/users/users/search';
+        var searchUrl = $scope.baseUrl + '/users/users/search/' + $scope.userId;
         if (page) {
           searchUrl += '/page:' + page;
         }
