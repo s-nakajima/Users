@@ -30,7 +30,9 @@ class UsersController extends UsersAppController {
 	public $uses = array(
 		//'Groups.GroupsUser',
 		'Rooms.Space',
+		'Rooms.RolesRoomsUser',
 		'Users.User',
+		'Users.UserSelectCount',
 	);
 
 /**
@@ -52,6 +54,7 @@ class UsersController extends UsersAppController {
  * @var array
  */
 	public $helpers = array(
+		'NetCommons.Token',
 		'UserAttributes.UserAttributeLayout',
 		'Users.UserLayout',
 	);
@@ -77,9 +80,34 @@ class UsersController extends UsersAppController {
 			$this->setAction('throwBadRequest');
 			return;
 		}
-
 		$this->set('user', $user);
 		$this->set('title', false);
+
+		//ルームデータチェック
+		if (Hash::get($this->data, 'Room.id')) {
+			$roomId = Hash::get($this->data, 'Room.id');
+		} elseif (Hash::get($this->request->query, 'room_id')) {
+			$roomId = Hash::get($this->request->query, 'room_id');
+		} else {
+			$roomId = null;
+		}
+		if ($roomId) {
+			//ルームデータ取得
+			if (! Current::allowSystemPlugin('rooms')) {
+				$conditions = array('Room.active' => true);
+			} else {
+				$conditions = array();
+			}
+			$conditions = Hash::merge($conditions, array(
+				'Room.id' => $roomId
+			));
+			$count = $this->Room->find('count', $this->Room->getReadableRoomsCondtions($conditions));
+			if (! $count) {
+				$this->setAction('throwBadRequest');
+				return;
+			}
+			$this->set('roomId', $roomId);
+		}
 	}
 
 /**
@@ -138,7 +166,7 @@ class UsersController extends UsersAppController {
 			$this->PageLayout = $this->Components->load('Pages.PageLayout');
 		}
 		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
-			$this->setAction('throwBadRequest');
+			$this->throwBadRequest();
 			return;
 		}
 
@@ -174,7 +202,7 @@ class UsersController extends UsersAppController {
 
 		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
 				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
-			$this->setAction('throwBadRequest');
+			$this->throwBadRequest();
 			return;
 		}
 
@@ -257,20 +285,58 @@ class UsersController extends UsersAppController {
 	public function select() {
 		$this->__prepare();
 
-		//レイアウトの設定
-		$this->viewClass = 'View';
-		$this->layout = 'NetCommons.modal';
-
 		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
+			$this->throwBadRequest();
 			return;
 		}
 
-		//$users = $this->GroupsUser->getUsersForOwnGroups();
-		$users = null;
-		if (! $users) {
-			$users = array();
+		$roomId = Hash::get($this->viewVars, 'roomId');
+		if (! $roomId) {
+			$this->throwBadRequest();
+			return;
 		}
-		$this->set('selectors', $users);
+
+		if ($this->request->isPost()) {
+			//登録処理
+			//** ロールルームユーザデータ取得
+			$rolesRoomsUsers = $this->RolesRoomsUser->getRolesRoomsUsers(array(
+				'RolesRoomsUser.user_id' => $this->request->data['UserSelectCount']['user_id'],
+				'Room.id' => $roomId
+			));
+			$userIds = Hash::extract($rolesRoomsUsers, '{n}.RolesRoomsUser.user_id');
+			sort($userIds);
+			sort($this->request->data['UserSelectCount']['user_id']);
+
+			//** user_idのチェック
+			if (Hash::diff($userIds, $this->request->data['UserSelectCount']['user_id'])) {
+				//diffがあった場合は、不正ありと判断する
+				$this->throwBadRequest();
+				return;
+			}
+			$data = array_map(function ($userId) {
+				return array('UserSelectCount' => array(
+					'user_id' => $userId, 'created_user' => Current::read('User.id')
+				));
+			}, $this->request->data['UserSelectCount']['user_id']);
+
+			//** 登録処理
+			if (! $this->UserSelectCount->saveUserSelectCount($data)) {
+				$this->NetCommons->handleValidationError($this->UserSelectCount->validationErrors);
+			}
+			return;
+		} else {
+			//表示処理
+			//** レイアウトの設定
+			$this->viewClass = 'View';
+			$this->layout = 'NetCommons.modal';
+
+			//** 選択したユーザ取得
+			$users = $this->UserSelectCount->getUsers($roomId);
+			if (! $users) {
+				$users = array();
+			}
+			$this->set('searchResults', $users);
+		}
 	}
 
 }

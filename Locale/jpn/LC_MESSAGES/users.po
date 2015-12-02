@@ -61,16 +61,7 @@ msgstr "配信された情報を受け取る"
 msgid "User select"
 msgstr "会員選択"
 
-msgid "Favorites"
-msgstr "お気に入り"
-
-msgid "Candidates"
-msgstr "候補"
-
-msgid "Please search by entering the handle."
-msgstr "ハンドルを入力して検索してください"
-
-msgid "Not found the candidate user."
+msgid "Not found the search result."
 msgstr "1件も見つかりません。"
 
 msgid "Not found the select user."

@@ -13,13 +13,13 @@
 
 <div class="row">
 	<div class="col-xs-12 user-selection-list" ng-repeat="user in <?php echo $userType; ?> track by $index" ng-class="{'user-selection-list-offset': $odd}">
-		<?php if ($userType === 'candidates') : ?>
+		<?php if ($userType === 'searchResults') : ?>
 			<?php echo $this->Button->add('', array(
 				'type' => 'button',
 				'class' => 'btn btn-success btn-xs user-select-button',
 				'ng-click' => 'select($index)',
-				'ng-disabled' => 'selected(candidates[$index])',
-				'ng-class' => '{active: selected(candidates[$index])}',
+				'ng-disabled' => 'selected(searchResults[$index])',
+				'ng-class' => '{active: selected(searchResults[$index])}',
 			)); ?>
 		<?php endif; ?>
 
