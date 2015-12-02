@@ -21,10 +21,42 @@
 	border-radius: 3px;
 }
 
-.user-selection-list-group {
-	margin-bottom: 0px;
+@media (min-width: 768px) {
+	.user-selection-list {
+		width: 48.2%;
+	}
+	.user-selection-list-offset {
+		margin-left: 3.6%;
+	}
+}
+.user-selection-list {
+	margin-bottom: 10px;
+	border: 1px solid #ddd;
+    border-radius: 4px;
+	padding: 5px 10px;
 }
 
-.user-selection-list-group .user-selection-avatar-outer {
-	margin-left: 40px;
+.user-selection-list-group .user-select-button {
+	margin-right: 10px;
+}
+
+.user-selection-list-group .user-remove-button {
+	margin-left: 10px;
+}
+
+.pre-scrollable.user-selection-list-group {
+	max-height: 170px;
+}
+
+.pre-scrollable.user-selection-list-group .row {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.user-selection-panel-footer {
+	padding: 5px 3px 3px;
+}
+
+.user-selection-panel-footer .pagination {
+	margin: 0px;
 }

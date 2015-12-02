@@ -26,6 +26,13 @@ App::uses('NetCommonsTime', 'NetCommons.Utility');
 class User extends UsersAppModel {
 
 /**
+ * 表示ページ数の定数
+ *
+ * @var const
+ */
+	const DISPLAY_PAGE_NUMBER = 9;
+
+/**
  * 非公開の定数
  *
  * @var const

@@ -10,17 +10,31 @@
  */
 ?>
 
-<ul class="list-group user-selection-list-group">
-	<li class="list-group-item clearfix" ng-repeat="user in <?php echo $userType; ?> track by $index">
-		<div class="pull-left">
+
+<div class="row">
+	<div class="col-xs-12 user-selection-list" ng-repeat="user in <?php echo $userType; ?> track by $index" ng-class="{'user-selection-list-offset': $odd}">
+		<?php if ($userType === 'searchResults') : ?>
 			<?php echo $this->Button->add('', array(
 				'type' => 'button',
-				'iconSize' => 'btn-xs',
-				'ng-click' => 'selectedFrom' . Inflector::camelize($userType) . '($index)'
+				'class' => 'btn btn-success btn-xs user-select-button',
+				'ng-click' => 'select($index)',
+				'ng-disabled' => 'selected(searchResults[$index])',
+				'ng-class' => '{active: selected(searchResults[$index])}',
 			)); ?>
-		</div>
-		<div class="user-selection-avatar-outer">
-			<?php echo $this->DisplayUser->handle(array('ngModel' => 'user'), array('avatar' => true)); ?>
-		</div>
-	</li>
-</ul>
+		<?php endif; ?>
+
+		<span class="user-selection-avatar-outer">
+			<?php echo $this->DisplayUser->handleLink(array('ngModel' => 'user'), array('avatar' => true)); ?>
+		</span>
+
+		<?php if ($userType === 'selectors') : ?>
+			<?php echo $this->Button->cancel('', false, array(
+				'type' => 'button',
+				'class' => 'btn btn-default btn-xs pull-right user-delete-button',
+				'ng-click' => 'remove($index)'
+			)); ?>
+		<?php endif; ?>
+	</div>
+
+	<div class="clearfix visible-xs-block" ng-if="$odd"></div>
+</div>
