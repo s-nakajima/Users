@@ -23,6 +23,13 @@ App::uses('AppController', 'Controller');
 class UsersController extends UsersAppController {
 
 /**
+ * 会員一覧の表示する項目
+ *
+ * @var const
+ */
+	public static $displaField = 'handlename';
+
+/**
  * use model
  *
  * @var array
@@ -244,23 +251,25 @@ class UsersController extends UsersAppController {
 		//$this->layout = 'NetCommons.default';
 		$this->viewClass = 'View';
 		$this->view = 'Users.Users/json/search';
-		//$this->__prepare();
-		//
-		//if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
-		//	return;
-		//}
-		//CakeLog::debug('UsersController::search() ' . print_r($this->request->query, true));
+		$this->__prepare();
 
-		$query = array_map(function ($value) {
-			return '%' . $value . '%';
-		}, $this->request->query);
-		//CakeLog::debug(print_r($query, true));
+		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
+			return;
+		}
+
+		$query = Hash::remove($this->request->query, 'room_id');
 
 		$this->UserSearch->search(
 			Hash::merge(array('space_id' => Space::PRIVATE_SPACE_ID), $query),
-			array('Room' => array('Room.page_id_top NOT' => null))
+			array('Room' => array(
+				'conditions' => array(
+					'Room.page_id_top NOT' => null,
+				)
+			))
 		);
-		$this->set('displayFields', $this->User->getDispayFields());
+
+		$fields = array(self::$displaField => self::$displaField);
+		$this->set('displayFields', $this->User->cleanSearchFields($fields));
 
 		//CakeLog::debug('UsersController::search() ' . print_r($this->viewVars['users'], true));
 	}

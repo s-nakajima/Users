@@ -151,7 +151,7 @@ class UserSearchHelper extends AppHelper {
  */
 	public function linkHandlename($user, $modelName, $fieldName, $isEdit) {
 		if (! $isEdit) {
-			return $this->DisplayUser->handle($user, array('avatar' => true), 'User');
+			return $this->DisplayUser->handleLink($user, array('avatar' => true), array(), 'User');
 		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
 				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 

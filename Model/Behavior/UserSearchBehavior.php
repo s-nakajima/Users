@@ -46,7 +46,6 @@ class UserSearchBehavior extends ModelBehavior {
 			return;
 		}
 
-		$userAttributes = $model->UserAttribute->getUserAttributesForLayout();
 		$results = $model->UserAttributesRole->find('list', array(
 			'recursive' => -1,
 			'fields' => array('user_attribute_key', 'user_attribute_key'),
@@ -58,20 +57,12 @@ class UserSearchBehavior extends ModelBehavior {
 
 		self::$readableFields = array('id');
 		foreach ($results as $key => $field) {
-			$dataType = Hash::extract($userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $field . ']');
-			$dataType = Hash::get($dataType, '0.data_type_key', '');
-			if (in_array($dataType, [DataType::DATA_TYPE_TEXT, DataType::DATA_TYPE_TEXTAREA, DataType::DATA_TYPE_EMAIL], true)) {
-				$sign = ' LIKE';
-			} else {
-				$sign = '';
-			}
-
 			//Fieldのチェック
 			if ($model->hasField($field)) {
-				self::$readableFields[$key] = $model->alias . '.' . $field . $sign;
+				self::$readableFields[$key] = $model->alias . '.' . $field;
 			}
 			if ($model->UsersLanguage->hasField($field)) {
-				self::$readableFields[$key] = $model->UsersLanguage->alias . '.' . $field . $sign;
+				self::$readableFields[$key] = $model->UsersLanguage->alias . '.' . $field;
 			}
 			//Field(is_xxxx_public)のチェック
 			$fieldKey = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $field);
@@ -90,41 +81,14 @@ class UserSearchBehavior extends ModelBehavior {
 	}
 
 /**
- * 検索フィールドを取得する
- *
- * @param Model $model Model ビヘイビア呼び出し前のモデル
- * @param array $fields 表示するフィールドリスト
- * @return array 実際に検索できるフィールドリスト
- */
-	public function getSearchFields(Model $model, $fields = array()) {
-		$this->__prepare($model);
-		return '*';
-	}
-
-/**
- * 表示フィールドの取得
+ * 検索可能のフィールドをチェックして、検索不可なフィールドは削除する
  *
  * @param Model $model Model ビヘイビア呼び出し前のモデル
  * @param array $fields 表示するフィールドリスト
  * @return array 実際に表示できるフィールドリスト
  */
-	public function getDispayFields(Model $model, $fields = array()) {
+	public function cleanSearchFields(Model $model, $fields) {
 		$this->__prepare($model);
-
-		//if (! $fields) {
-			//$fields = CakeSession::read($sessionKey);
-			if (! $fields || ! is_array($fields)) {
-				$fields = array(
-					'handlename',
-					'name',
-					'role_key',
-					'status',
-					'modified',
-					'last_login'
-				);
-				$fields = array_combine($fields, $fields);
-			}
-		//}
 
 		$fieldKeys = array_keys($fields);
 		foreach ($fieldKeys as $key) {
@@ -132,9 +96,6 @@ class UserSearchBehavior extends ModelBehavior {
 				unset($fields[$key]);
 			}
 		}
-
-		//CakeSession::write($sessionKey, $fields);
-
 		return $fields;
 	}
 
@@ -148,13 +109,25 @@ class UserSearchBehavior extends ModelBehavior {
 	public function getSearchConditions(Model $model, $conditions = array()) {
 		$this->__prepare($model);
 
+		$userAttributes = $model->UserAttribute->getUserAttributesForLayout();
+
 		$fieldKeys = array_keys($conditions);
 		foreach ($fieldKeys as $key) {
+			$dataType = Hash::extract($userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $key . ']');
+			$dataType = Hash::get($dataType, '0.data_type_key', '');
+			if (in_array($dataType, [DataType::DATA_TYPE_TEXT, DataType::DATA_TYPE_TEXTAREA, DataType::DATA_TYPE_EMAIL], true)) {
+				$sign = ' LIKE';
+				$value = '%' . $conditions[$key] . '%';
+			} else {
+				$sign = '';
+				$value = $conditions[$key];
+			}
+
 			if (isset(self::$readableFields[$key])) {
-				$conditions[self::$readableFields[$key]] = $conditions[$key];
+				$conditions[self::$readableFields[$key] . $sign] = $value;
 				unset($conditions[$key]);
 			} else {
-				$conditions[$key] = $conditions[$key];
+				$conditions[$key . $sign] = $value;
 			}
 		}
 
@@ -162,7 +135,6 @@ class UserSearchBehavior extends ModelBehavior {
 			$conditions['User.status'] = '1';
 		}
 		$conditions['User.is_deleted'] = false;
-		//$conditions['Room.page_id_top NOT'] = null;
 
 		return $conditions;
 	}
@@ -185,61 +157,61 @@ class UserSearchBehavior extends ModelBehavior {
 			),
 		);
 
-		if (Hash::check($joinModels, 'RolesRoomsUser')) {
-			$conditions = Hash::get($joinModels, 'RolesRoomsUser');
-		} else {
-			$conditions = array();
-		}
-		$joins[] = array(
+		$joins[] = Hash::merge(array(
 			'table' => $model->RolesRoomsUser->table,
 			'alias' => $model->RolesRoomsUser->alias,
 			'type' => 'LEFT',
-			'conditions' => Hash::merge(
-				array($model->RolesRoomsUser->alias . '.user_id' . ' = ' . $model->alias . '.id'),
-				$conditions
+			'conditions' => array(
+				$model->RolesRoomsUser->alias . '.user_id' . ' = ' . $model->alias . '.id',
 			),
-		);
+		), Hash::get($joinModels, 'RolesRoomsUser', array()));
 
-		if (Hash::check($joinModels, 'RolesRoom')) {
-			$conditions = Hash::get($joinModels, 'RolesRoom');
-		} else {
-			$conditions = array();
-		}
-		$joins[] = array(
+		$joins[] = Hash::merge(array(
 			'table' => $model->RolesRoom->table,
 			'alias' => $model->RolesRoom->alias,
 			'type' => 'LEFT',
-			'conditions' => Hash::merge(
-				array($model->RolesRoomsUser->alias . '.roles_room_id' . ' = ' . $model->RolesRoom->alias . '.id'),
-				$conditions
+			'conditions' => array(
+				$model->RolesRoomsUser->alias . '.roles_room_id' . ' = ' . $model->RolesRoom->alias . '.id',
 			),
-		);
-		$joins[] = array(
+		), Hash::get($joinModels, 'RolesRoom', array()));
+
+		$joins[] = Hash::merge(array(
 			'table' => $model->RoomRole->table,
 			'alias' => $model->RoomRole->alias,
 			'type' => 'LEFT',
-			'conditions' => Hash::merge(
-				array($model->RolesRoom->alias . '.role_key' . ' = ' . $model->RoomRole->alias . '.role_key'),
-				$conditions
+			'conditions' => array(
+				$model->RolesRoom->alias . '.role_key' . ' = ' . $model->RoomRole->alias . '.role_key',
 			),
-		);
+		), Hash::get($joinModels, 'RolesRoom', array()));
 
-		if (Hash::check($joinModels, 'Room')) {
-			$conditions = Hash::get($joinModels, 'Room');
-		} else {
-			$conditions = array();
-		}
-		$joins[] = array(
+		$joins[] = Hash::merge(array(
 			'table' => $model->Room->table,
 			'alias' => $model->Room->alias,
 			'type' => 'LEFT',
-			'conditions' => Hash::merge(
-				array($model->RolesRoomsUser->alias . '.room_id' . ' = ' . $model->Room->alias . '.id'),
-				$conditions
+			'conditions' => array(
+				$model->RolesRoomsUser->alias . '.room_id' . ' = ' . $model->Room->alias . '.id',
 			),
-		);
+		), Hash::get($joinModels, 'Room', array()));
 
 		return $joins;
+	}
+
+/**
+ * 検索フィールドを取得する
+ *
+ * @param Model $model Model ビヘイビア呼び出し前のモデル
+ * @return array 実際に検索できるフィールドリスト
+ */
+	public function getSearchFields(Model $model) {
+		$this->__prepare($model);
+
+		return array(
+			$model->alias . '.*',
+			$model->UsersLanguage->alias . '.*',
+			$model->RolesRoomsUser->alias . '.*',
+			$model->RolesRoom->alias . '.*',
+			$model->Room->alias . '.*'
+		);
 	}
 
 /**
