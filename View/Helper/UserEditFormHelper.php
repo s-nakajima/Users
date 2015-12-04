@@ -131,7 +131,7 @@ class UserEditFormHelper extends AppHelper {
 	public function userPublicForSelf($userAttribute) {
 		$html = '';
 
-		if (! $userAttribute['UserAttributeSetting']['self_publicity'] ||
+		if (! $userAttribute['UserAttributeSetting']['self_public_setting'] ||
 				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
 				! $userAttribute['UserAttributesRole']['self_editable']) {
@@ -160,7 +160,7 @@ class UserEditFormHelper extends AppHelper {
 		$html = '';
 
 		if ($userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_EMAIL ||
-				! $userAttribute['UserAttributeSetting']['self_email_reception_possibility'] ||
+				! $userAttribute['UserAttributeSetting']['self_email_setting'] ||
 				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
 				! $userAttribute['UserAttributesRole']['self_editable']) {
