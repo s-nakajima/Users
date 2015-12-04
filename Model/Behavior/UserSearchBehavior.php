@@ -24,7 +24,7 @@ class UserSearchBehavior extends ModelBehavior {
  *
  * @var array
  */
-	public static $readableFields = null;
+	public $readableFields = null;
 
 /**
  * 事前準備
@@ -42,7 +42,7 @@ class UserSearchBehavior extends ModelBehavior {
 			'RoomRole' => 'Rooms.RoomRole',
 		]);
 
-		if (isset(self::$readableFields)) {
+		if (isset($this->readableFields)) {
 			return;
 		}
 
@@ -55,29 +55,24 @@ class UserSearchBehavior extends ModelBehavior {
 			)
 		));
 
-		self::$readableFields = array('id');
+		$this->readableFields = array('id');
 		foreach ($results as $key => $field) {
 			//Fieldのチェック
 			if ($model->hasField($field)) {
-				self::$readableFields[$key] = $model->alias . '.' . $field;
+				$this->readableFields[$key] = $model->alias . '.' . $field;
 			}
 			if ($model->UsersLanguage->hasField($field)) {
-				self::$readableFields[$key] = $model->UsersLanguage->alias . '.' . $field;
+				$this->readableFields[$key] = $model->UsersLanguage->alias . '.' . $field;
 			}
 			//Field(is_xxxx_public)のチェック
 			$fieldKey = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $field);
 			if ($model->hasField($fieldKey)) {
-				self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
+				$this->readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
 			}
-			////Field(xxxx_file_id)のチェック
-			//$fieldKey = sprintf(UserAttribute::FILE_FIELD_FORMAT, $field);
-			//if ($model->hasField($fieldKey)) {
-			//	self::$readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
-			//}
 		}
-		self::$readableFields['room_id'] = $model->Room->alias . '.id';
-		self::$readableFields['space_id'] = $model->Room->alias . '.space_id';
-		self::$readableFields['room_role_key'] = $model->RolesRoom->alias . '.role_key';
+		$this->readableFields['room_id'] = $model->Room->alias . '.id';
+		$this->readableFields['space_id'] = $model->Room->alias . '.space_id';
+		$this->readableFields['room_role_key'] = $model->RolesRoom->alias . '.role_key';
 	}
 
 /**
@@ -92,7 +87,7 @@ class UserSearchBehavior extends ModelBehavior {
 
 		$fieldKeys = array_keys($fields);
 		foreach ($fieldKeys as $key) {
-			if (! isset(self::$readableFields[$key])) {
+			if (! isset($this->readableFields[$key])) {
 				unset($fields[$key]);
 			}
 		}
@@ -123,15 +118,15 @@ class UserSearchBehavior extends ModelBehavior {
 				$value = $conditions[$key];
 			}
 
-			if (isset(self::$readableFields[$key])) {
-				$conditions[self::$readableFields[$key] . $sign] = $value;
+			if (isset($this->readableFields[$key])) {
+				$conditions[$this->readableFields[$key] . $sign] = $value;
 				unset($conditions[$key]);
 			} else {
 				$conditions[$key . $sign] = $value;
 			}
 		}
 
-		if (! isset(self::$readableFields['role_key'])) {
+		if (! isset($this->readableFields['role_key'])) {
 			$conditions['User.status'] = '1';
 		}
 		$conditions['User.is_deleted'] = false;
@@ -223,7 +218,7 @@ class UserSearchBehavior extends ModelBehavior {
  */
 	public function getOriginalUserField(Model $model, $field) {
 		$this->__prepare($model);
-		return Hash::get(self::$readableFields, $field);
+		return Hash::get($this->readableFields, $field);
 	}
 
 }
