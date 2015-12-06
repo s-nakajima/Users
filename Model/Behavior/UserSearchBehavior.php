@@ -166,9 +166,7 @@ class UserSearchBehavior extends ModelBehavior {
 		$dataTypeKey = Hash::get($dataType, '0.data_type_key', '');
 
 		if (in_array($field, UserAttribute::$typeDatetime, true) || $dataTypeKey === DataType::DATA_TYPE_DATETIME) {
-			/**
-			 * 日付型の場合
-			 */
+			//日付型の場合
 			if ($setting === UserSearchComponent::MORE_THAN_DAYS) {
 				//○日以上前(○日以上ログインしていない)
 				$sign = ' <=';
@@ -182,10 +180,8 @@ class UserSearchBehavior extends ModelBehavior {
 
 		} elseif (in_array($dataTypeKey, [DataType::DATA_TYPE_TEXT, DataType::DATA_TYPE_TEXTAREA, DataType::DATA_TYPE_EMAIL], true) ||
 				in_array($field, ['created_user', 'modified_user'], true)) {
-			/**
-			 * テキスト型、テキストエリア型、メールアドレス型、作成者、更新者の場合
-			 * ->あいまい検索※今後、MatchAgainstもしくは、前方一致にする必要あり。
-			 */
+			// テキスト型、テキストエリア型、メールアドレス型、作成者、更新者の場合
+			// ->あいまい検索※今後、MatchAgainstもしくは、前方一致にする必要あり。
 			$sign = ' LIKE';
 			$value = '%' . $value . '%';
 		} else {
