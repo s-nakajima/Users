@@ -34,6 +34,22 @@ class UserSearchComponent extends Component {
 	const DEFAULT_LIMIT = 20;
 
 /**
+ * more_than_days定数
+ * ○日以上前(○日以上ログインしていない)
+ *
+ * @var const
+ */
+	const MORE_THAN_DAYS = 'more_than_days';
+
+/**
+ * within_days定数
+ * ○日以内(○日以内ログインしている)
+ *
+ * @var const
+ */
+	const WITHIN_DAYS = 'within_days';
+
+/**
  * Other Components this component uses.
  *
  * @var array
@@ -56,9 +72,16 @@ class UserSearchComponent extends Component {
 		//Modelの呼び出し
 		$controller->User = ClassRegistry::init('Users.User');
 		$controller->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
+	}
 
-		if (! $controller->request->query && ! $controller->request->named) {
-			$controller->Session->delete(self::$sessionKey);
+/**
+ * 条件のクリア
+ *
+ * @return void
+ */
+	public function clearConditions() {
+		if (! $this->controller->request->query && ! $this->controller->request->named) {
+			$this->controller->Session->delete(self::$sessionKey);
 		}
 	}
 
@@ -73,10 +96,21 @@ class UserSearchComponent extends Component {
  */
 	public function search($conditions = array(), $joins = array(), $orders = array(), $limit = self::DEFAULT_LIMIT) {
 		$defaultConditions = $this->controller->Session->read(self::$sessionKey);
+
 		if (! $defaultConditions) {
 			$defaultConditions = array();
 		}
 		$conditions = Hash::merge($defaultConditions, $conditions);
+
+		if (Hash::get($defaultConditions, 'group_id')) {
+			$joins = Hash::merge(array('Group' => true), $joins);
+		}
+		if (Hash::get($defaultConditions, 'created_user')) {
+			$joins = Hash::merge(array('TrackableCreator' => true), $joins);
+		}
+		if (Hash::get($defaultConditions, 'modified_user')) {
+			$joins = Hash::merge(array('TrackableUpdater' => true), $joins);
+		}
 
 		//ユーザデータ取得
 		$this->controller->Paginator->settings = array(
