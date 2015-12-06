@@ -101,15 +101,28 @@ class UserSearchComponent extends Component {
 			$defaultConditions = array();
 		}
 		$conditions = Hash::merge($defaultConditions, $conditions);
-
-		if (Hash::get($defaultConditions, 'group_id')) {
-			$joins = Hash::merge(array('Group' => true), $joins);
-		}
-		if (Hash::get($defaultConditions, 'created_user')) {
-			$joins = Hash::merge(array('TrackableCreator' => true), $joins);
-		}
-		if (Hash::get($defaultConditions, 'modified_user')) {
-			$joins = Hash::merge(array('TrackableUpdater' => true), $joins);
+		$fieldKeys = array_keys($conditions);
+		foreach ($fieldKeys as $field) {
+			if ($field === 'group_id') {
+				$joins = Hash::merge(array('Group' => true), $joins);
+			} elseif ($field === 'created_user') {
+				$joins = Hash::merge(array('TrackableCreator' => true), $joins);
+			} elseif ($field === 'modified_user') {
+				$joins = Hash::merge(array('TrackableUpdater' => true), $joins);
+			} elseif ($this->controller->User->getOriginalUserField($field) ===
+								$this->controller->User->UploadFile->alias . Inflector::classify($field) . '.field_name') {
+				$modelName = $this->controller->User->UploadFile->alias . Inflector::classify($field);
+				$joins = Hash::merge(array($modelName => array(
+					'table' => $this->controller->User->UploadFile->table,
+					'alias' => $modelName,
+					'type' => 'LEFT',
+					'conditions' => array(
+						$modelName . '.content_key' . ' = ' . $this->controller->User->alias . '.id',
+						$modelName . '.plugin_key' => 'users',
+						$modelName . '.field_name' => $field,
+					),
+				)), $joins);
+			}
 		}
 
 		//ユーザデータ取得

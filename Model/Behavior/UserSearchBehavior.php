@@ -42,6 +42,7 @@ class UserSearchBehavior extends ModelBehavior {
 			'RoomRole' => 'Rooms.RoomRole',
 			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'UserAttributesRole' => 'UserRoles.UserAttributesRole',
+			'UploadFile' => 'Files.UploadFile',
 		]);
 
 		if (isset($this->readableFields)) {
@@ -65,7 +66,9 @@ class UserSearchBehavior extends ModelBehavior {
 			$dataTypeKey = Hash::get($dataType, '0.data_type_key', '');
 
 			//Fieldのチェック
-			if (in_array($field, UserAttribute::$typeDatetime, true) || $dataTypeKey === DataType::DATA_TYPE_DATETIME) {
+			if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
+				$this->readableFields[$field] = $model->UploadFile->alias . Inflector::classify($field) . '.field_name';
+			} elseif (in_array($field, UserAttribute::$typeDatetime, true) || $dataTypeKey === DataType::DATA_TYPE_DATETIME) {
 				//日時型の場合
 				$this->readableFields[$field] = $model->alias . '.' . $field;
 				$this->readableFields[$field . '.' . UserSearchComponent::MORE_THAN_DAYS] = $model->alias . '.' . $field;
@@ -128,18 +131,20 @@ class UserSearchBehavior extends ModelBehavior {
 			$setting = Hash::get($explode, '1', null);
 
 			list($sign, $value) = $this->__creanSearchCondtion($model, $field, $setting, $conditions[$key]);
+			unset($conditions[$key]);
 
-			if (isset($this->readableFields[$key]) && $setting === UserSearchComponent::MORE_THAN_DAYS) {
+			if (! isset($this->readableFields[$key])) {
+				continue;
+			}
+
+			if ($setting === UserSearchComponent::MORE_THAN_DAYS) {
 				$conditions[count($conditions)]['OR'] = array(
 					$this->readableFields[$key] => null,
 					$this->readableFields[$key] . $sign => $value
 				);
-			} elseif (isset($this->readableFields[$key])) {
-				$conditions[$this->readableFields[$key] . $sign] = $value;
 			} else {
-				$conditions[$key . $sign] = $value;
+				$conditions[$this->readableFields[$key] . $sign] = $value;
 			}
-			unset($conditions[$key]);
 		}
 
 		if (! isset($this->readableFields['role_key'])) {
@@ -165,7 +170,14 @@ class UserSearchBehavior extends ModelBehavior {
 		$dataType = Hash::extract($userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $field . ']');
 		$dataTypeKey = Hash::get($dataType, '0.data_type_key', '');
 
-		if (in_array($field, UserAttribute::$typeDatetime, true) || $dataTypeKey === DataType::DATA_TYPE_DATETIME) {
+		if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
+			if ($value) {
+				$sign = ' NOT';
+			} else {
+				$sign = '';
+			}
+			$value = null;
+		} elseif (in_array($field, UserAttribute::$typeDatetime, true) || $dataTypeKey === DataType::DATA_TYPE_DATETIME) {
 			//日付型の場合
 			if ($setting === UserSearchComponent::MORE_THAN_DAYS) {
 				//○日以上前(○日以上ログインしていない)
@@ -274,6 +286,11 @@ class UserSearchBehavior extends ModelBehavior {
 					$model->alias . '.modified_user' . ' = ' . 'TrackableUpdater.id',
 				),
 			);
+		}
+
+		$uploads = Hash::extract($joinModels, '{s}[table=' . $model->UploadFile->table . ']');
+		foreach ($uploads as $upload) {
+			$joins[] = $upload;
 		}
 
 		return $joins;
