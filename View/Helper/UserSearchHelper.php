@@ -129,7 +129,7 @@ class UserSearchHelper extends AppHelper {
 			} else {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[code=' . $user[$modelName][$fieldName] . ']');
 			}
-			$value = h($values[0]['name']);
+			$value = h(Hash::get($values, '0.name'));
 		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_DATETIME ||
 				in_array($userAttribute['UserAttribute']['key'], UserAttribute::$typeDatetime, true)) {
 			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
