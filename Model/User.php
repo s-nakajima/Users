@@ -197,22 +197,26 @@ class User extends UsersAppModel {
 		if (! Configure::read('NetCommons.installed')) {
 			//インストール時は、アップロードビヘイビアを削除する
 			$this->Behaviors->unload('Files.Attachment');
-		} else {
-			$this->prepare();
 		}
 	}
 
 /**
  * UserModelの前準備
  *
+ * @param bool $force 強制的に取得するフラグ
  * @return void
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function prepare() {
+	public function prepare($force = false) {
+		if (! $force && $this->userAttributeData && self::$avatarField) {
+			return;
+		}
+
 		$this->loadModels([
 			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'DataType' => 'DataTypes.DataType',
 		]);
-		$userAttributes = $this->UserAttribute->getUserAttributesForLayout(true);
+		$userAttributes = $this->UserAttribute->getUserAttributesForLayout($force);
 		$this->userAttributeData = Hash::combine($userAttributes,
 			'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
 		);
@@ -425,6 +429,8 @@ class User extends UsersAppModel {
  * @return array
  */
 	public function getUser($userId, $languageId = null) {
+		$this->prepare();
+
 		$user = $this->find('first', array(
 			'recursive' => 0,
 			'conditions' => array(
@@ -462,6 +468,7 @@ class User extends UsersAppModel {
 	public function saveUser($data) {
 		//トランザクションBegin
 		$this->begin();
+		$this->prepare();
 
 		//プライベートルームの登録
 		$this->loadModels([
@@ -507,6 +514,7 @@ class User extends UsersAppModel {
 	public function deleteUser($data) {
 		//トランザクションBegin
 		$this->begin();
+		$this->prepare();
 
 		try {
 			//Userデータの削除->論理削除
@@ -545,6 +553,7 @@ class User extends UsersAppModel {
 		App::uses('CsvFileReader', 'Files.Utility');
 
 		//$this->begin();
+		$this->prepare(true);
 
 		$reader = new CsvFileReader($filePath);
 		foreach ($reader as $i => $row) {

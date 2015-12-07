@@ -51,7 +51,6 @@ class ImportTask extends AppShell {
 		$user = $this->User->findById(1);
 		CakeSession::write(AuthComponent::$sessionKey, $user['User']);
 		Current::initialize(new CakeRequest());
-		$this->User->prepare();
 
 		if (! $this->User->importUsers($file)) {
 			//バリデーションエラーの場合
