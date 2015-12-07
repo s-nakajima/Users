@@ -1,11 +1,6 @@
 <?php
 /**
- * Element of block delete form
- *   - $model: Controller for delete request.
- *   - $action: Action for delete request.
- *   - $callback: Callback element for parameters and messages.
- *   - $callbackOptions: Callback options for element.
- *   - $options: Options array for Form->create()
+ * 会員削除テンプレート
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
