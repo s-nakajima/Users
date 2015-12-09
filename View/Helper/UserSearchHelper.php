@@ -97,7 +97,7 @@ class UserSearchHelper extends AppHelper {
 			}
 
 			if ($modelName) {
-				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit);
+				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit, true);
 			} else {
 				$output .= '<td></td>';
 			}
@@ -113,9 +113,10 @@ class UserSearchHelper extends AppHelper {
  * @param string $modelName モデル名
  * @param string $fieldName 表示フィールド
  * @param bool $isEdit 編集の有無
+ * @param bool $tdElement tdタグの出力
  * @return string セルのHTMLタグ
  */
-	public function tableCell($user, $modelName, $fieldName, $isEdit) {
+	public function tableCell($user, $modelName, $fieldName, $isEdit, $tdElement) {
 		$userAttribute = Hash::get($this->userAttributes, $fieldName);
 
 		$value = '';
@@ -137,7 +138,11 @@ class UserSearchHelper extends AppHelper {
 			$value = h($user[$modelName][$fieldName]);
 		}
 
-		return '<td>' . $value . '</td>';
+		if ($tdElement) {
+			return '<td>' . $value . '</td>';
+		} else {
+			return $value;
+		}
 	}
 
 /**
