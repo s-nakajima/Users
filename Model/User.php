@@ -207,7 +207,7 @@ class User extends UsersAppModel {
  * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function prepare($force = false) {
+	private function __prepare($force = false) {
 		if (! $force && $this->userAttributeData && self::$avatarField) {
 			return;
 		}
@@ -429,7 +429,7 @@ class User extends UsersAppModel {
  * @return array
  */
 	public function getUser($userId, $languageId = null) {
-		$this->prepare();
+		$this->__prepare();
 
 		$user = $this->find('first', array(
 			'recursive' => 0,
@@ -468,7 +468,7 @@ class User extends UsersAppModel {
 	public function saveUser($data) {
 		//トランザクションBegin
 		$this->begin();
-		$this->prepare();
+		$this->__prepare();
 
 		//プライベートルームの登録
 		$this->loadModels([
@@ -514,7 +514,7 @@ class User extends UsersAppModel {
 	public function deleteUser($data) {
 		//トランザクションBegin
 		$this->begin();
-		$this->prepare();
+		$this->__prepare();
 
 		try {
 			//Userデータの削除->論理削除
@@ -553,7 +553,7 @@ class User extends UsersAppModel {
 		App::uses('CsvFileReader', 'Files.Utility');
 
 		//$this->begin();
-		$this->prepare(true);
+		$this->__prepare(true);
 
 		$reader = new CsvFileReader($filePath);
 		foreach ($reader as $i => $row) {

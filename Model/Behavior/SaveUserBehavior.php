@@ -181,4 +181,33 @@ class SaveUserBehavior extends ModelBehavior {
 		}
 	}
 
+/**
+ * ユーザの登録処理
+ *
+ * @param array $data data
+ * @return mixed On success Model::$data, false on failure
+ * @throws InternalErrorException
+ */
+	public function updateLoginTime(Model $model, $userId) {
+		//トランザクションBegin
+		$model->begin();
+
+		try {
+			$update = array(
+				'User.pre_last_login' => 'User.last_login',
+				'User.last_login' => '\'' . date('Y-m-d H:i:s') . '\''
+			);
+			$conditions = array('User.id' => (int)$userId);
+			if (! $model->updateAll($update, $conditions)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$model->commit();
+
+		} catch (Exception $ex) {
+			$model->rollback($ex);
+		}
+
+		return true;
+	}
+
 }
