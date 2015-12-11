@@ -87,6 +87,7 @@ class User extends UsersAppModel {
 		'Users.SaveUser',
 		'Users.DeleteUser',
 		'Users.UserSearch',
+		//'Users.Avatar',
 	);
 
 /**
@@ -207,7 +208,7 @@ class User extends UsersAppModel {
  * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	private function __prepare($force = false) {
+	public function prepare($force = false) {
 		if (! $force && $this->userAttributeData && self::$avatarField) {
 			return;
 		}
@@ -429,7 +430,7 @@ class User extends UsersAppModel {
  * @return array
  */
 	public function getUser($userId, $languageId = null) {
-		$this->__prepare();
+		$this->prepare();
 
 		$user = $this->find('first', array(
 			'recursive' => 0,
@@ -468,7 +469,7 @@ class User extends UsersAppModel {
 	public function saveUser($data) {
 		//トランザクションBegin
 		$this->begin();
-		$this->__prepare();
+		$this->prepare();
 
 		//プライベートルームの登録
 		$this->loadModels([
@@ -490,6 +491,8 @@ class User extends UsersAppModel {
 			if (! $user = $this->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
+
+			//$this->createAvatarAutomatically($user);
 
 			//トランザクションCommit
 			$this->commit();
@@ -514,7 +517,7 @@ class User extends UsersAppModel {
 	public function deleteUser($data) {
 		//トランザクションBegin
 		$this->begin();
-		$this->__prepare();
+		$this->prepare();
 
 		try {
 			//Userデータの削除->論理削除
@@ -553,7 +556,7 @@ class User extends UsersAppModel {
 		App::uses('CsvFileReader', 'Files.Utility');
 
 		//$this->begin();
-		$this->__prepare(true);
+		$this->prepare(true);
 
 		$reader = new CsvFileReader($filePath);
 		foreach ($reader as $i => $row) {

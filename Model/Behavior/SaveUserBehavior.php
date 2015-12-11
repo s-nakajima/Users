@@ -184,7 +184,8 @@ class SaveUserBehavior extends ModelBehavior {
 /**
  * ユーザの登録処理
  *
- * @param array $data data
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param int $userId ユーザID
  * @return mixed On success Model::$data, false on failure
  * @throws InternalErrorException
  */

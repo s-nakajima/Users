@@ -45,6 +45,7 @@ class UserSearchBehavior extends ModelBehavior {
 			'UploadFile' => 'Files.UploadFile',
 		]);
 
+		$model->prepare();
 		if (isset($this->readableFields)) {
 			return;
 		}
