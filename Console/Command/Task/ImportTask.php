@@ -35,6 +35,8 @@ class ImportTask extends AppShell {
  * @return void
  */
 	public function execute() {
+		Security::setHash('sha512');
+
 		$file = Hash::get($this->args, '0');
 		if (! $file) {
 			$this->args[0] = $this->in(__d('users', 'Enter import file path.'));

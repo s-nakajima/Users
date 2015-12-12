@@ -35,11 +35,11 @@ class AvatarBehavior extends ModelBehavior {
 		$draw->setfillcolor('white');
 
 		//フォントサイズを 160 に設定します
-		$draw->setFontSize(160);
+		$draw->setFontSize(140);
 
 		//テキストを追加します
 		$draw->setFont(CakePlugin::path($model->plugin) . 'webroot' . DS . 'fonts' . DS . 'ipag.ttf');
-		$draw->annotation(10, 152, mb_substr(mb_convert_kana($user['User']['handlename'], 'KVA'), 0, 1));
+		$draw->annotation(19, 143, mb_substr(mb_convert_kana($user['User']['handlename'], 'KVA'), 0, 1));
 
 		//新しいキャンバスオブジェクトを作成する
 		$canvas = new Imagick();
@@ -48,7 +48,7 @@ class AvatarBehavior extends ModelBehavior {
 		$red = strtolower(dechex(mt_rand(3, 12)));
 		$green = strtolower(dechex(mt_rand(3, 12)));
 		$blue = strtolower(dechex(mt_rand(3, 12)));
-		$canvas->newImage(180, 180, '#' . $red . $red . $green . $green . $blue . $blue);
+		$canvas->newImage(179, 179, '#' . $red . $red . $green . $green . $blue . $blue);
 
 		//ImagickDraw をキャンバス上に描画します
 		$canvas->drawImage($draw);
