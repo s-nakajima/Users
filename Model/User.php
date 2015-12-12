@@ -521,7 +521,12 @@ class User extends UsersAppModel {
 						Hash::get($user, 'User.handlename') &&
 						Hash::get($beforeUser, 'User.handlename') !== Hash::get($user, 'User.handlename')) {
 
-					$this->createAvatarAutomatically($user);
+					$filePath = $this->createAvatarAutomatically($user);
+
+					$currentDir = getcwd();
+					chdir(APP . WEBROOT_DIR);
+					$this->attachFile($user, User::$avatarField, $filePath, 'id');
+					chdir($currentDir);
 				}
 			}
 

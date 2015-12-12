@@ -61,12 +61,7 @@ class AvatarBehavior extends ModelBehavior {
 		$filePath = $folder->path . DS . Security::hash($user['User']['handlename'], 'md5') . '.png';
 		$canvas->writeImages($filePath, true);
 
-		$currentDir = getcwd();
-		chdir(APP . WEBROOT_DIR);
-		$model->attachFile($user, User::$avatarField, $filePath, 'id');
-		chdir($currentDir);
-
-		return true;
+		return $filePath;
 	}
 
 }
