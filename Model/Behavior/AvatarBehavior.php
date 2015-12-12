@@ -28,28 +28,27 @@ class AvatarBehavior extends ModelBehavior {
  * @throws InternalErrorException
  */
 	public function createAvatarAutomatically(Model $model, $user) {
-		if (Hash::get($user, 'UploadFile') ||
-				Hash::get($user, 'User.' . User::$avatarField . '.name') ||
-				! Hash::get($user, 'User.handlename')) {
-			return true;
-		}
-
 		//imagickdraw オブジェクトを作成します
 		$draw = new ImagickDraw();
 
 		//文字色のセット
 		$draw->setfillcolor('white');
 
-		//フォントサイズを 200 に設定します
-		$draw->setFontSize(200);
+		//フォントサイズを 160 に設定します
+		$draw->setFontSize(160);
 
 		//テキストを追加します
-		$draw->setFont(CakePlugin::path($model->plugin) . 'webroot' . DS . 'fonts' . DS . 'NotoSansCJKjp-Regular.otf');
-		$draw->annotation(50, 225, mb_substr(mb_convert_kana($user['User']['handlename'], 'KVA'), 0, 1));
+		$draw->setFont(CakePlugin::path($model->plugin) . 'webroot' . DS . 'fonts' . DS . 'ipag.ttf');
+		$draw->annotation(10, 152, mb_substr(mb_convert_kana($user['User']['handlename'], 'KVA'), 0, 1));
 
 		//新しいキャンバスオブジェクトを作成する
 		$canvas = new Imagick();
-		$canvas->newImage(300, 300, '#99CCCC');
+
+		//ランダムで背景色を指定する
+		$red = strtolower(dechex(mt_rand(3, 12)));
+		$green = strtolower(dechex(mt_rand(3, 12)));
+		$blue = strtolower(dechex(mt_rand(3, 12)));
+		$canvas->newImage(180, 180, '#' . $red . $red . $green . $green . $blue . $blue);
 
 		//ImagickDraw をキャンバス上に描画します
 		$canvas->drawImage($draw);
@@ -57,12 +56,18 @@ class AvatarBehavior extends ModelBehavior {
 		//フォーマットを PNG に設定します
 		$canvas->setImageFormat('png');
 
-		App::uses('TemporaryFile', 'Files.Utility');
-		$file = new TemporaryFile();
-		$canvas->writeImages('/var/www/app/app/webroot/bbb.png', true);
-		$canvas->writeImages($file->path . '.png', TRUE);
+		App::uses('TemporaryFolder', 'Files.Utility');
+		$folder = new TemporaryFolder();
+		$folder->cd(APP . WEBROOT_DIR);
 
-		return $model->attachFile($user, User::$avatarField, $file->path . '.png', 'id');
+		$filePath = $folder->path . DS . Security::hash($user['User']['handlename'], 'md5') . '.png';
+		$canvas->writeImages($filePath, true);
+
+		$model->attachFile($user, User::$avatarField, $filePath, 'id');
+
+		$folder->cd(TMP);
+
+		return true;
 	}
 
 }

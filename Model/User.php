@@ -87,7 +87,7 @@ class User extends UsersAppModel {
 		'Users.SaveUser',
 		'Users.DeleteUser',
 		'Users.UserSearch',
-		//'Users.Avatar',
+		'Users.Avatar',
 	);
 
 /**
@@ -198,6 +198,7 @@ class User extends UsersAppModel {
 		if (! Configure::read('NetCommons.installed')) {
 			//インストール時は、アップロードビヘイビアを削除する
 			$this->Behaviors->unload('Files.Attachment');
+			$this->Behaviors->unload('Users.Avatar');
 		}
 	}
 
@@ -480,6 +481,21 @@ class User extends UsersAppModel {
 		$currentRoom = Current::read('Room');
 		Current::$current['Room'] = null;
 
+		$beforeUser = $this->find('first', array(
+			'recursive' => -1,
+			'conditions' => array(
+				$this->alias . '.id' => Hash::get($data, 'User.id')
+			),
+		));
+
+		if (Hash::get($data, 'User.' . User::$avatarField . '.remove')) {
+			$data['User']['is_avatar_auto_created'] = true;
+		} elseif (Hash::get($data, 'User.' . User::$avatarField . '.name')) {
+			$data['User']['is_avatar_auto_created'] = false;
+		} else {
+			$data['User']['is_avatar_auto_created'] = (bool)Hash::get($beforeUser, 'User.is_avatar_auto_created', true);
+		}
+
 		//バリデーション
 		$this->set($data);
 		if (! $this->validates()) {
@@ -492,7 +508,22 @@ class User extends UsersAppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
-			//$this->createAvatarAutomatically($user);
+			if ($this->Behaviors->hasMethod('createAvatarAutomatically')) {
+				//下記の条件の場合、自動的にアバターを生成する
+				// * 削除がチェックONになっている ||
+				// * アップロードファイルがない &&
+				//     アバターを自動生成する場合 &&
+				//     ハンドルを登録する場合 &&
+				//     登録前のハンドル名と登録後のハンドル名が異なる場合
+				if (Hash::get($data, 'User.' . User::$avatarField . '.remove') ||
+						$data['User']['is_avatar_auto_created'] &&
+						! Hash::get($user, 'User.' . User::$avatarField . '.name') &&
+						Hash::get($user, 'User.handlename') &&
+						Hash::get($beforeUser, 'User.handlename') !== Hash::get($user, 'User.handlename')) {
+
+					$this->createAvatarAutomatically($user);
+				}
+			}
 
 			//トランザクションCommit
 			$this->commit();
