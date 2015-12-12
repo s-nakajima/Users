@@ -58,14 +58,13 @@ class AvatarBehavior extends ModelBehavior {
 
 		App::uses('TemporaryFolder', 'Files.Utility');
 		$folder = new TemporaryFolder();
-		$folder->cd(APP . WEBROOT_DIR);
-
 		$filePath = $folder->path . DS . Security::hash($user['User']['handlename'], 'md5') . '.png';
 		$canvas->writeImages($filePath, true);
 
+		$currentDir = getcwd();
+		chdir(APP . WEBROOT_DIR);
 		$model->attachFile($user, User::$avatarField, $filePath, 'id');
-
-		$folder->cd(TMP);
+		chdir($currentDir);
 
 		return true;
 	}
