@@ -106,8 +106,8 @@ class UsersSchema extends CakeSchema {
 		'is_password_modified_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'last_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'Last login | 最終ログイン日時'),
 		'is_last_login_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
-		'pre_last_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'PreLast login | 前回ログイン日時'),
-		'is_pre_last_login_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'previous_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'PreLast login | 前回ログイン日時'),
+		'is_previous_login_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_profile_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_search_keywords_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'indexes' => array(

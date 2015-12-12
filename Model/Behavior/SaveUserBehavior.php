@@ -195,7 +195,7 @@ class SaveUserBehavior extends ModelBehavior {
 
 		try {
 			$update = array(
-				'User.pre_last_login' => 'User.last_login',
+				'User.previous_login' => 'User.last_login',
 				'User.last_login' => '\'' . date('Y-m-d H:i:s') . '\''
 			);
 			$conditions = array('User.id' => (int)$userId);

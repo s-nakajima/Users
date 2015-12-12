@@ -11,18 +11,18 @@
 /**
  * Migration file
  *
- * * 前回ログイン日時に関するするフィールド追加（pre_last_login、is_pre_last_login_public）
+ * * 前回ログイン日時に関するするフィールド追加（previous_login、is_previous_login_public）
  *
  * @package NetCommons\Users\Config\Migration
  */
-class AddPreLastLogin extends CakeMigration {
+class AddPrevioustLogin extends CakeMigration {
 
 /**
  * Migration description
  *
  * @var string
  */
-	public $description = 'add_pre_last_login';
+	public $description = 'add_previous_login';
 
 /**
  * Actions to be performed
@@ -33,14 +33,14 @@ class AddPreLastLogin extends CakeMigration {
 		'up' => array(
 			'create_field' => array(
 				'users' => array(
-					'pre_last_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'PreLast login | 前回ログイン日時', 'after' => 'is_last_login_public'),
-					'is_pre_last_login_public' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'after' => 'pre_last_login'),
+					'previous_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'previoust login | 前回ログイン日時', 'after' => 'is_last_login_public'),
+					'is_previous_login_public' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'after' => 'previous_login'),
 				),
 			),
 		),
 		'down' => array(
 			'drop_field' => array(
-				'users' => array('pre_last_login', 'is_pre_last_login_public'),
+				'users' => array('previous_login', 'is_previous_login_public'),
 			),
 		),
 	);
