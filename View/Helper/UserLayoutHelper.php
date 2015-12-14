@@ -191,11 +191,15 @@ class UserLayoutHelper extends AppHelper {
  * @return bool 表示有無
  */
 	public function isDisplayable($userAttribute) {
+		//表示しない条件
+		// * 非表示項目の場合
+		// * パスワード項目
+		// * 他人の項目が読めない && 他人
+		// * 本人の項目が読めない && 本人
 		if (! $userAttribute['UserAttributeSetting']['display'] ||
 				$userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_PASSWORD ||
 				(! $userAttribute['UserAttributesRole']['other_readable'] && Current::read('User.id') !== $this->_View->viewVars['user']['User']['id']) ||
-				(! $userAttribute['UserAttributesRole']['self_readable'] && Current::read('User.id') === $this->_View->viewVars['user']['User']['id']) ||
-				$userAttribute['UserAttributeSetting']['only_administrator'] && ! Current::allowSystemPlugin('user_manager')) {
+				(! $userAttribute['UserAttributesRole']['self_readable'] && Current::read('User.id') === $this->_View->viewVars['user']['User']['id'])) {
 
 			return false;
 		} else {

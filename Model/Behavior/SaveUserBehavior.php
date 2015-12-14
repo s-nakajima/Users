@@ -113,7 +113,7 @@ class SaveUserBehavior extends ModelBehavior {
 		}
 
 		//管理者しか強化しない項目のチェック⇒不正エラーとする
-		if ($userAttribute['UserAttributeSetting']['only_administrator'] &&
+		if ($userAttribute['UserAttributeSetting']['only_administrator_editable'] &&
 				! Current::allowSystemPlugin('user_manager') && isset($model->data[$modelName][$userAttributeKey])) {
 
 			throw new BadRequestException(__d('net_commons', 'Bad Request'));
