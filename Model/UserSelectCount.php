@@ -217,7 +217,7 @@ class UserSelectCount extends UsersAppModel {
 					),
 				),
 			),
-			'order' => array($this->alias . '.select_count' => 'desc'),
+			'order' => array($this->alias . '.select_count' => 'desc', $this->alias . '.modified' => 'desc'),
 			'limit' => self::LIMIT,
 		));
 		return $users;

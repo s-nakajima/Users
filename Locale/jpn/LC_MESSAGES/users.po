@@ -70,3 +70,5 @@ msgstr "選択されていません。"
 msgid "Please enter handle name."
 msgstr "ハンドルを入力して下さい。"
 
+msgid "Too many results to show. Can you think of more specific search keywords?"
+msgstr "検索結果は、%s件までしか表示できません。さらに条件を絞り込んで下さい。"

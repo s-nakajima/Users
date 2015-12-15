@@ -59,37 +59,19 @@ $data += $tokens;
 	<?php $this->end(); ?>
 
 	<br ng-if="searched">
-	<div class="panel panel-default" ng-if="searched">
-		<div class="panel-body pre-scrollable user-selection-list-group">
+	<div class="panel panel-default" ng-if="searched"
+			ng-class="{'panel-danger': (paginator && paginator.endPage > 1 || !searchResults.length)}">
+
+		<div class="panel-heading" ng-if="(paginator && paginator.endPage > 1)">
+			<?php echo sprintf(__d('users', 'Too many results to show. Can you think of more specific search keywords?'), UserSelectCount::LIMIT); ?>
+		</div>
+		<div class="panel-heading" ng-if="(!searchResults.length)">
+			<?php echo __d('users', 'Not found the search result.'); ?>
+		</div>
+		<div class="panel-body pre-scrollable user-selection-list-group" ng-if="(searchResults.length)">
 			<div ng-if="searchResults.length">
 				<?php echo $this->element('Users/select_users', array('userType' => 'searchResults')); ?>
 			</div>
-			<div ng-if="!searchResults.length">
-				<?php echo __d('users', 'Not found the search result.'); ?>
-			</div>
-		</div>
-		<div class="panel-footer text-center user-selection-panel-footer" ng-if="(paginator && searched)">
-			<nav>
-				<ul class="pagination pagination-sm">
-					<li ng-if="paginator.startPage !== 1">
-						<a href="" aria-label="First" ng-click="movePage(1)">
-							<span aria-hidden="true">&laquo;</span>
-						</a>
-					</li>
-
-					<li ng-repeat="page in pages" ng-class="{active: page === paginator.page}">
-						<a href="" ng-click="movePage(page)">
-							{{page}}
-						</a>
-					</li>
-
-					<li ng-if="paginator.endPage !== paginator.pageCount">
-						<a href="" aria-label="Last" ng-click="movePage(paginator.pageCount)">
-							<span aria-hidden="true">&raquo;</span>
-						</a>
-					</li>
-				</ul>
-			</nav>
 		</div>
 	</div>
 
