@@ -513,7 +513,7 @@ class User extends UsersAppModel {
 				// * 削除がチェックONになっている ||
 				// * アップロードファイルがない &&
 				//     アバターを自動生成する場合 &&
-				//     ハンドルを登録する場合 &&
+				//     ハンドルを登録(POSTに含まれている)する場合 &&
 				//     登録前のハンドル名と登録後のハンドル名が異なる場合
 				if (Hash::get($data, 'User.' . User::$avatarField . '.remove') ||
 						$data['User']['is_avatar_auto_created'] &&

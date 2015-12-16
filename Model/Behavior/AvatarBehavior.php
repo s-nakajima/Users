@@ -45,10 +45,13 @@ class AvatarBehavior extends ModelBehavior {
 		$canvas = new Imagick();
 
 		//ランダムで背景色を指定する
-		$red = strtolower(dechex(mt_rand(3, 12)));
-		$green = strtolower(dechex(mt_rand(3, 12)));
-		$blue = strtolower(dechex(mt_rand(3, 12)));
-		$canvas->newImage(179, 179, '#' . $red . $red . $green . $green . $blue . $blue);
+		$red1 = strtolower(dechex(mt_rand(3, 12)));
+		$red2 = strtolower(dechex(mt_rand(0, 15)));
+		$green1 = strtolower(dechex(mt_rand(3, 12)));
+		$green2 = strtolower(dechex(mt_rand(0, 15)));
+		$blue1 = strtolower(dechex(mt_rand(3, 12)));
+		$blue2 = strtolower(dechex(mt_rand(0, 15)));
+		$canvas->newImage(179, 179, '#' . $red1 . $red2 . $green1 . $green2 . $blue1 . $blue2);
 
 		//ImagickDraw をキャンバス上に描画します
 		$canvas->drawImage($draw);
