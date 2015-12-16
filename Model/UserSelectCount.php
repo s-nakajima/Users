@@ -26,7 +26,7 @@ class UserSelectCount extends UsersAppModel {
  *
  * @var const
  */
-	const LIMIT = 30;
+	const LIMIT = 50;
 
 /**
  * Validation rules
