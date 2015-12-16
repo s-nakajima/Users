@@ -515,12 +515,7 @@ class User extends UsersAppModel {
 				//     アバターを自動生成する場合 &&
 				//     ハンドルを登録(POSTに含まれている)する場合 &&
 				//     登録前のハンドル名と登録後のハンドル名が異なる場合
-				if (Hash::get($data, 'User.' . User::$avatarField . '.remove') ||
-						$data['User']['is_avatar_auto_created'] &&
-						! Hash::get($user, 'User.' . User::$avatarField . '.name') &&
-						Hash::get($user, 'User.handlename') &&
-						Hash::get($beforeUser, 'User.handlename') !== Hash::get($user, 'User.handlename')) {
-
+				if ($this->validAvatarAutomatically($data, $user, $beforeUser)) {
 					$filePath = $this->createAvatarAutomatically($user);
 
 					$currentDir = getcwd();

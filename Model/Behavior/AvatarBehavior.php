@@ -23,7 +23,7 @@ class AvatarBehavior extends ModelBehavior {
  * アバター自動生成処理
  *
  * @param Model $model ビヘイビア呼び出し元モデル
- * @param string $text 生成するテキスト
+ * @param array $user ユーザデータ配列
  * @return mixed On success Model::$data, false on failure
  * @throws InternalErrorException
  */
@@ -65,6 +65,30 @@ class AvatarBehavior extends ModelBehavior {
 		$canvas->writeImages($filePath, true);
 
 		return $filePath;
+	}
+
+/**
+ * アバター自動生成チェック
+ *
+ * * 削除がチェックONになっている ||
+ * * アップロードファイルがない &&
+ *		アバターを自動生成する場合 &&
+ *		ハンドルを登録(POSTに含まれている)する場合 &&
+ *		登録前のハンドル名と登録後のハンドル名が異なる場合
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $data リクエストデータ配列
+ * @param array $user ユーザデータ配列
+ * @param array $beforeUser 変更前ユーザデータ配列
+ * @return mixed On success Model::$data, false on failure
+ * @throws InternalErrorException
+ */
+	public function validAvatarAutomatically(Model $model, $data, $user, $beforeUser) {
+		return Hash::get($data, 'User.' . User::$avatarField . '.remove') ||
+			$data['User']['is_avatar_auto_created'] &&
+			! Hash::get($user, 'User.' . User::$avatarField . '.name') &&
+			Hash::get($user, 'User.handlename') &&
+			Hash::get($beforeUser, 'User.handlename') !== Hash::get($user, 'User.handlename');
 	}
 
 }
