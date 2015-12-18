@@ -75,7 +75,6 @@ class ImportExportBehavior extends ModelBehavior {
  * 後で、ちゃんと仕様を考えて作る
  *
  * @param Model $model Model using this behavior
- * @param string $pass ファイルのPassword
  * @return bool True on success, false on failure
  */
 	public function exportUsers(Model $model) {
