@@ -10,7 +10,6 @@
  */
 ?>
 
-
 <div class="row">
 	<div class="col-xs-12 user-selection-list" ng-repeat="user in <?php echo $userType; ?> track by $index" ng-class="{'user-selection-list-offset': $odd}">
 		<?php if ($userType === 'searchResults') : ?>

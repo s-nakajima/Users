@@ -109,8 +109,12 @@ class UserEditFormHelper extends AppHelper {
 	public function userInputForSelf($userAttribute) {
 		$html = '';
 
-		if ($userAttribute['UserAttributeSetting']['only_administrator'] ||
-				Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
+		//以下の条件の場合、何も表示しない
+		// * 「本人も書けない（管理者のみ書ける）」項目の場合
+		// * 他人の場合
+		// * 「自分自身が読めない」の場合
+		// * 「自分自身が書けない」の場合
+		if (Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
 				! $userAttribute['UserAttributesRole']['self_editable']) {
 
@@ -131,7 +135,7 @@ class UserEditFormHelper extends AppHelper {
 	public function userPublicForSelf($userAttribute) {
 		$html = '';
 
-		if (! $userAttribute['UserAttributeSetting']['self_publicity'] ||
+		if (! $userAttribute['UserAttributeSetting']['self_public_setting'] ||
 				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
 				! $userAttribute['UserAttributesRole']['self_editable']) {
@@ -160,7 +164,7 @@ class UserEditFormHelper extends AppHelper {
 		$html = '';
 
 		if ($userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_EMAIL ||
-				! $userAttribute['UserAttributeSetting']['self_email_reception_possibility'] ||
+				! $userAttribute['UserAttributeSetting']['self_email_setting'] ||
 				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
 				! $userAttribute['UserAttributesRole']['self_editable']) {

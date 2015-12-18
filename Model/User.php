@@ -87,6 +87,7 @@ class User extends UsersAppModel {
 		'Users.SaveUser',
 		'Users.DeleteUser',
 		'Users.UserSearch',
+		'Users.Avatar',
 	);
 
 /**
@@ -197,22 +198,27 @@ class User extends UsersAppModel {
 		if (! Configure::read('NetCommons.installed')) {
 			//インストール時は、アップロードビヘイビアを削除する
 			$this->Behaviors->unload('Files.Attachment');
-		} else {
-			$this->prepare();
+			$this->Behaviors->unload('Users.Avatar');
 		}
 	}
 
 /**
  * UserModelの前準備
  *
+ * @param bool $force 強制的に取得するフラグ
  * @return void
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function prepare() {
+	public function prepare($force = false) {
+		if (! $force && $this->userAttributeData && self::$avatarField) {
+			return;
+		}
+
 		$this->loadModels([
 			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'DataType' => 'DataTypes.DataType',
 		]);
-		$userAttributes = $this->UserAttribute->getUserAttributesForLayout(true);
+		$userAttributes = $this->UserAttribute->getUserAttributesForLayout($force);
 		$this->userAttributeData = Hash::combine($userAttributes,
 			'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
 		);
@@ -425,6 +431,8 @@ class User extends UsersAppModel {
  * @return array
  */
 	public function getUser($userId, $languageId = null) {
+		$this->prepare();
+
 		$user = $this->find('first', array(
 			'recursive' => 0,
 			'conditions' => array(
@@ -462,6 +470,7 @@ class User extends UsersAppModel {
 	public function saveUser($data) {
 		//トランザクションBegin
 		$this->begin();
+		$this->prepare();
 
 		//プライベートルームの登録
 		$this->loadModels([
@@ -471,6 +480,21 @@ class User extends UsersAppModel {
 
 		$currentRoom = Current::read('Room');
 		Current::$current['Room'] = null;
+
+		$beforeUser = $this->find('first', array(
+			'recursive' => -1,
+			'conditions' => array(
+				$this->alias . '.id' => Hash::get($data, 'User.id')
+			),
+		));
+
+		if (Hash::get($data, 'User.' . User::$avatarField . '.remove')) {
+			$data['User']['is_avatar_auto_created'] = true;
+		} elseif (Hash::get($data, 'User.' . User::$avatarField . '.name')) {
+			$data['User']['is_avatar_auto_created'] = false;
+		} else {
+			$data['User']['is_avatar_auto_created'] = (bool)Hash::get($beforeUser, 'User.is_avatar_auto_created', true);
+		}
 
 		//バリデーション
 		$this->set($data);
@@ -482,6 +506,23 @@ class User extends UsersAppModel {
 			//Userデータの登録
 			if (! $user = $this->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			if ($this->Behaviors->hasMethod('createAvatarAutomatically')) {
+				//下記の条件の場合、自動的にアバターを生成する
+				// * 削除がチェックONになっている ||
+				// * アップロードファイルがない &&
+				//     アバターを自動生成する場合 &&
+				//     ハンドルを登録(POSTに含まれている)する場合 &&
+				//     登録前のハンドル名と登録後のハンドル名が異なる場合
+				if ($this->validAvatarAutomatically($data, $user, $beforeUser)) {
+					$filePath = $this->createAvatarAutomatically($user);
+
+					$currentDir = getcwd();
+					chdir(APP . WEBROOT_DIR);
+					$this->attachFile($user, User::$avatarField, $filePath, 'id');
+					chdir($currentDir);
+				}
 			}
 
 			//トランザクションCommit
@@ -507,6 +548,7 @@ class User extends UsersAppModel {
 	public function deleteUser($data) {
 		//トランザクションBegin
 		$this->begin();
+		$this->prepare();
 
 		try {
 			//Userデータの削除->論理削除
@@ -545,6 +587,7 @@ class User extends UsersAppModel {
 		App::uses('CsvFileReader', 'Files.Utility');
 
 		//$this->begin();
+		$this->prepare(true);
 
 		$reader = new CsvFileReader($filePath);
 		foreach ($reader as $i => $row) {

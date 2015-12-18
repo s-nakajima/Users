@@ -113,7 +113,7 @@ class SaveUserBehavior extends ModelBehavior {
 		}
 
 		//管理者しか強化しない項目のチェック⇒不正エラーとする
-		if ($userAttribute['UserAttributeSetting']['only_administrator'] &&
+		if ($userAttribute['UserAttributeSetting']['only_administrator_editable'] &&
 				! Current::allowSystemPlugin('user_manager') && isset($model->data[$modelName][$userAttributeKey])) {
 
 			throw new BadRequestException(__d('net_commons', 'Bad Request'));
@@ -179,6 +179,36 @@ class SaveUserBehavior extends ModelBehavior {
 		} else {
 			$model->validate[$userAttributeKey] = $validates;
 		}
+	}
+
+/**
+ * ユーザの登録処理
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param int $userId ユーザID
+ * @return mixed On success Model::$data, false on failure
+ * @throws InternalErrorException
+ */
+	public function updateLoginTime(Model $model, $userId) {
+		//トランザクションBegin
+		$model->begin();
+
+		try {
+			$update = array(
+				'User.previous_login' => 'User.last_login',
+				'User.last_login' => '\'' . date('Y-m-d H:i:s') . '\''
+			);
+			$conditions = array('User.id' => (int)$userId);
+			if (! $model->updateAll($update, $conditions)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$model->commit();
+
+		} catch (Exception $ex) {
+			$model->rollback($ex);
+		}
+
+		return true;
 	}
 
 }

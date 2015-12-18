@@ -76,6 +76,7 @@ class UsersSchema extends CakeSchema {
 		'key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Link identifier | リンク識別子', 'charset' => 'utf8'),
 		'is_deleted' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'is_avatar_auto_created' => array('type' => 'boolean', 'null' => false, 'default' => '1'),
 		'handlename' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Handle | ハンドル', 'charset' => 'utf8'),
 		'is_handlename_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_name_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
@@ -105,6 +106,8 @@ class UsersSchema extends CakeSchema {
 		'is_password_modified_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'last_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'Last login | 最終ログイン日時'),
 		'is_last_login_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'previous_login' => array('type' => 'datetime', 'null' => true, 'default' => null, 'comment' => 'PreLast login | 前回ログイン日時'),
+		'is_previous_login_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_profile_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_search_keywords_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'indexes' => array(

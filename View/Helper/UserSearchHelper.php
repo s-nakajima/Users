@@ -97,7 +97,7 @@ class UserSearchHelper extends AppHelper {
 			}
 
 			if ($modelName) {
-				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit);
+				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit, true);
 			} else {
 				$output .= '<td></td>';
 			}
@@ -113,43 +113,51 @@ class UserSearchHelper extends AppHelper {
  * @param string $modelName モデル名
  * @param string $fieldName 表示フィールド
  * @param bool $isEdit 編集の有無
+ * @param bool $tdElement tdタグの出力
  * @return string セルのHTMLタグ
  */
-	public function tableCell($user, $modelName, $fieldName, $isEdit) {
+	public function tableCell($user, $modelName, $fieldName, $isEdit, $tdElement) {
 		$userAttribute = Hash::get($this->userAttributes, $fieldName);
 
 		$value = '';
 		if ($fieldName === 'handlename') {
-			$value = $this->linkHandlename($user, $modelName, $fieldName, $isEdit);
+			//ハンドル
+			$value = $this->linkHandlename($user, $isEdit);
 		} elseif ($fieldName === 'room_role_key') {
+			//ルーム権限
 			$value = $this->Rooms->roomRoleName($user[$modelName]['role_key']);
 		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
+			//選択肢
 			if ($fieldName === 'role_key') {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[key=' . $user[$modelName][$fieldName] . ']');
 			} else {
 				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[code=' . $user[$modelName][$fieldName] . ']');
 			}
-			$value = h($values[0]['name']);
+			$value = h(Hash::get($values, '0.name'));
 		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_DATETIME ||
 				in_array($userAttribute['UserAttribute']['key'], UserAttribute::$typeDatetime, true)) {
+			//日付型
 			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
 		} else {
+			//その他
 			$value = h($user[$modelName][$fieldName]);
 		}
 
-		return '<td>' . $value . '</td>';
+		if ($tdElement) {
+			return '<td>' . $value . '</td>';
+		} else {
+			return $value;
+		}
 	}
 
 /**
  * ハンドルの出力
  *
  * @param array $user ユーザデータ
- * @param string $modelName モデル名
- * @param string $fieldName 表示フィールド
  * @param bool $isEdit 編集の有無
  * @return string ハンドルのHTMLタグ
  */
-	public function linkHandlename($user, $modelName, $fieldName, $isEdit) {
+	public function linkHandlename($user, $isEdit) {
 		if (! $isEdit) {
 			return $this->DisplayUser->handleLink($user, array('avatar' => true), array(), 'User');
 		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
@@ -159,6 +167,8 @@ class UserSearchHelper extends AppHelper {
 				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id']),
 				array('escape' => false)
 			);
+		} else {
+			return $this->DisplayUser->handle($user, array('avatar' => true), 'User');
 		}
 	}
 

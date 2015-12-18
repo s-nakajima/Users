@@ -12,7 +12,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('AppController', 'Controller');
+App::uses('UsersAppController', 'Users.Controller');
+App::uses('UserSelectCount', 'Users.Model');
 
 /**
  * Users Controller
@@ -24,8 +25,6 @@ class UsersController extends UsersAppController {
 
 /**
  * 会員一覧の表示する項目
- *
- * @var const
  */
 	public static $displaField = 'handlename';
 
@@ -265,7 +264,9 @@ class UsersController extends UsersAppController {
 				'conditions' => array(
 					'Room.page_id_top NOT' => null,
 				)
-			))
+			)),
+			array(),
+			UserSelectCount::LIMIT
 		);
 
 		$fields = array(self::$displaField => self::$displaField);
