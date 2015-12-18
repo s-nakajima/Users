@@ -84,10 +84,11 @@ class User extends UsersAppModel {
 	public $actsAs = array(
 		'NetCommons.OriginalKey',
 		'Files.Attachment',
-		'Users.SaveUser',
-		'Users.DeleteUser',
-		'Users.UserSearch',
 		'Users.Avatar',
+		'Users.DeleteUser',
+		'Users.ImportExport',
+		'Users.SaveUser',
+		'Users.UserSearch',
 	);
 
 /**
@@ -572,49 +573,6 @@ class User extends UsersAppModel {
 			//トランザクションRollback
 			$this->rollback($ex);
 		}
-
-		return true;
-	}
-
-/**
- * インポート処理
- * 後で、ちゃんと仕様を考えて作る
- *
- * @param string $filePath ファイルのパス
- * @return bool True on success, false on failure
- */
-	public function importUsers($filePath) {
-		App::uses('CsvFileReader', 'Files.Utility');
-
-		//$this->begin();
-		$this->prepare(true);
-
-		$reader = new CsvFileReader($filePath);
-		foreach ($reader as $i => $row) {
-			if ($i === 0) {
-				$header = $row;
-				continue;
-			}
-			$row = array_combine($header, $row);
-			$row['User.id'] = null;
-			$row['User.password_again'] = $row['User.password'];
-
-			$data = Hash::expand($row);
-			$data = Hash::insert($data, 'UsersLanguage.{n}.id');
-			$data = Hash::insert($data, 'UsersLanguage.0.language_id', '1');
-			$data = Hash::insert($data, 'UsersLanguage.1.language_id', '2');
-
-			CakeLog::debug(var_export($data, true));
-
-			if (! $this->saveUser($data)) {
-				//バリデーションエラーの場合
-				//CakeLog::debug(var_export($data, true));
-				return false;
-			}
-		}
-
-		//$this->commit();
-		//$this->rollback();
 
 		return true;
 	}
