@@ -150,7 +150,7 @@ class UserLayoutHelper extends AppHelper {
 			} else {
 				$imageUrl = $this->NetCommonsHtml->url('/users/img/noimage.gif');
 			}
-			$element .= '<div class="thumbnail">';
+			$element .= '<div class="thumbnail data-type-thumbnail">';
 			$element .= $this->NetCommonsHtml->image($imageUrl, array(
 				'class' => 'img-responsive img-rounded',
 			));
