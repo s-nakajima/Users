@@ -24,7 +24,7 @@ class ImportExportBehavior extends ModelBehavior {
  *
  * @var const
  */
-	const RANDAMSTR = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&@=-_';
+	const RANDAMSTR = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&=-~+*?@_';
 
 /**
  * エクスポート用のランダム文字列
