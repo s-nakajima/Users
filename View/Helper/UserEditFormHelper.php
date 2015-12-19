@@ -232,6 +232,11 @@ class UserEditFormHelper extends AppHelper {
 			} else {
 				$attributes['url'] = $this->NetCommonsHtml->url('/users/img/noimage.gif');
 			}
+
+			if (Hash::get($this->_View->request->data, 'User.is_avatar_auto_created') && $userAttributeKey === User::$avatarField) {
+				$attributes['remove'] = false;
+				$attributes['filename'] = false;
+			}
 		}
 
 		$html .= $this->DataTypeForm->inputDataType(

@@ -24,7 +24,16 @@ class ImportExportBehavior extends ModelBehavior {
  *
  * @var const
  */
-	const RANDAMSTR = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&@=-_';
+	const RANDAMSTR = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&=-~+*?@_';
+
+/**
+ * エクスポート用のランダム文字列
+ *
+ * @var const
+ */
+	public static $unexportFileds = array(
+		'id', 'key', 'is_deleted', 'created', 'created_user', 'modified', 'modified_user', 'password_modified', 'last_login', 'previous_login'
+	);
 
 /**
  * インポート処理
@@ -81,15 +90,17 @@ class ImportExportBehavior extends ModelBehavior {
 		App::uses('CsvFileWriter', 'Files.Utility');
 
 		$schema = array_flip(array_keys($model->schema(true)));
-		$schema = Hash::remove($schema, 'id');
-		$schema = Hash::remove($schema, 'password');
+		foreach (self::$unexportFileds as $field) {
+			$schema = Hash::remove($schema, $field);
+		}
 
 		$header = array_keys(Hash::flatten(array('User' => $schema)));
 		$csvWriter = new CsvFileWriter(array('header' => array_combine($header, $header)));
 		$users = $model->find('all', array(
 			'recursive' => -1,
 			'conditions' => array(
-				'role_key !=' => UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR
+				'role_key !=' => UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR,
+				'is_deleted' => false,
 			),
 		));
 
@@ -98,6 +109,7 @@ class ImportExportBehavior extends ModelBehavior {
 			return false;
 		}
 		foreach ($users as $user) {
+			$user = Hash::insert($user, 'User.password', '');
 			$csvWriter->addModelData($user);
 		}
 
