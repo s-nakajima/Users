@@ -377,6 +377,7 @@ class UserSearchFormHelper extends AppHelper {
 			'ng-click' => 'showUserSearch(null, ' .
 									'\'' . h($this->_View->request->params['plugin']) . '\', ' .
 									'\'' . h($this->_View->request->params['controller']) . '\', ' .
+									'\'' . h($this->_View->request->params['action']) . '\', ' .
 									'\'' . implode('/', array_map('h', $params)) . '\')'
 		));
 		$html .= '</div>';

@@ -17,7 +17,8 @@ NetCommonsApp.controller('UserSearch.controller', function(
        * @param {string} callbackUrl callbackするURL
        * @return {void}
        */
-      $scope.showUserSearch = function(condtions, plugin, controller, pass) {
+      $scope.showUserSearch = function(
+              condtions, plugin, controller, action, pass) {
         if (pass) {
           pass = '/' + pass
         }
@@ -34,6 +35,7 @@ NetCommonsApp.controller('UserSearch.controller', function(
                   condtions: condtions,
                   plugin: plugin,
                   controller: controller,
+                  action: action,
                   pass: pass
                 }
               }
@@ -50,14 +52,19 @@ NetCommonsApp.controller('UserSearch.search', function(
     $scope, $http, $modalInstance, $location, $window, options) {
 
       /**
-       * プラグイン
+       * 検索後に戻すプラグイン
        */
       $scope.plugin = options['plugin'];
 
       /**
-       * コントローラ
+       * 検索後に戻すコントローラ
        */
       $scope.controller = options['controller'];
+
+      /**
+       * 検索後に戻すアクション
+       */
+      $scope.action = options['action'];
 
       /**
        * URL pass
@@ -92,27 +99,11 @@ NetCommonsApp.controller('UserSearch.search', function(
           }
         }, $scope);
 
-        //console.log($location.url($scope.condtions));
-
-        $http.post($scope.baseUrl + '/' + $scope.plugin + '/' +
-                    $scope.controller + '/search_result' + $scope.pass,
-            $.param({_method: 'POST', data: $scope.condtions}),
-            {cache: false,
-              headers:
-                  {'Content-Type': 'application/x-www-form-urlencoded'}
-            }
-        )
-          .success(function(data) {
-              //success condition
-              $window.location.href = $scope.baseUrl +
-                      $scope.plugin + '/' + $scope.controller +
-                      '/index' + '?search';
-              //$modalInstance.close('success');
-            })
-          .error(function(data, status) {
-              //error condition
-              $modalInstance.dismiss('error');
-            });
+        $location.search($scope.condtions);
+        $window.location.href =
+                $scope.baseUrl + '/' + $scope.plugin + '/' +
+                $scope.controller + '/' + $scope.action +
+                $scope.pass + $location.url();
       };
 
       /**
