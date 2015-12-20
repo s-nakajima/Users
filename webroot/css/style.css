@@ -6,10 +6,6 @@
  * @license  http://www.netcommons.org/license.txt NetCommons License
  */
 
-.user-search-index-head-margin {
-	margin-bottom: 10px;
-}
-
 .user-public-type-form-control {
 	margin-top: -15px;
 }
@@ -59,4 +55,33 @@
 
 .user-selection-panel-footer .pagination {
 	margin: 0px;
+}
+
+.user-search-index-head-margin {
+	margin-bottom: 10px;
+}
+
+.user-search-conditions label {
+	font-weight: normal;
+}
+
+.user-search-conditions-datetime label {
+	width: 60.8%;
+	text-align: left;
+}
+
+input.user-search-conditions-datetime-top {
+	border-bottom-left-radius: 0;
+	border-bottom: 0;
+}
+input.user-search-conditions-datetime-bottom {
+	border-top-left-radius: 0;
+}
+
+label.user-search-conditions-datetime-top {
+	border-bottom-right-radius: 0;
+	border-bottom: 0;
+}
+label.user-search-conditions-datetime-bottom {
+	border-top-right-radius: 0;
 }
