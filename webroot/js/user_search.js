@@ -92,7 +92,7 @@ NetCommonsApp.controller('UserSearch.search', function(
        */
       $scope.search = function() {
         var element = angular.element('#' + $scope.domId);
-        $scope.condtions = {};
+        $scope.condtions = {search: '1'};
         angular.forEach(element.serializeArray(), function(input) {
           if (input['value'] !== '') {
             this.condtions[input['name']] = input['value'];

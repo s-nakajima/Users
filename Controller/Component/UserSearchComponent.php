@@ -78,19 +78,6 @@ class UserSearchComponent extends Component {
 	}
 
 /**
- * 条件のクリア
- *
- * @return void
- */
-	public function clearConditions() {
-		$controller = $this->controller;
-
-		if (! $controller->request->query && ! $controller->request->named) {
-			$controller->Session->delete(self::$sessionKey);
-		}
-	}
-
-/**
  * 条件フォーム出力(モーダル表示固定)
  *
  * @return void
@@ -137,7 +124,7 @@ class UserSearchComponent extends Component {
 	public function search($conditions = array(), $joins = array(), $orders = array(), $limit = self::DEFAULT_LIMIT) {
 		$controller = $this->controller;
 
-		$defaultConditions = $controller->Session->read(self::$sessionKey);
+		$defaultConditions = $controller->User->cleanSearchFields($controller->request->query);
 		if (! $defaultConditions) {
 			$defaultConditions = array();
 		}
@@ -178,5 +165,6 @@ class UserSearchComponent extends Component {
 		$results = $controller->Paginator->paginate('User');
 
 		$controller->set('users', $results);
+		$controller->request->data['UserSearch'] = $defaultConditions;
 	}
 }

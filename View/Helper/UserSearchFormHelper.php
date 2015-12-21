@@ -335,10 +335,6 @@ class UserSearchFormHelper extends AppHelper {
 	public function userSearchGroupsSelect() {
 		$html = '';
 
-		if (! $this->_View->viewVars['groups']) {
-			return $html;
-		}
-
 		$options = array('' => __d('user_manager', '-- Not specify --')) + $this->_View->viewVars['groups'];
 
 		$html .= '<div class="form-group">';
