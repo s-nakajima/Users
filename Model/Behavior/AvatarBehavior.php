@@ -84,9 +84,9 @@ class AvatarBehavior extends ModelBehavior {
  * @throws InternalErrorException
  */
 	public function validAvatarAutomatically(Model $model, $data, $user, $beforeUser) {
-		return Hash::get($data, 'User.' . User::$avatarField . '.remove') ||
+		return Hash::get($data, 'User.' . UserAttribute::AVATAR_FIELD . '.remove') ||
 			$data['User']['is_avatar_auto_created'] &&
-			! Hash::get($user, 'User.' . User::$avatarField . '.name') &&
+			! Hash::get($user, 'User.' . UserAttribute::AVATAR_FIELD . '.name') &&
 			Hash::get($user, 'User.handlename') &&
 			Hash::get($beforeUser, 'User.handlename') !== Hash::get($user, 'User.handlename');
 	}

@@ -20,13 +20,13 @@ NetCommonsApp.controller('UserSearch.controller', function(
       $scope.showUserSearch = function(
               condtions, plugin, controller, action, pass) {
         if (pass) {
-          pass = '/' + pass
+          pass = '/' + pass;
         }
 
         NetCommonsModal.show(
             $scope, 'UserSearch.search',
             $scope.baseUrl + '/' +
-                    plugin + '/' + controller + '/search_conditions' + pass,
+                plugin + '/' + controller + '/search_conditions' + pass,
             {
               backdrop: 'static',
               size: 'lg',
@@ -100,8 +100,7 @@ NetCommonsApp.controller('UserSearch.search', function(
         }, $scope);
 
         $location.search($scope.condtions);
-        $window.location.href =
-                $scope.baseUrl + '/' + $scope.plugin + '/' +
+        $window.location.href = $scope.baseUrl + '/' + $scope.plugin + '/' +
                 $scope.controller + '/' + $scope.action +
                 $scope.pass + $location.url();
       };

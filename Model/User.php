@@ -55,14 +55,6 @@ class User extends UsersAppModel {
 	public static $publicTypes = array();
 
 /**
- * アバタとするフィールド
- * __constructでセットする
- *
- * @var array
- */
-	public static $avatarField = null;
-
-/**
  * language data.
  *
  * @var array
@@ -211,7 +203,7 @@ class User extends UsersAppModel {
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 	public function prepare($force = false) {
-		if (! $force && $this->userAttributeData && self::$avatarField) {
+		if (! $force && $this->userAttributeData && UserAttribute::AVATAR_FIELD) {
 			return;
 		}
 
@@ -230,9 +222,6 @@ class User extends UsersAppModel {
 		foreach ($uploads as $upload) {
 			$this->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
 		}
-
-		//Userモデル内以外でAssociationやJOINで使用するため
-		self::$avatarField = Hash::get($uploads, '0.user_attribute_key');
 	}
 
 /**
@@ -489,9 +478,9 @@ class User extends UsersAppModel {
 			),
 		));
 
-		if (Hash::get($data, 'User.' . User::$avatarField . '.remove')) {
+		if (Hash::get($data, 'User.' . UserAttribute::AVATAR_FIELD . '.remove')) {
 			$data['User']['is_avatar_auto_created'] = true;
-		} elseif (Hash::get($data, 'User.' . User::$avatarField . '.name')) {
+		} elseif (Hash::get($data, 'User.' . UserAttribute::AVATAR_FIELD . '.name')) {
 			$data['User']['is_avatar_auto_created'] = false;
 		} else {
 			$data['User']['is_avatar_auto_created'] = (bool)Hash::get($beforeUser, 'User.is_avatar_auto_created', true);
@@ -521,7 +510,7 @@ class User extends UsersAppModel {
 
 					$currentDir = getcwd();
 					chdir(APP . WEBROOT_DIR);
-					$this->attachFile($user, User::$avatarField, $filePath, 'id');
+					$this->attachFile($user, UserAttribute::AVATAR_FIELD, $filePath, 'id');
 					chdir($currentDir);
 				}
 			}

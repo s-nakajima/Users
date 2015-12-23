@@ -259,7 +259,7 @@ class UsersController extends UsersAppController {
 		$query = Hash::remove($this->request->query, 'room_id');
 
 		$this->UserSearch->search(
-			Hash::merge(array('space_id' => Space::PRIVATE_SPACE_ID), $query),
+			Hash::merge(array(), $query),
 			array('Room' => array(
 				'conditions' => array(
 					'Room.page_id_top NOT' => null,
