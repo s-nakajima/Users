@@ -10,6 +10,7 @@
  */
 
 App::uses('AppModel', 'Model');
+App::uses('UserAttribute', 'UserAttributes.Model');
 
 /**
  * Users App Model
