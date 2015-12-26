@@ -72,17 +72,44 @@ class UserSearchComponent extends Component {
 		//Modelの呼び出し
 		$controller->User = ClassRegistry::init('Users.User');
 		$controller->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
+		$controller->Group = ClassRegistry::init('Groups.Group');
+		$controller->Space = ClassRegistry::init('Rooms.Space');
+		$controller->Room = ClassRegistry::init('Rooms.Room');
 	}
 
 /**
- * 条件のクリア
+ * 条件フォーム出力(モーダル表示固定)
  *
  * @return void
  */
-	public function clearConditions() {
-		if (! $this->controller->request->query && ! $this->controller->request->named) {
-			$this->controller->Session->delete(self::$sessionKey);
-		}
+	public function conditions() {
+		$controller = $this->controller;
+
+		//検索フォーム表示
+		$controller->helpers[] = 'Users.UserSearchForm';
+		$controller->viewClass = 'View';
+		$controller->layout = 'NetCommons.modal';
+		$controller->view = 'Users.UserSearch/conditions';
+
+		//自分自身のグループデータ取得(後でGroupプラグインで用意されれば置き換える)
+		$result = $controller->Group->find('list', array(
+			'recursive' => -1,
+			'fields' => array('id', 'name'),
+			'conditions' => array(
+				'created_user' => Current::read('User.id'),
+			),
+			'order' => array('id'),
+		));
+		$controller->set('groups', $result);
+
+		//参加ルームデータ取得
+		$result = $controller->Room->find('all', $controller->Room->getReadableRoomsCondtions(array(
+			'Room.space_id !=' => Space::PRIVATE_SPACE_ID
+		)));
+		$rooms = Hash::combine($result, '{n}.Room.id', '{n}.RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . '].name');
+		$controller->set('rooms', $rooms);
+
+		$controller->request->data['UserSearch'] = $controller->Session->read(UserSearchComponent::$sessionKey);
 	}
 
 /**
@@ -95,8 +122,9 @@ class UserSearchComponent extends Component {
  * @return array void
  */
 	public function search($conditions = array(), $joins = array(), $orders = array(), $limit = self::DEFAULT_LIMIT) {
-		$defaultConditions = $this->controller->Session->read(self::$sessionKey);
+		$controller = $this->controller;
 
+		$defaultConditions = $controller->User->cleanSearchFields($controller->request->query);
 		if (! $defaultConditions) {
 			$defaultConditions = array();
 		}
@@ -109,15 +137,15 @@ class UserSearchComponent extends Component {
 				$joins = Hash::merge(array('TrackableCreator' => true), $joins);
 			} elseif ($field === 'modified_user') {
 				$joins = Hash::merge(array('TrackableUpdater' => true), $joins);
-			} elseif ($this->controller->User->getOriginalUserField($field) ===
-								$this->controller->User->UploadFile->alias . Inflector::classify($field) . '.field_name') {
-				$modelName = $this->controller->User->UploadFile->alias . Inflector::classify($field);
+			} elseif ($controller->User->getOriginalUserField($field) ===
+								$controller->User->UploadFile->alias . Inflector::classify($field) . '.field_name') {
+				$modelName = $controller->User->UploadFile->alias . Inflector::classify($field);
 				$joins = Hash::merge(array($modelName => array(
-					'table' => $this->controller->User->UploadFile->table,
+					'table' => $controller->User->UploadFile->table,
 					'alias' => $modelName,
 					'type' => 'LEFT',
 					'conditions' => array(
-						$modelName . '.content_key' . ' = ' . $this->controller->User->alias . '.id',
+						$modelName . '.content_key' . ' = ' . $controller->User->alias . '.id',
 						$modelName . '.plugin_key' => 'users',
 						$modelName . '.field_name' => $field,
 					),
@@ -126,16 +154,17 @@ class UserSearchComponent extends Component {
 		}
 
 		//ユーザデータ取得
-		$this->controller->Paginator->settings = array(
+		$controller->Paginator->settings = array(
 			'recursive' => -1,
-			'fields' => $this->controller->User->getSearchFields(),
-			'conditions' => $this->controller->User->getSearchConditions($conditions),
-			'joins' => $this->controller->User->getSearchJoinTables($joins),
-			'order' => Hash::merge($orders, array($this->controller->User->alias . '.id' => 'asc')),
+			'fields' => $controller->User->getSearchFields(),
+			'conditions' => $controller->User->getSearchConditions($conditions),
+			'joins' => $controller->User->getSearchJoinTables($joins),
+			'order' => Hash::merge($orders, array($controller->User->alias . '.id' => 'asc')),
 			'limit' => $limit
 		);
-		$results = $this->controller->Paginator->paginate('User');
+		$results = $controller->Paginator->paginate('User');
 
-		$this->controller->set('users', $results);
+		$controller->set('users', $results);
+		$controller->request->data['UserSearch'] = $defaultConditions;
 	}
 }

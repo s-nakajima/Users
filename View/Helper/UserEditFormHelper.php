@@ -99,7 +99,7 @@ class UserEditFormHelper extends AppHelper {
 	}
 
 /**
- * 会員の入力フォームの表示
+ * 会員の入力フォームの表示(自分)
  *
  * @param array $userAttribute UserAttributeデータ
  * @return string HTMLタグ
@@ -108,13 +108,16 @@ class UserEditFormHelper extends AppHelper {
 		$html = '';
 
 		//以下の条件の場合、何も表示しない
-		// * 「本人も書けない（管理者のみ書ける）」項目の場合
 		// * 他人の場合
-		// * 「自分自身が読めない」の場合
-		// * 「自分自身が書けない」の場合
+		// * 非表示(display=OFF)項目
+		// * 自分が読めない && パスワード以外
+		// * 自分自身が書けない && ラベルタイプ以外
 		if (Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
-				! $userAttribute['UserAttributesRole']['self_readable'] ||
-				! $userAttribute['UserAttributesRole']['self_editable']) {
+				! $userAttribute['UserAttributeSetting']['display'] ||
+				! $userAttribute['UserAttributesRole']['self_readable'] &&
+						$userAttribute['UserAttribute']['key'] !== UserAttribute::PASSWORD_FIELD ||
+				! $userAttribute['UserAttributesRole']['self_editable'] &&
+						$userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_LABEL) {
 
 			return $html;
 		}
@@ -133,10 +136,18 @@ class UserEditFormHelper extends AppHelper {
 	public function userPublicForSelf($userAttribute) {
 		$html = '';
 
+		//以下の条件の場合、何も表示しない
+		// * 各自で公開非公開の設定ができない
+		// * 他人の場合
+		// * 非表示(display=OFF)項目
+		// * 自分が読めない
+		// * 自分自身が書けない && ラベルタイプ以外
 		if (! $userAttribute['UserAttributeSetting']['self_public_setting'] ||
 				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
+				! $userAttribute['UserAttributeSetting']['display'] ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
-				! $userAttribute['UserAttributesRole']['self_editable']) {
+				! $userAttribute['UserAttributesRole']['self_editable'] &&
+						$userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_LABEL) {
 
 			return $html;
 		}
@@ -161,10 +172,16 @@ class UserEditFormHelper extends AppHelper {
 	public function userMailReceptionForSelf($userAttribute) {
 		$html = '';
 
+		//以下の条件の場合、何も表示しない
+		// * メール項目でない
+		// * 各自でメール受信可否の設定ができない
+		// * 他人の場合
+		// * 非表示(display=OFF)項目
+		// * 自分自身が書けない
 		if ($userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_EMAIL ||
 				! $userAttribute['UserAttributeSetting']['self_email_setting'] ||
 				Current::read('User.id') !== Hash::get($this->_View->viewVars, 'user.User.id') ||
-				! $userAttribute['UserAttributesRole']['self_readable'] ||
+				! $userAttribute['UserAttributeSetting']['display'] ||
 				! $userAttribute['UserAttributesRole']['self_editable']) {
 
 			return $html;
@@ -231,7 +248,8 @@ class UserEditFormHelper extends AppHelper {
 				$attributes['url'] = $this->NetCommonsHtml->url('/users/img/noimage.gif');
 			}
 
-			if (Hash::get($this->_View->request->data, 'User.is_avatar_auto_created') && $userAttributeKey === User::$avatarField) {
+			if (Hash::get($this->_View->request->data, 'User.is_avatar_auto_created') &&
+					$userAttributeKey === UserAttribute::AVATAR_FIELD) {
 				$attributes['remove'] = false;
 				$attributes['filename'] = false;
 			}

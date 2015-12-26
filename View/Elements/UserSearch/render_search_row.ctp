@@ -1,6 +1,9 @@
 <?php
 /**
- * Users App Model
+ * 後で見直す
+ * UserAttribute index row template
+ *   - $row: UserAttributeLayout.row
+ *   - $layout: UserAttributeLayout
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -8,16 +11,8 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+?>
 
-App::uses('AppModel', 'Model');
-App::uses('UserAttribute', 'UserAttributes.Model');
-
-/**
- * Users App Model
- *
- * @author Shohei Nakajima <nakajimashouhei@gmail.com>
- * @package NetCommons\Users\Model
- */
-class UsersAppModel extends AppModel {
-
-}
+<div class="row">
+	<?php echo $this->UserAttributeLayout->renderCol('Users.UserSearch/render_search_col', $layout); ?>
+</div>

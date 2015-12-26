@@ -188,23 +188,39 @@ class UserLayoutHelper extends AppHelper {
  * 表示可能な項目かどうかチェック
  *
  * @param array $userAttribute ユーザ属性データ
- * @return bool 表示有無
+ * @return bool 表示可・不可
  */
 	public function isDisplayable($userAttribute) {
-		//表示しない条件
-		// * 非表示項目の場合
-		// * パスワード項目
-		// * 他人の項目が読めない && 他人
-		// * 本人の項目が読めない && 本人
-		if (! $userAttribute['UserAttributeSetting']['display'] ||
-				$userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_PASSWORD ||
-				(! $userAttribute['UserAttributesRole']['other_readable'] && Current::read('User.id') !== $this->_View->viewVars['user']['User']['id']) ||
-				(! $userAttribute['UserAttributesRole']['self_readable'] && Current::read('User.id') === $this->_View->viewVars['user']['User']['id'])) {
-
+		//非表示項目 = false
+		if (! $userAttribute['UserAttributeSetting']['display']) {
 			return false;
-		} else {
+		}
+
+		//パスワード項目 = false
+		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_PASSWORD) {
+			return false;
+		}
+
+		//本人の場合、本人の項目が読めない = false、読める = true
+		if (Current::read('User.id') === $this->_View->viewVars['user']['User']['id']) {
+			return (bool)$userAttribute['UserAttributesRole']['self_readable'];
+		}
+
+		//// 以下、他人の場合
+
+		//他人の項目が読めない = false
+		if (! $userAttribute['UserAttributesRole']['other_readable']) {
+			return false;
+		}
+
+		//各自で公開・非公開が設定不可 = true
+		if (! $userAttribute['UserAttributeSetting']['self_public_setting']) {
 			return true;
 		}
+
+		//各自で公開に設定 = true、各自で公開に設定 = false
+		$isPublicField = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
+		return Hash::get($this->_View->viewVars['user']['User'], $isPublicField);
 	}
 
 }

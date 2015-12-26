@@ -213,7 +213,7 @@ class UserSelectCount extends UsersAppModel {
 					'type' => 'LEFT',
 					'conditions' => array(
 						$this->UploadFile->alias . '.content_key' . ' = User.id',
-						$this->UploadFile->alias . '.field_name' => User::$avatarField,
+						$this->UploadFile->alias . '.field_name' => UserAttribute::AVATAR_FIELD,
 					),
 				),
 			),

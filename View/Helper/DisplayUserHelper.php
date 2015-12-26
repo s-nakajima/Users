@@ -10,6 +10,7 @@
  */
 
 App::uses('AppHelper', 'View/Helper');
+App::uses('UserAttribute', 'UserAttributes.Model');
 
 /**
  * DisplayUser Helper
@@ -104,8 +105,8 @@ class DisplayUserHelper extends AppHelper {
 	public function avatar($user, $attributes = array(), $asImageTag = true) {
 		$html = '';
 
-		if (Hash::check($user, 'UploadFile.' . User::$avatarField . '.field_name')) {
-			$keyPath = 'UploadFile.' . User::$avatarField . '.field_name';
+		if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
+			$keyPath = 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name';
 		} else {
 			$keyPath = 'UploadFile.field_name';
 		}
