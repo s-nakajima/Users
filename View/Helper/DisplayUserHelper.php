@@ -10,6 +10,7 @@
  */
 
 App::uses('AppHelper', 'View/Helper');
+App::uses('UserAttribute', 'UserAttributes.Model');
 
 /**
  * DisplayUser Helper
