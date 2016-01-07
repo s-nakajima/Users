@@ -219,12 +219,31 @@ class UsersController extends UsersAppController {
 		$this->__prepare();
 
 		$fieldName = $this->params['pass'][1];
-		$fileSetting = Hash::extract(
-			$this->viewVars['userAttributes'],
-			'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
-		);
-		if (! $fileSetting) {
+		//$fileSetting = Hash::extract(
+		//	$this->viewVars['userAttributes'],
+		//	'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
+		//);
+		//if (! $fileSetting) {
+		//	throw new NotFoundException();
+		//}
+
+CakeLog::debug(print_r($fieldName, true));
+CakeLog::debug(print_r($this->viewVars['user'], true));
+		if (Hash::check($this->viewVars['user'], 'UploadFile.' . $fieldName . '.field_name')) {
+			$keyPath = 'UploadFile.' . $fieldName . '.field_name';
+		} else {
 			throw new NotFoundException();
+		}
+		$avatar = Hash::get(Hash::extract($this->viewVars['user'], $keyPath), '0');
+		if (! $avatar) {
+			$fieldSize = $this->params['pass'][2];
+			if ($fieldSize === 'thumb') {
+				$noimage = User::AVATAR_THUMB;
+			} else {
+				$noimage = User::AVATAR_IMG;
+			}
+			$this->response->file(App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . $noimage, array('name' => 'No Image'));
+			return $this->response;
 		}
 
 		// 以下の条件の場合、noimageを表示する
@@ -232,8 +251,6 @@ class UsersController extends UsersAppController {
 		// * 個人情報設定で閲覧不可、
 		// * ユーザ項目属性の管理者のみ許可する場合で会員管理が使えない
 
-		//	$this->response->file(Router::url('/users/img/noimage.gif'), array('name' => 'No Image'));
-		//	return $this->response;
 
 		return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
 			'field' => $this->params['pass'][1],

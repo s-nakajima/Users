@@ -47,6 +47,20 @@ class User extends UsersAppModel {
 	const PUBLIC_TYPE_DISCLOSE_TO_ALL = '1';
 
 /**
+ * アバターNoimageサムネイル画像
+ *
+ * @var const
+ */
+	const AVATAR_THUMB = 'Avatar.PNG';
+
+/**
+ * アバターNoimage画像
+ *
+ * @var const
+ */
+	const AVATAR_IMG = 'noimage.gif';
+
+/**
  * 公開・非公開のリスト
  * __constructでセットする
  *
@@ -429,6 +443,9 @@ class User extends UsersAppModel {
 				$this->alias . '.id' => $userId
 			),
 		));
+
+		CakeLog::debug(print_r($user, true));
+		
 		unset($user['User']['password']);
 
 		$conditions = array(

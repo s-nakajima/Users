@@ -104,26 +104,27 @@ class DisplayUserHelper extends AppHelper {
  */
 	public function avatar($user, $attributes = array(), $asImageTag = true) {
 		$html = '';
+		CakeLog::debug(print_r($user, true));
+CakeLog::debug('aaaaa');
+		//if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
+		//	$keyPath = 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name';
+		//} else {
+		//	$keyPath = 'UploadFile.field_name';
+		//}
 
-		if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
-			$keyPath = 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name';
-		} else {
-			$keyPath = 'UploadFile.field_name';
-		}
-
-		$avatar = Hash::get(Hash::extract($user, $keyPath), '0');
-		if ($avatar) {
+		//$avatar = Hash::get(Hash::extract($user, $keyPath), '0');
+		//if ($avatar) {
 			$url = NetCommonsUrl::actionUrl(array(
 				'plugin' => 'users',
 				'controller' => 'users',
 				'action' => 'download',
 				'key' => Hash::get($user, 'User.id'),
-				$avatar,
+				UserAttribute::AVATAR_FIELD,
 				'thumb'
 			));
-		} else {
-			$url = '/users/img/avatar.PNG';
-		}
+		//} else {
+		//	$url = '/users/img/avatar.PNG';
+		//}
 
 		if ($asImageTag) {
 			$html .= $this->NetCommonsHtml->image($url,
