@@ -85,7 +85,7 @@ class DisplayUserHelper extends AppHelper {
 		} else {
 			if (Hash::get($attributes, 'avatar')) {
 				$attributes = Hash::remove($attributes, 'avatar');
-				$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model) . ' ';
+				$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model, true) . ' ';
 			}
 			$handlename .= h(Hash::get($user, $model . '.handlename'));
 		}
@@ -102,10 +102,9 @@ class DisplayUserHelper extends AppHelper {
  * @return string HTMLタグ
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function avatar($user, $attributes = array(), $asImageTag = true) {
+	public function avatar($user, $attributes = array(), $model = 'TrackableCreator', $asImageTag = true) {
 		$html = '';
-		CakeLog::debug(print_r($user, true));
-CakeLog::debug('aaaaa');
+
 		//if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
 		//	$keyPath = 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name';
 		//} else {
@@ -118,7 +117,7 @@ CakeLog::debug('aaaaa');
 				'plugin' => 'users',
 				'controller' => 'users',
 				'action' => 'download',
-				'key' => Hash::get($user, 'User.id'),
+				'key' => Hash::get($user, $model . '.id'),
 				UserAttribute::AVATAR_FIELD,
 				'thumb'
 			));

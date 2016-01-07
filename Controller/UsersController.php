@@ -227,15 +227,7 @@ class UsersController extends UsersAppController {
 		//	throw new NotFoundException();
 		//}
 
-CakeLog::debug(print_r($fieldName, true));
-CakeLog::debug(print_r($this->viewVars['user'], true));
-		if (Hash::check($this->viewVars['user'], 'UploadFile.' . $fieldName . '.field_name')) {
-			$keyPath = 'UploadFile.' . $fieldName . '.field_name';
-		} else {
-			throw new NotFoundException();
-		}
-		$avatar = Hash::get(Hash::extract($this->viewVars['user'], $keyPath), '0');
-		if (! $avatar) {
+		if (! Hash::get($this->viewVars['user'], 'UploadFile.' . $fieldName . '.field_name')) {
 			$fieldSize = $this->params['pass'][2];
 			if ($fieldSize === 'thumb') {
 				$noimage = User::AVATAR_THUMB;
@@ -246,11 +238,20 @@ CakeLog::debug(print_r($this->viewVars['user'], true));
 			return $this->response;
 		}
 
-		// 以下の条件の場合、noimageを表示する
-		// * 非公開 && 自分以外、
-		// * 個人情報設定で閲覧不可、
-		// * ユーザ項目属性の管理者のみ許可する場合で会員管理が使えない
+		//以下の場合、アバター表示
+		// * 自動生成画像
+		// * 自分自身
+		if (Hash::get($this->viewVars['user'], 'User.is_avatar_auto_created') ||
+				Hash::get($this->viewVars['user'], 'User.id') === Current::read('User.id')) {
+			return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
+				'field' => $this->params['pass'][1],
+				'size' => $this->params['pass'][2])
+			);
+		}
 
+		// 以下の条件の場合、ハンドル画像を表示する(後で)
+		// * 各自で公開・非公開が設定可 && 非公開
+		// * 個人情報設定で閲覧不可、
 
 		return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
 			'field' => $this->params['pass'][1],

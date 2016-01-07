@@ -51,7 +51,7 @@ class User extends UsersAppModel {
  *
  * @var const
  */
-	const AVATAR_THUMB = 'Avatar.PNG';
+	const AVATAR_THUMB = 'noimage_thumbnail.gif';
 
 /**
  * アバターNoimage画像
@@ -445,7 +445,7 @@ class User extends UsersAppModel {
 		));
 
 		CakeLog::debug(print_r($user, true));
-		
+
 		unset($user['User']['password']);
 
 		$conditions = array(
