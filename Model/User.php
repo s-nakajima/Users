@@ -444,8 +444,6 @@ class User extends UsersAppModel {
 			),
 		));
 
-		CakeLog::debug(print_r($user, true));
-
 		unset($user['User']['password']);
 
 		$conditions = array(
