@@ -85,7 +85,7 @@ class DisplayUserHelper extends AppHelper {
 		} else {
 			if (Hash::get($attributes, 'avatar')) {
 				$attributes = Hash::remove($attributes, 'avatar');
-				$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model) . ' ';
+				$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model, true) . ' ';
 			}
 			$handlename .= h(Hash::get($user, $model . '.handlename'));
 		}
@@ -98,32 +98,33 @@ class DisplayUserHelper extends AppHelper {
  *
  * @param array $user ユーザデータ
  * @param array $attributes imgタグの属性
+ * @param array $model モデル名(TrackableCreatorやTrackableUpdaterなど)
  * @param bool $asImageTag imgタグとするかのフラグ
  * @return string HTMLタグ
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function avatar($user, $attributes = array(), $asImageTag = true) {
+	public function avatar($user, $attributes = array(), $model = 'TrackableCreator', $asImageTag = true) {
 		$html = '';
 
-		if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
-			$keyPath = 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name';
-		} else {
-			$keyPath = 'UploadFile.field_name';
-		}
+		//if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
+		//	$keyPath = 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name';
+		//} else {
+		//	$keyPath = 'UploadFile.field_name';
+		//}
 
-		$avatar = Hash::get(Hash::extract($user, $keyPath), '0');
-		if ($avatar) {
+		//$avatar = Hash::get(Hash::extract($user, $keyPath), '0');
+		//if ($avatar) {
 			$url = NetCommonsUrl::actionUrl(array(
 				'plugin' => 'users',
 				'controller' => 'users',
 				'action' => 'download',
-				'key' => Hash::get($user, 'User.id'),
-				$avatar,
+				'key' => Hash::get($user, $model . '.id'),
+				UserAttribute::AVATAR_FIELD,
 				'thumb'
 			));
-		} else {
-			$url = '/users/img/avatar.PNG';
-		}
+		//} else {
+		//	$url = '/users/img/avatar.PNG';
+		//}
 
 		if ($asImageTag) {
 			$html .= $this->NetCommonsHtml->image($url,

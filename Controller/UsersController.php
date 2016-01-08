@@ -219,21 +219,39 @@ class UsersController extends UsersAppController {
 		$this->__prepare();
 
 		$fieldName = $this->params['pass'][1];
-		$fileSetting = Hash::extract(
-			$this->viewVars['userAttributes'],
-			'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
-		);
-		if (! $fileSetting) {
-			throw new NotFoundException();
+		//$fileSetting = Hash::extract(
+		//	$this->viewVars['userAttributes'],
+		//	'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
+		//);
+		//if (! $fileSetting) {
+		//	throw new NotFoundException();
+		//}
+
+		if (! Hash::get($this->viewVars['user'], 'UploadFile.' . $fieldName . '.field_name')) {
+			$fieldSize = $this->params['pass'][2];
+			if ($fieldSize === 'thumb') {
+				$noimage = User::AVATAR_THUMB;
+			} else {
+				$noimage = User::AVATAR_IMG;
+			}
+			$this->response->file(App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . $noimage, array('name' => 'No Image'));
+			return $this->response;
 		}
 
-		// 以下の条件の場合、noimageを表示する
-		// * 非公開 && 自分以外、
-		// * 個人情報設定で閲覧不可、
-		// * ユーザ項目属性の管理者のみ許可する場合で会員管理が使えない
+		//以下の場合、アバター表示
+		// * 自動生成画像
+		// * 自分自身
+		if (Hash::get($this->viewVars['user'], 'User.is_avatar_auto_created') ||
+				Hash::get($this->viewVars['user'], 'User.id') === Current::read('User.id')) {
+			return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
+				'field' => $this->params['pass'][1],
+				'size' => $this->params['pass'][2])
+			);
+		}
 
-		//	$this->response->file(Router::url('/users/img/noimage.gif'), array('name' => 'No Image'));
-		//	return $this->response;
+		// 以下の条件の場合、ハンドル画像を表示する(後で)
+		// * 各自で公開・非公開が設定可 && 非公開
+		// * 個人情報設定で閲覧不可、
 
 		return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
 			'field' => $this->params['pass'][1],
