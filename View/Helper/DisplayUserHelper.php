@@ -98,6 +98,7 @@ class DisplayUserHelper extends AppHelper {
  *
  * @param array $user ユーザデータ
  * @param array $attributes imgタグの属性
+ * @param array $model モデル名(TrackableCreatorやTrackableUpdaterなど)
  * @param bool $asImageTag imgタグとするかのフラグ
  * @return string HTMLタグ
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
