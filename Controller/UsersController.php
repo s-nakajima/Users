@@ -100,7 +100,7 @@ class UsersController extends UsersAppController {
 		if ($roomId) {
 			//ルームデータ取得
 			$conditions = array('Room.id' => $roomId);
-			$count = $this->Room->find('count', $this->Room->getReadableRoomsCondtions($conditions));
+			$count = $this->Room->find('count', $this->Room->getReadableRoomsConditions($conditions));
 			if (! $count) {
 				$this->setAction('throwBadRequest');
 				return;
@@ -132,7 +132,7 @@ class UsersController extends UsersAppController {
 		}
 
 		//ルームデータ取得
-		$result = $this->Room->find('all', $this->Room->getReadableRoomsCondtions());
+		$result = $this->Room->find('all', $this->Room->getReadableRoomsConditions());
 		$this->set('rooms', Hash::combine($result, '{n}.Room.id', '{n}'));
 
 		//ルームのTreeリスト取得
