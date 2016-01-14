@@ -98,12 +98,12 @@ class DisplayUserHelper extends AppHelper {
  *
  * @param array $user ユーザデータ
  * @param array $attributes imgタグの属性
- * @param array $model モデル名(TrackableCreatorやTrackableUpdaterなど)
+ * @param string $modelId モデル名+id(TrackableCreator.idやTrackableUpdater.idなど)
  * @param bool $asImageTag imgタグとするかのフラグ
  * @return string HTMLタグ
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function avatar($user, $attributes = array(), $model = 'TrackableCreator', $asImageTag = true) {
+	public function avatar($user, $attributes = array(), $modelId = 'TrackableCreator.id', $asImageTag = true) {
 		$html = '';
 
 		//if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
@@ -118,7 +118,7 @@ class DisplayUserHelper extends AppHelper {
 				'plugin' => 'users',
 				'controller' => 'users',
 				'action' => 'download',
-				'key' => Hash::get($user, $model . '.id'),
+				'key' => Hash::get($user, $modelId),
 				UserAttribute::AVATAR_FIELD,
 				'thumb'
 			));
