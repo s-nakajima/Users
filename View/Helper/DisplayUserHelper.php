@@ -85,7 +85,7 @@ class DisplayUserHelper extends AppHelper {
 		} else {
 			if (Hash::get($attributes, 'avatar')) {
 				$attributes = Hash::remove($attributes, 'avatar');
-				$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model, true) . ' ';
+				$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model . '.id', true) . ' ';
 			}
 			$handlename .= h(Hash::get($user, $model . '.handlename'));
 		}
