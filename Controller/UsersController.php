@@ -66,6 +66,18 @@ class UsersController extends UsersAppController {
 	);
 
 /**
+ * beforeFilter
+ *
+ * @return void
+ */
+	public function beforeFilter() {
+		// ゲストアクセスOKのアクションを設定
+		$this->Auth->allow('download');
+
+		parent::beforeFilter();
+	}
+
+/**
  * アクションの前処理
  * Controller::beforeFilter()のあと、アクション前に実行する
  *
