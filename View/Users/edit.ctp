@@ -24,6 +24,12 @@ echo $this->NetCommonsHtml->css('/users/css/style.css');
 			<?php echo __d('users', 'Rooms'); ?>
 		</a>
 	</li>
+
+	<li class="disabled">
+		<a href="">
+			<?php echo __d('groups', 'Groups management'); ?>
+		</a>
+	</li>
 </ul>
 <br>
 

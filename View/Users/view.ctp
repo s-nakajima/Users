@@ -27,6 +27,12 @@
 				<?php echo __d('users', 'Rooms'); ?>
 			</a>
 		</li>
+
+		<li>
+			<a href="#user-groups" aria-controls="user-groups" role="tab" data-toggle="tab">
+				<?php echo __d('groups', 'Groups management'); ?>
+			</a>
+		</li>
 	</ul>
 	<br>
 <?php endif; ?>
@@ -41,4 +47,8 @@
 			<?php echo $this->element('Users/view_rooms'); ?>
 		</div>
 	<?php endif; ?>
+
+	<div class="tab-pane" id="user-groups">
+		<?php echo $this->element('Groups.list'); ?>
+	</div>
 </div>

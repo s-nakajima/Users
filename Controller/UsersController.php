@@ -39,6 +39,7 @@ class UsersController extends UsersAppController {
 		'Rooms.RolesRoomsUser',
 		'Users.User',
 		'Users.UserSelectCount',
+		'Groups.Group',
 	);
 
 /**
@@ -63,19 +64,8 @@ class UsersController extends UsersAppController {
 		'NetCommons.Token',
 		'UserAttributes.UserAttributeLayout',
 		'Users.UserLayout',
+		'Groups.GroupUserList',
 	);
-
-/**
- * beforeFilter
- *
- * @return void
- */
-	public function beforeFilter() {
-		// ゲストアクセスOKのアクションを設定
-		$this->Auth->allow('download');
-
-		parent::beforeFilter();
-	}
 
 /**
  * アクションの前処理
@@ -154,6 +144,10 @@ class UsersController extends UsersAppController {
 		$roomTreeLists[Space::ROOM_SPACE_ID] = $this->Room->generateTreeList(
 				array('Room.space_id' => Space::ROOM_SPACE_ID), null, null, Room::$treeParser);
 		$this->set('roomTreeLists', $roomTreeLists);
+
+		// グループデータ取得
+		$groups = $this->Group->getGroupList();
+		$this->set('groups', $groups);
 	}
 
 /**
