@@ -103,7 +103,7 @@ class UserSearchComponent extends Component {
 		$controller->set('groups', $result);
 
 		//参加ルームデータ取得
-		$result = $controller->Room->find('all', $controller->Room->getReadableRoomsCondtions(array(
+		$result = $controller->Room->find('all', $controller->Room->getReadableRoomsConditions(array(
 			'Room.space_id !=' => Space::PRIVATE_SPACE_ID
 		)));
 		$rooms = Hash::combine($result, '{n}.Room.id', '{n}.RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . '].name');
