@@ -40,14 +40,18 @@ class DisplayUserHelper extends AppHelper {
  */
 	public function handleLink($user, $attributes = array(), $options = array(), $model = 'TrackableCreator') {
 		$html = '';
-		$handlename = $this->handle($user, $attributes, $model);
-		$attributes = Hash::remove($attributes, 'avatar');
-
 		if (Hash::get($user, 'ngModel')) {
 			$userId = Hash::get($user, 'ngModel') . '.id';
+		} elseif (strpos($model, '.') !== false) {
+			$userId = '\'' . Hash::get($user, $model) . '\'';
+			$model = substr($model, 0, strpos($model, '.'));
 		} else {
 			$userId = '\'' . Hash::get($user, $model . '.id') . '\'';
 		}
+
+		$handlename = $this->handle($user, $attributes, $model);
+		$attributes = Hash::remove($attributes, 'avatar');
+
 		if (! Current::read('User.id')) {
 			$attributes['ng-click'] = null;
 		}
