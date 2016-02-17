@@ -33,7 +33,7 @@ class DisplayUserHelper extends AppHelper {
  * 投稿者(TrackableCreator)や最終更新者(TrackableUpdater)などのハンドルリンクの表示
  *
  * @param array $user ユーザデータ
- * @param array $attributes リンクタグの属性
+ * @param array $attributes リンクタグの属性。array('avatar' => true)とするとアバターも表示する
  * @param array $options リンクタグのオプション
  * @param array $model モデル名(TrackableCreatorやTrackableUpdaterなど)
  * @return string HTMLタグ
@@ -69,7 +69,7 @@ class DisplayUserHelper extends AppHelper {
  * 投稿者(TrackableCreator)や最終更新者(TrackableUpdater)などのハンドルの表示
  *
  * @param array $user ユーザデータ
- * @param array $attributes ハンドル表示の属性
+ * @param array $attributes ハンドル表示の属性。array('avatar' => true)とするとアバターも表示する
  * @param array $model モデル名(TrackableCreatorやTrackableUpdaterなど)
  * @return string HTMLタグ
  */
