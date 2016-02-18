@@ -368,7 +368,9 @@ class User extends UsersAppModel {
 			]);
 			$room = $this->PrivateSpace->createRoom();
 			$room['RolesRoomsUser']['user_id'] = $this->data['User']['id'];
-			$this->Room->saveRoom($room);
+			if (! $this->Room->saveRoom($room)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
 
 			//デフォルト参加ルームの登録
 			$rooms = $this->Room->find('all', array(
@@ -504,6 +506,7 @@ class User extends UsersAppModel {
 		//バリデーション
 		$this->set($data);
 		if (! $this->validates()) {
+CakeLog::debug('saveUser() $this->validates()');
 			return false;
 		}
 
@@ -512,6 +515,7 @@ class User extends UsersAppModel {
 			if (! $user = $this->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
+CakeLog::debug('$user = ' . print_r($user, true));
 
 			if ($this->Behaviors->hasMethod('createAvatarAutomatically')) {
 				//下記の条件の場合、自動的にアバターを生成する
@@ -532,6 +536,7 @@ class User extends UsersAppModel {
 
 			//トランザクションCommit
 			$this->commit();
+CakeLog::debug('commit');
 
 		} catch (Exception $ex) {
 			//トランザクションRollback
@@ -539,7 +544,7 @@ class User extends UsersAppModel {
 		}
 
 		Current::$current['Room'] = $currentRoom;
-
+CakeLog::debug('$currentRoom = ' . print_r($currentRoom, true));
 		return $user;
 	}
 
