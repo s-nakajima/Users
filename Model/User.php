@@ -506,7 +506,6 @@ class User extends UsersAppModel {
 		//バリデーション
 		$this->set($data);
 		if (! $this->validates()) {
-CakeLog::debug('saveUser() $this->validates()');
 			return false;
 		}
 
@@ -515,7 +514,6 @@ CakeLog::debug('saveUser() $this->validates()');
 			if (! $user = $this->save(null, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-CakeLog::debug('$user = ' . print_r($user, true));
 
 			if ($this->Behaviors->hasMethod('createAvatarAutomatically')) {
 				//下記の条件の場合、自動的にアバターを生成する
@@ -536,7 +534,6 @@ CakeLog::debug('$user = ' . print_r($user, true));
 
 			//トランザクションCommit
 			$this->commit();
-CakeLog::debug('commit');
 
 		} catch (Exception $ex) {
 			//トランザクションRollback
@@ -544,7 +541,7 @@ CakeLog::debug('commit');
 		}
 
 		Current::$current['Room'] = $currentRoom;
-CakeLog::debug('$currentRoom = ' . print_r($currentRoom, true));
+
 		return $user;
 	}
 
