@@ -343,16 +343,15 @@ class User extends UsersAppModel {
  */
 	public function afterSave($created, $options = array()) {
 		//UsersLanguage登録
-		if (isset($this->data['UsersLanguage'])) {
-			if ($created) {
-				$this->data = Hash::insert($this->data, 'UsersLanguage.{n}.user_id', $this->data['User']['id']);
+		$userLanguages = Hash::get($this->data, 'UsersLanguage', array());
+		if ($created) {
+			$this->data = Hash::insert($this->data, 'UsersLanguage.{n}.user_id', $this->data['User']['id']);
+		}
+		foreach ($userLanguages as $index => $usersLanguage) {
+			if (! $ret = $this->UsersLanguage->save($usersLanguage, false, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-			foreach ($this->data['UsersLanguage'] as $index => $usersLanguage) {
-				if (! $ret = $this->UsersLanguage->save($usersLanguage, false, false)) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-				$this->data['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
-			}
+			$this->data['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
 		}
 
 		//インストール時は、言語のCurrentデータをセットする
