@@ -432,9 +432,13 @@ class User extends UsersAppModel {
  * Userの存在チェック
  *
  * @param int|array $userId ユーザID
- * @return array
+ * @return bool True:正常、False:不正
  */
 	public function existsUser($userId) {
+		if (! $userId) {
+			return false;
+		}
+
 		if (! is_array($userId)) {
 			$userId = (array)$userId;
 		}
