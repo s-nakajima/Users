@@ -343,11 +343,11 @@ class User extends UsersAppModel {
  */
 	public function afterSave($created, $options = array()) {
 		//UsersLanguage登録
-		$userLanguages = Hash::get($this->data, 'UsersLanguage', array());
+		$usersLanguages = Hash::get($this->data, 'UsersLanguage', array());
 		if ($created) {
-			$this->data = Hash::insert($this->data, 'UsersLanguage.{n}.user_id', $this->data['User']['id']);
+			$usersLanguages = Hash::insert($usersLanguages, '{n}.user_id', $this->data['User']['id']);
 		}
-		foreach ($userLanguages as $index => $usersLanguage) {
+		foreach ($usersLanguages as $index => $usersLanguage) {
 			if (! $ret = $this->UsersLanguage->save($usersLanguage, false, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
