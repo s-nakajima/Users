@@ -38,7 +38,7 @@ class AvatarBehavior extends ModelBehavior {
 		$draw->setFontSize(140);
 
 		//テキストを追加します
-		$draw->setFont(CakePlugin::path($model->plugin) . 'webroot' . DS . 'fonts' . DS . 'ipag.ttf');
+		$draw->setFont(CakePlugin::path($model->plugin) . 'webroot' . DS . 'fonts' . DS . 'ipaexg.ttf');
 		$draw->annotation(19, 143, mb_substr(mb_convert_kana($user['User']['handlename'], 'KVA'), 0, 1));
 
 		//新しいキャンバスオブジェクトを作成する
