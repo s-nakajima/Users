@@ -446,7 +446,8 @@ class User extends UsersAppModel {
 		$count = $this->find('count', array(
 			'recursive' => -1,
 			'conditions' => array(
-				$this->alias . '.id' => $userId
+				$this->alias . '.id' => $userId,
+				$this->alias . '.is_deleted' => false,
 			),
 		));
 

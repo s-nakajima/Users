@@ -62,9 +62,15 @@ class UserExistsUserTest extends NetCommonsModelTestCase {
  */
 	public function dataProvider() {
 		return array(
+			// * user_idなし
 			array('userId' => null, 'expected' => false),
+			// * user_idが配列でない
 			array('userId' => '1', 'expected' => true),
+			// * user_idが配列
 			array('userId' => array('1', '3'), 'expected' => true),
+			// * user_idに削除済みのユーザが含まれる
+			array('userId' => array('1', '7'), 'expected' => false),
+			// * user_idが不正
 			array('userId' => array('1', '99'), 'expected' => false),
 		);
 	}
