@@ -9,6 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
+App::uses('Shell', 'Console');
 App::uses('AppShell', 'Console/Command');
 App::uses('AuthComponent', 'Controller/Component');
 
