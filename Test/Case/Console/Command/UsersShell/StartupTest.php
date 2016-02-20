@@ -40,7 +40,7 @@ class ConsoleCommandUsersShellStartupTest extends NetCommonsConsoleTestCase {
  */
 	public function testStartup() {
 		$shell = $this->_shellName;
-		$this->loadShell($shell);
+		$this->$shell = $this->loadShell($shell);
 
 		//チェック
 		$this->$shell->expects($this->at(0))->method('out')

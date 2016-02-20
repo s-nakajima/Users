@@ -40,7 +40,7 @@ class ConsoleCommandUsersShellGetOptionParserTest extends NetCommonsConsoleTestC
  */
 	public function testGetOptionParser() {
 		$shell = $this->_shellName;
-		$this->loadShell($shell, 'h');
+		$this->$shell = $this->loadShell($shell, 'h');
 		$this->$shell->Import = $this->getMock('ImportTask',
 				array('getOptionParser'), array(), '', false);
 
