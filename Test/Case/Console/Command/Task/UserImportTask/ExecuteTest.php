@@ -27,6 +27,7 @@ class UsersConsoleCommandTaskUserImportTaskExecuteTest extends NetCommonsConsole
 	public $fixtures = array(
 		'plugin.plugin_manager.plugins_role',
 		'plugin.roles.default_role_permission',
+		'plugin.rooms.room_role_permission',
 		'plugin.user_roles.user_role_setting',
 	);
 
