@@ -1,6 +1,6 @@
 <?php
 /**
- * ImportTask::execute()のテスト
+ * UserImportTask::execute()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -12,12 +12,12 @@
 App::uses('NetCommonsConsoleTestCase', 'NetCommons.TestSuite');
 
 /**
- * ImportTask::execute()のテスト
+ * UserImportTask::execute()のテスト
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
- * @package NetCommons\Users\Test\Case\Console\Command\Task\ImportTask
+ * @package NetCommons\Users\Test\Case\Console\Command\Task\UserImportTask
  */
-class UsersConsoleCommandTaskImportTaskExecuteTest extends NetCommonsConsoleTestCase {
+class UsersConsoleCommandTaskUserImportTaskExecuteTest extends NetCommonsConsoleTestCase {
 
 /**
  * Fixtures
@@ -41,7 +41,7 @@ class UsersConsoleCommandTaskImportTaskExecuteTest extends NetCommonsConsoleTest
  *
  * @var string
  */
-	protected $_shellName = 'ImportTask';
+	protected $_shellName = 'UserImportTask';
 
 /**
  * execute()のテスト

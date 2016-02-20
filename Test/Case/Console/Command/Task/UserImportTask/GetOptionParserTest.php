@@ -1,6 +1,6 @@
 <?php
 /**
- * ImportTask::getOptionParser()のテスト
+ * UserImportTask::getOptionParser()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -12,12 +12,12 @@
 App::uses('NetCommonsConsoleTestCase', 'NetCommons.TestSuite');
 
 /**
- * ImportTask::getOptionParser()のテスト
+ * UserImportTask::getOptionParser()のテスト
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\Case\Console\Command\Task\ImportTask
  */
-class UsersConsoleCommandTaskImportTaskGetOptionParserTest extends NetCommonsConsoleTestCase {
+class UsersConsoleCommandTaskUserImportTaskGetOptionParserTest extends NetCommonsConsoleTestCase {
 
 /**
  * Plugin name
@@ -31,7 +31,7 @@ class UsersConsoleCommandTaskImportTaskGetOptionParserTest extends NetCommonsCon
  *
  * @var string
  */
-	protected $_shellName = 'ImportTask';
+	protected $_shellName = 'UserImportTask';
 
 /**
  * getOptionParser()のテスト

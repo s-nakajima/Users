@@ -27,7 +27,7 @@ class UsersShell extends AppShell {
  * @var array
  */
 	public $tasks = array(
-		'Users.Import',
+		'Users.UserImport',
 	);
 
 /**

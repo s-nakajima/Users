@@ -19,7 +19,7 @@ App::uses('AuthComponent', 'Controller/Component');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Console\Command
  */
-class ImportTask extends AppShell {
+class UserImportTask extends AppShell {
 
 /**
  * use model
