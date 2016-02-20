@@ -27,7 +27,7 @@ class UsersShell extends AppShell {
  * @var array
  */
 	public $tasks = array(
-		'Users.Import',
+		'Users.UserImport',
 	);
 
 /**
@@ -50,7 +50,7 @@ class UsersShell extends AppShell {
 		$this->out(__d('users', '[H]elp'));
 		$this->out(__d('users', '[Q]uit'));
 
-		$choice = strtolower($this->in(__d('users', 'What would you like to do?'), array('I', 'H', 'Q')));
+		$choice = strtolower($this->in(__d('users', 'What would you like to do?'), array('I', 'H', 'Q'), 'Q'));
 		switch ($choice) {
 			case 'i':
 				$this->Import->execute();
@@ -64,13 +64,12 @@ class UsersShell extends AppShell {
 				$this->out(__d('cake_console', 'You have made an invalid selection. Please choose a command to execute by entering I, H, or Q.'));
 		}
 		$this->hr();
-		$this->main();
 	}
 
 /**
  * Get the option parser.
  *
- * @return void
+ * @return ConsoleOptionParser
  */
 	public function getOptionParser() {
 		$parser = parent::getOptionParser();

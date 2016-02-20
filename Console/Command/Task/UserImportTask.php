@@ -9,8 +9,9 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
+App::uses('Shell', 'Console');
 App::uses('AppShell', 'Console/Command');
-App::uses('AuthComponent', 'Controller/Component/Auth');
+App::uses('AuthComponent', 'Controller/Component');
 
 /**
  * UserのImportによるシェル
@@ -18,7 +19,7 @@ App::uses('AuthComponent', 'Controller/Component/Auth');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Console\Command
  */
-class ImportTask extends AppShell {
+class UserImportTask extends AppShell {
 
 /**
  * use model
@@ -38,15 +39,9 @@ class ImportTask extends AppShell {
 		Security::setHash('sha512');
 
 		$file = Hash::get($this->args, '0');
-		if (! $file) {
-			$this->args[0] = $this->in(__d('users', 'Enter import file path.'));
-			$this->execute();
-			return;
-		}
+
 		if (! file_exists($file)) {
 			$this->out(__d('users', '<warning>Not found file.</warning>'));
-			$this->args[0] = null;
-			$this->execute();
 			return;
 		}
 
@@ -57,8 +52,10 @@ class ImportTask extends AppShell {
 		if (! $this->User->importUsers($file)) {
 			//バリデーションエラーの場合
 			//$this->NetCommons->handleValidationError($this->User->validationErrors);
-			$this->out(__d('users', '<warning>Import error</warning>'));
+			$this->out(__d('users', '<error>Import error.</error>'));
 			$this->out(var_export($this->User->validationErrors, true));
+		} else {
+			$this->out(__d('users', '<success>Import success.</success>'));
 		}
 	}
 
