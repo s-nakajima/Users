@@ -38,15 +38,9 @@ class ImportTask extends AppShell {
 		Security::setHash('sha512');
 
 		$file = Hash::get($this->args, '0');
-		if (! $file) {
-			$this->args[0] = $this->in(__d('users', 'Enter import file path.'));
-			$this->execute();
-			return;
-		}
+
 		if (! file_exists($file)) {
 			$this->out(__d('users', '<warning>Not found file.</warning>'));
-			$this->args[0] = null;
-			$this->execute();
 			return;
 		}
 
@@ -57,8 +51,10 @@ class ImportTask extends AppShell {
 		if (! $this->User->importUsers($file)) {
 			//バリデーションエラーの場合
 			//$this->NetCommons->handleValidationError($this->User->validationErrors);
-			$this->out(__d('users', '<warning>Import error</warning>'));
+			$this->out(__d('users', '<error>Import error.</error>'));
 			$this->out(var_export($this->User->validationErrors, true));
+		} else {
+			$this->out(__d('users', '<success>Import success.</success>'));
 		}
 	}
 
