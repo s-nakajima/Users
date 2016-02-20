@@ -27,7 +27,7 @@ class UsersConsoleCommandTaskImportTaskGetOptionParserTest extends NetCommonsCon
 	public $plugin = 'users';
 
 /**
- * Shell name
+ * Task name
  *
  * @var string
  */

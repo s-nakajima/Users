@@ -37,7 +37,7 @@ class UsersConsoleCommandTaskImportTaskExecuteTest extends NetCommonsConsoleTest
 	public $plugin = 'users';
 
 /**
- * Shell name
+ * Task name
  *
  * @var string
  */

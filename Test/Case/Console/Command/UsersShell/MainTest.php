@@ -31,7 +31,7 @@ class ConsoleCommandUsersShellMainTest extends NetCommonsConsoleTestCase {
  *
  * @var string
  */
-	public $_shellName = 'UsersShell';
+	protected $_shellName = 'UsersShell';
 
 /**
  * main()のチェック

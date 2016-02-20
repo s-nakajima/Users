@@ -10,7 +10,7 @@
  */
 
 App::uses('AppShell', 'Console/Command');
-App::uses('AuthComponent', 'Controller/Component/Auth');
+App::uses('AuthComponent', 'Controller/Component');
 
 /**
  * UserのImportによるシェル

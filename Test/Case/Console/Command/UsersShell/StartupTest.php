@@ -31,7 +31,7 @@ class ConsoleCommandUsersShellStartupTest extends NetCommonsConsoleTestCase {
  *
  * @var string
  */
-	public $_shellName = 'UsersShell';
+	protected $_shellName = 'UsersShell';
 
 /**
  * startup()のテスト

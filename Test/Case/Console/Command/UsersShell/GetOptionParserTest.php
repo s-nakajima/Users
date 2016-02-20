@@ -31,7 +31,7 @@ class ConsoleCommandUsersShellGetOptionParserTest extends NetCommonsConsoleTestC
  *
  * @var string
  */
-	public $_shellName = 'UsersShell';
+	protected $_shellName = 'UsersShell';
 
 /**
  * getOptionParser()のテスト
