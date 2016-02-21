@@ -74,7 +74,7 @@ class UsersShell extends AppShell {
 	public function getOptionParser() {
 		$parser = parent::getOptionParser();
 		return $parser->description(__d('users', 'The Users shell.'))
-			->addSubcommand('import', array(
+			->addSubcommand('user_import', array(
 				'help' => __d('user_manager', 'Import description'),
 				'parser' => $this->UserImport->getOptionParser(),
 			));
