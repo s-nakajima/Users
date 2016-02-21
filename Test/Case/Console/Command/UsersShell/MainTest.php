@@ -75,13 +75,13 @@ class ConsoleCommandUsersShellMainTest extends NetCommonsConsoleTestCase {
 	public function testMainImport() {
 		$shell = $this->_shellName;
 		$this->$shell = $this->loadShell($shell, 'i');
-		$this->$shell->Import = $this->getMock('ImportTask',
+		$this->$shell->UserImport = $this->getMock('ImportTask',
 				array('execute'), array(), '', false);
 
 		//チェック
 		$this->__expectsMain();
 
-		$this->$shell->Import->expects($this->once())->method('execute')
+		$this->$shell->UserImport->expects($this->once())->method('execute')
 			->will($this->returnValue(true));
 		$this->$shell->expects($this->once())->method('_stop')
 			->will($this->returnValue(true));
@@ -98,14 +98,14 @@ class ConsoleCommandUsersShellMainTest extends NetCommonsConsoleTestCase {
 	public function testMainHelp() {
 		$shell = $this->_shellName;
 		$this->$shell = $this->loadShell($shell, 'h');
-		$this->$shell->Import = $this->getMock('ImportTask',
+		$this->$shell->UserImport = $this->getMock('ImportTask',
 				array('getOptionParser'), array(), '', false);
 
 		//チェック
 		$this->__expectsMain();
 		$this->$shell->expects($this->exactly(4))->method('out')
 			->will($this->returnValue(true));
-		$this->$shell->Import->expects($this->once())->method('getOptionParser')
+		$this->$shell->UserImport->expects($this->once())->method('getOptionParser')
 			->will($this->returnValue(''));
 
 		//テスト実施
