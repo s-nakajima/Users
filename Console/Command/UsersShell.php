@@ -53,7 +53,7 @@ class UsersShell extends AppShell {
 		$choice = strtolower($this->in(__d('users', 'What would you like to do?'), array('I', 'H', 'Q'), 'Q'));
 		switch ($choice) {
 			case 'i':
-				$this->Import->execute();
+				$this->UserImport->execute();
 				return $this->_stop();
 			case 'h':
 				$this->out($this->getOptionParser()->help());
