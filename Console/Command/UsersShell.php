@@ -76,7 +76,7 @@ class UsersShell extends AppShell {
 		return $parser->description(__d('users', 'The Users shell.'))
 			->addSubcommand('import', array(
 				'help' => __d('user_manager', 'Import description'),
-				'parser' => $this->Import->getOptionParser(),
+				'parser' => $this->UserImport->getOptionParser(),
 			));
 	}
 
