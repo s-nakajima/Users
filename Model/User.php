@@ -80,7 +80,7 @@ class User extends UsersAppModel {
  *
  * @var array
  */
-	public $userAttributeData = null;
+	public $userAttributeData = array();
 
 /**
  * use behaviors
@@ -217,21 +217,21 @@ class User extends UsersAppModel {
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 	public function prepare($force = false) {
-		if (! $force && $this->userAttributeData && UserAttribute::AVATAR_FIELD) {
-			return;
-		}
-
 		$this->loadModels([
 			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'DataType' => 'DataTypes.DataType',
 		]);
-		$userAttributes = $this->UserAttribute->getUserAttributesForLayout($force);
-		$this->userAttributeData = Hash::combine($userAttributes,
-			'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
-		);
+
+		if ($force || ! $this->userAttributeData) {
+			$userAttributes = $this->UserAttribute->getUserAttributesForLayout($force);
+			$this->userAttributeData = Hash::combine($userAttributes,
+				'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
+			);
+		}
+
 		$uploads = Hash::extract(
-			$userAttributes,
-			'{n}.{n}.{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
+			$this->userAttributeData,
+			'{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
 		);
 		foreach ($uploads as $upload) {
 			$this->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
