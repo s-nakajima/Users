@@ -148,7 +148,7 @@ class UsersController extends UsersAppController {
 		// グループデータ取得
 		list($groups, $groupUsers) = $this->Group->getGroupList();
 		$this->set('groups', $groups);
-		$this->set('groupUserss', $groupUsers);
+		$this->set('groupUsers', $groupUsers);
 	}
 
 /**
