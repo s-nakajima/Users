@@ -146,7 +146,7 @@ class UsersController extends UsersAppController {
 		$this->set('roomTreeLists', $roomTreeLists);
 
 		// グループデータ取得
-		list($groups, $groupUsers)= $this->Group->getGroupList();
+		list($groups, $groupUsers) = $this->Group->getGroupList();
 		$this->set('groups', $groups);
 		$this->set('groupUserss', $groupUsers);
 	}
