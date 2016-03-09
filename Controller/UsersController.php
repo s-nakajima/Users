@@ -53,7 +53,7 @@ class UsersController extends UsersAppController {
 		'Rooms.Rooms',
 		'UserAttributes.UserAttributeLayout',
 		'Users.UserSearch',
-		'Groups.GroupList',
+		'Groups.Groups',
 	);
 
 /**
@@ -147,7 +147,7 @@ class UsersController extends UsersAppController {
 		$this->set('roomTreeLists', $roomTreeLists);
 
 		// グループデータ取得・設定
-		$this->GroupList->setGroupList($this);
+		$this->Groups->setGroupList($this);
 	}
 
 /**
