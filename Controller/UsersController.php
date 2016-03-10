@@ -34,12 +34,12 @@ class UsersController extends UsersAppController {
  * @var array
  */
 	public $uses = array(
-		//'Groups.GroupsUser',
 		'Rooms.Space',
 		'Rooms.RolesRoomsUser',
 		'Users.User',
 		'Users.UserSelectCount',
 		'Groups.Group',
+		'Groups.GroupsUser',
 	);
 
 /**
@@ -53,6 +53,7 @@ class UsersController extends UsersAppController {
 		'Rooms.Rooms',
 		'UserAttributes.UserAttributeLayout',
 		'Users.UserSearch',
+		'Groups.Groups',
 	);
 
 /**
@@ -145,10 +146,8 @@ class UsersController extends UsersAppController {
 				array('Room.space_id' => Space::ROOM_SPACE_ID), null, null, Room::$treeParser);
 		$this->set('roomTreeLists', $roomTreeLists);
 
-		// グループデータ取得
-		list($groups, $groupUsers) = $this->Group->getGroupList();
-		$this->set('groups', $groups);
-		$this->set('groupUsers', $groupUsers);
+		// グループデータ取得・設定
+		$this->Groups->setGroupList($this);
 	}
 
 /**
