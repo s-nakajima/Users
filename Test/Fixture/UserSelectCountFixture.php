@@ -41,7 +41,7 @@ class UserSelectCountFixture extends CakeTestFixture {
  */
 	public function init() {
 		require_once App::pluginPath('Users') . 'Config' . DS . 'Schema' . DS . 'schema.php';
-		$this->fields = (new UsersSchema())->tables['ser_select_counts'];
+		$this->fields = (new UsersSchema())->tables['user_select_counts'];
 		parent::init();
 	}
 
