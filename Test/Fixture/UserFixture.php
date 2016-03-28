@@ -33,6 +33,10 @@ class UserFixture extends CakeTestFixture {
 			'is_handlename_public' => '1',
 			'role_key' => 'system_administrator',
 			'status' => '1',
+			'created' => '2015-08-15 06:12:30',
+			'created_user' => '1',
+			'modified' => '2015-08-15 06:12:30',
+			'modified_user' => '1',
 		),
 		array(
 			'id' => '2',
@@ -44,6 +48,10 @@ class UserFixture extends CakeTestFixture {
 			'is_handlename_public' => '1',
 			'role_key' => 'administrator',
 			'status' => '1',
+			'created' => '2015-08-15 06:12:30',
+			'created_user' => '1',
+			'modified' => '2015-08-15 06:12:30',
+			'modified_user' => '1',
 		),
 		array(
 			'id' => '3',
@@ -55,6 +63,10 @@ class UserFixture extends CakeTestFixture {
 			'is_handlename_public' => '1',
 			'role_key' => 'common_user',
 			'status' => '1',
+			'created' => '2015-08-15 06:12:30',
+			'created_user' => '1',
+			'modified' => '2015-08-15 06:12:30',
+			'modified_user' => '1',
 		),
 		array(
 			'id' => '4',
@@ -66,6 +78,10 @@ class UserFixture extends CakeTestFixture {
 			'is_handlename_public' => '1',
 			'role_key' => 'common_user',
 			'status' => '1',
+			'created' => '2015-08-15 06:12:30',
+			'created_user' => '1',
+			'modified' => '2015-08-15 06:12:30',
+			'modified_user' => '1',
 		),
 		array(
 			'id' => '5',
@@ -77,6 +93,10 @@ class UserFixture extends CakeTestFixture {
 			'is_handlename_public' => '1',
 			'role_key' => 'common_user',
 			'status' => '1',
+			'created' => '2015-08-15 06:12:30',
+			'created_user' => '1',
+			'modified' => '2015-08-15 06:12:30',
+			'modified_user' => '1',
 		),
 		array(
 			'id' => '6',
@@ -88,6 +108,10 @@ class UserFixture extends CakeTestFixture {
 			'is_handlename_public' => '1',
 			'role_key' => 'common_user',
 			'status' => '1',
+			'created' => '2015-08-15 06:12:30',
+			'created_user' => '1',
+			'modified' => '2015-08-15 06:12:30',
+			'modified_user' => '1',
 		),
 		array(
 			'id' => '7',
@@ -99,6 +123,10 @@ class UserFixture extends CakeTestFixture {
 			'is_handlename_public' => '1',
 			'role_key' => 'common_user',
 			'status' => '1',
+			'created' => '2015-08-15 06:12:30',
+			'created_user' => '1',
+			'modified' => '2015-08-15 06:12:30',
+			'modified_user' => '1',
 		),
 	);
 
