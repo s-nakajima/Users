@@ -146,7 +146,7 @@ class DisplayUserHelper extends AppHelper {
  * @return string HTMLタグ
  */
 	public function avatarLink($user, $attributes = array(), $options = array(), $modelId = 'TrackableCreator.id') {
-		if ($user === null) {
+		if (!$user) {
 			return '';
 		}
 		$html = '';
