@@ -356,7 +356,7 @@ class User extends UsersAppModel {
 
 		//インストール時は、言語のCurrentデータをセットする
 		if (! Configure::read('NetCommons.installed')) {
-			(new CurrentControlPanel())->setLanguage();
+			(new CurrentSystem())->setLanguage();
 		}
 
 		if ($created) {

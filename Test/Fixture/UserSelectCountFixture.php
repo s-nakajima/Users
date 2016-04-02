@@ -11,30 +11,11 @@
 
 /**
  * UserSelectCountFixture
- * 
+ *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model
  */
 class UserSelectCountFixture extends CakeTestFixture {
-
-/**
- * Fields
- *
- * @var array
- */
-	public $fields = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'user_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
-		'select_count' => array('type' => 'integer', 'null' => false, 'default' => '0', 'unsigned' => false),
-		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
-		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
-		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
-	);
 
 /**
  * Records
@@ -52,5 +33,16 @@ class UserSelectCountFixture extends CakeTestFixture {
 			'modified' => '2015-11-29 15:45:41'
 		),
 	);
+
+/**
+ * Initialize the fixture.
+ *
+ * @return void
+ */
+	public function init() {
+		require_once App::pluginPath('Users') . 'Config' . DS . 'Schema' . DS . 'schema.php';
+		$this->fields = (new UsersSchema())->tables['user_select_counts'];
+		parent::init();
+	}
 
 }

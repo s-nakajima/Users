@@ -78,7 +78,7 @@ class UsersController extends UsersAppController {
 		$this->Auth->deny('index', 'view');
 
 		//ユーザデータ取得
-		if ($this->request->isPut() || $this->request->isDelete()) {
+		if ($this->request->is('put') || $this->request->is('delete')) {
 			$userId = $this->data['User']['id'];
 		} else {
 			$userId = $this->params['pass'][0];
@@ -170,7 +170,7 @@ class UsersController extends UsersAppController {
 			return;
 		}
 
-		if ($this->request->isPut()) {
+		if ($this->request->is('put')) {
 			//不要パラメータ除去
 			unset($this->request->data['save'], $this->request->data['active_lang_id']);
 
@@ -206,7 +206,7 @@ class UsersController extends UsersAppController {
 			return;
 		}
 
-		if (! $this->request->isDelete()) {
+		if (! $this->request->is('delete')) {
 			$this->throwBadRequest();
 			return;
 		}
@@ -318,7 +318,7 @@ class UsersController extends UsersAppController {
 			return;
 		}
 
-		if ($this->request->isPost()) {
+		if ($this->request->is('post')) {
 			//登録処理
 			//** ロールルームユーザデータ取得
 			$rolesRoomsUsers = $this->RolesRoomsUser->getRolesRoomsUsers(array(
