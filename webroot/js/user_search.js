@@ -49,7 +49,7 @@ NetCommonsApp.controller('UserSearch.controller', function(
  * UserManager search condtion modal controller
  */
 NetCommonsApp.controller('UserSearch.search', function(
-    $scope, $http, $modalInstance, $location, $window, options) {
+    $scope, $http, $uibModalInstance, $location, $window, options) {
 
       /**
        * 検索後に戻すプラグイン
@@ -111,6 +111,6 @@ NetCommonsApp.controller('UserSearch.search', function(
        * @return {void}
        */
       $scope.cancel = function() {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
     });

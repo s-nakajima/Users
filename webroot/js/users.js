@@ -28,13 +28,13 @@ NetCommonsApp.controller('Users.controller', function(
 /**
  * User modal controller
  */
-NetCommonsApp.controller('User.view', function($scope, $modalInstance) {
+NetCommonsApp.controller('User.view', function($scope, $uibModalInstance) {
   /**
    * dialog cancel
    *
    * @return {void}
    */
   $scope.cancel = function() {
-    $modalInstance.dismiss('cancel');
+    $uibModalInstance.dismiss('cancel');
   };
 });
