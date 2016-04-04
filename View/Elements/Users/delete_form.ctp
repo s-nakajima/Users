@@ -16,14 +16,14 @@
 			'url' => $this->NetCommonsHtml->url(array('action' => 'delete'))
 		)); ?>
 
-		<accordion close-others="false">
-			<accordion-group is-open="dangerZone" class="panel-danger">
-				<accordion-heading class="clearfix">
+		<uib-accordion close-others="false">
+			<uib-accordion-group is-open="dangerZone" class="panel-danger">
+				<uib-accordion-heading class="clearfix">
 					<span style="cursor: pointer">
 						<?php echo __d('net_commons', 'Danger Zone'); ?>
 					</span>
 					<span class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': dangerZone, 'glyphicon-chevron-right': ! dangerZone}"></span>
-				</accordion-heading>
+				</uib-accordion-heading>
 
 				<div class="pull-left">
 					<?php echo sprintf(__d('net_commons', 'Delete all data associated with the %s.'), __d('users', 'User')); ?>
@@ -36,7 +36,7 @@
 						array('addClass' => 'pull-right')
 					); ?>
 
-			</accordion-group>
-		</accordion>
+			</uib-accordion-group>
+		</uib-accordion>
 	<?php echo $this->NetCommonsForm->end(); ?>
 </div>

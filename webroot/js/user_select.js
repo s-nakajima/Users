@@ -48,7 +48,7 @@ NetCommonsApp.factory('SelectUser',
  * User search condtion modal controller
  */
 NetCommonsApp.controller('User.select', function(
-    $scope, $http, $q, $modalInstance, filterFilter, options) {
+    $scope, $http, $q, $uibModalInstance, filterFilter, options) {
 
       /**
        * ユーザIDを保持する変数
@@ -196,10 +196,10 @@ NetCommonsApp.controller('User.select', function(
 
         saveUserSelectCount()
           .success(function(data) {
-              $modalInstance.close($scope.selectors);
+              $uibModalInstance.close($scope.selectors);
             })
           .error(function(data, status) {
-              $modalInstance.dismiss('error');
+              $uibModalInstance.dismiss('error');
             });
       };
 
@@ -209,7 +209,7 @@ NetCommonsApp.controller('User.select', function(
        * @return {void}
        */
       $scope.cancel = function() {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
 
       /**
