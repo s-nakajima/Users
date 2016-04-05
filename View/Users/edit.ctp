@@ -31,7 +31,6 @@ echo $this->NetCommonsHtml->css('/users/css/style.css');
 		</a>
 	</li>
 </ul>
-<br>
 
 <div class="tab-content">
 	<div class="tab-pane active" id="user-information">
