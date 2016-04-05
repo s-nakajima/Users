@@ -34,7 +34,6 @@
 			</a>
 		</li>
 	</ul>
-	<br>
 <?php endif; ?>
 
 <div class="tab-content">
