@@ -41,6 +41,10 @@ class DisplayUserHelper extends AppHelper {
 	public function handleLink($user, $attributes = array(), $options = array(), $model = 'TrackableCreator') {
 		$html = '';
 		$handlename = $this->handle($user, $attributes, $model);
+		if (! $handlename) {
+			return $html;
+		}
+
 		$attributes = Hash::remove($attributes, 'avatar');
 
 		if (Hash::get($user, 'ngModel')) {
@@ -75,6 +79,10 @@ class DisplayUserHelper extends AppHelper {
  */
 	public function handle($user, $attributes = array(), $model = 'TrackableCreator') {
 		$handlename = '';
+
+		if (! Hash::get($user, $model . '.handlename')) {
+			return '';
+		}
 
 		if (Hash::get($user, 'ngModel')) {
 			if (Hash::get($attributes, 'avatar')) {
