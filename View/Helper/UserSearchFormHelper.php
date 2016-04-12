@@ -158,11 +158,10 @@ class UserSearchFormHelper extends AppHelper {
 	private function __inputRadio($dataTypeKey, $userAttribute, $options) {
 		$html = '';
 
-		$html .= '<div class="form-control input-sm user-search-conditions nc-data-label">';
+		$html .= '<div class="form-inline input-sm">';
 
 		$options = array('' => __d('user_manager', 'Not specified')) + $options;
 		$html .= $this->NetCommonsForm->radio($userAttribute['UserAttribute']['key'], $options, array(
-			//'div' => array('class' => 'form-control form-inline'),
 			'div' => false,
 			'separator' => '<span class="radio-separator"></span>',
 			'default' => '',
