@@ -163,9 +163,15 @@ class UserSearchHelper extends AppHelper {
 		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
 				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 
-			return $this->NetCommonsHtml->link($this->DisplayUser->handle($user, array('avatar' => true), 'User'),
-				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id']),
-				array('escape' => false)
+			return $this->NetCommonsHtml->link($this->DisplayUser->handle($user, array('avatar' => true), 'User'), '#',
+				array(
+					'escape' => false,
+					'ng-controller' => 'UserManager.controller',
+					'ng-click' => 'showUser(' . $user['User']['id'] . ')'
+				),
+				array(
+					'escape' => false
+				)
 			);
 		} else {
 			return $this->DisplayUser->handle($user, array('avatar' => true), 'User');

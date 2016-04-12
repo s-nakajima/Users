@@ -20,7 +20,7 @@
 	</div>
 	<div class="tab-content">
 		<div ng-init="activeLangId = '<?php echo h($activeLangId); ?>'">
-			<?php echo $this->UserAttributeLayout->renderRow('Users/view_information_row'); ?>
+			<?php echo $this->UserAttributeLayout->renderRow('Users.Users/view_information_row'); ?>
 		</div>
 	</div>
 </div>
