@@ -19,7 +19,7 @@ msgstr "%s / %s ページ (総件数: %s件)"
 
 #: UserManager/View/UserManager/index.ctp:38
 msgid "Search for the members"
-msgstr "対象会員の絞込み"
+msgstr "対象者の検索"
 
 #: Users/Model/User.php:138;145
 msgid "username"
