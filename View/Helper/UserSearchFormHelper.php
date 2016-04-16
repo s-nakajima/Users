@@ -163,7 +163,6 @@ class UserSearchFormHelper extends AppHelper {
 		$options = array('' => __d('user_manager', 'Not specified')) + $options;
 		$html .= $this->NetCommonsForm->radio($userAttribute['UserAttribute']['key'], $options, array(
 			'div' => false,
-			'separator' => '<span class="radio-separator"></span>',
 			'default' => '',
 			'hiddenField' => false,
 		));

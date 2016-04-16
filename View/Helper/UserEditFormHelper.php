@@ -156,8 +156,7 @@ class UserEditFormHelper extends AppHelper {
 
 		$html .= '<div class="form-control user-public-type-form-control nc-data-label">';
 		$html .= $this->NetCommonsForm->radio($fieldName, User::$publicTypes, array(
-			'div' => array('class' => 'form-control form-inline'),
-			'separator' => '<span class="radio-separator"></span>'
+			'div' => array('class' => 'form-inline'),
 		));
 		$html .= '</div>';
 		return $html;
