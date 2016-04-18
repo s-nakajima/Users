@@ -85,8 +85,12 @@ class UserEditFormHelper extends AppHelper {
 			$html .= '</div>';
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			foreach ($this->_View->request->data['UsersLanguage'] as $index => $usersLanguage) {
-				$html .= '<div class="form-group"' . ' ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
-				$html .= $this->__input('UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute, $usersLanguage['language_id']);
+				$html .= '<div class="form-group"' .
+							' ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
+				$html .= $this->__input(
+						'UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute,
+						$usersLanguage['language_id']
+				);
 				$html .= '</div>';
 			}
 
@@ -115,9 +119,9 @@ class UserEditFormHelper extends AppHelper {
 		if (Current::read('User.id') !== $this->_View->viewVars['user']['User']['id'] ||
 				! $userAttribute['UserAttributeSetting']['display'] ||
 				! $userAttribute['UserAttributesRole']['self_readable'] &&
-						$userAttribute['UserAttribute']['key'] !== UserAttribute::PASSWORD_FIELD ||
+					$userAttribute['UserAttribute']['key'] !== UserAttribute::PASSWORD_FIELD ||
 				! $userAttribute['UserAttributesRole']['self_editable'] &&
-						$userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_LABEL) {
+					$userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_LABEL) {
 
 			return $html;
 		}
@@ -147,17 +151,17 @@ class UserEditFormHelper extends AppHelper {
 				! $userAttribute['UserAttributeSetting']['display'] ||
 				! $userAttribute['UserAttributesRole']['self_readable'] ||
 				! $userAttribute['UserAttributesRole']['self_editable'] &&
-						$userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_LABEL) {
+					$userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_LABEL) {
 
 			return $html;
 		}
 
-		$fieldName = 'User.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
+		$fieldName =
+			'User.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
 
 		$html .= '<div class="form-control user-public-type-form-control nc-data-label">';
 		$html .= $this->NetCommonsForm->radio($fieldName, User::$publicTypes, array(
-			'div' => array('class' => 'form-control form-inline'),
-			'separator' => '<span class="radio-separator"></span>'
+			'div' => array('class' => 'form-inline'),
 		));
 		$html .= '</div>';
 		return $html;
@@ -187,7 +191,9 @@ class UserEditFormHelper extends AppHelper {
 			return $html;
 		}
 
-		$fieldName = 'User.' . sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
+		$fieldName =
+			'User.' .
+			sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
 
 		$html .= '<div class="form-control nc-data-label">';
 		$html .= $this->NetCommonsForm->inlineCheckbox($fieldName, array(
@@ -228,7 +234,9 @@ class UserEditFormHelper extends AppHelper {
 			} else {
 				$keyPath = '{n}.code';
 			}
-			$attributes['options'] = Hash::combine($userAttribute['UserAttributeChoice'], $keyPath, '{n}.name');
+			$attributes['options'] = Hash::combine(
+				$userAttribute['UserAttributeChoice'], $keyPath, '{n}.name'
+			);
 			if (! $userAttribute['UserAttributeSetting']['required']) {
 				$attributes['empty'] = !(bool)$userAttribute['UserAttributeSetting']['required'];
 			}
@@ -241,7 +249,9 @@ class UserEditFormHelper extends AppHelper {
 					'controller' => 'users',
 					'action' => 'download',
 					'key' => Hash::get($this->_View->request->data, 'User.id'),
-					Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.field_name'),
+					'key2' => Hash::get(
+						$this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.field_name'
+					),
 					'medium',
 				));
 			} else {

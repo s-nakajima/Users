@@ -37,8 +37,16 @@
 <?php endif; ?>
 
 <div class="tab-content">
-	<div class="tab-pane panel panel-default active" id="user-information">
-		<?php echo $this->element('Users/view_information'); ?>
+	<div class="tab-pane active" id="user-information">
+		<?php
+			if ($user['User']['id'] === Current::read('User.id') && ! $this->request->is('ajax')) {
+				$editLink = true;
+			} else {
+				$editLink = false;
+			}
+		?>
+
+		<?php echo $this->element('Users/view_information', array('editLink' => $editLink)); ?>
 	</div>
 
 	<?php if (isset($rooms)) : ?>

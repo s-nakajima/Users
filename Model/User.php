@@ -263,7 +263,10 @@ class User extends UsersAppModel {
 					),
 					'regex' => array(
 						'rule' => array('custom', '/[\w]+/'),
-						'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'username')),
+						'message' => sprintf(
+							__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'),
+							__d('users', 'username')
+						),
 						'allowEmpty' => false,
 						'required' => true,
 					),
@@ -276,7 +279,9 @@ class User extends UsersAppModel {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
 			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
-			$this->data['User']['password_again'] = $passwordHasher->hash($this->data['User']['password_again']);
+
+			$passwordAgain = $this->data['User']['password_again'];
+			$this->data['User']['password_again'] = $passwordHasher->hash($passwordAgain);
 
 			//パスワード変更日時セット
 			$this->data['User']['password_modified'] = NetCommonsTime::getNowDatetime();
@@ -285,13 +290,18 @@ class User extends UsersAppModel {
 				'password' => array(
 					'notBlank' => array(
 						'rule' => array('notBlank'),
-						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'password')),
+						'message' => sprintf(
+							__d('net_commons', 'Please input %s.'), __d('users', 'password')
+						),
 						'allowEmpty' => false,
 						'required' => true,
 					),
 					'regex' => array(
 						'rule' => array('custom', '/[\w]+/'),
-						'message' => sprintf(__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'), __d('users', 'password')),
+						'message' => sprintf(
+							__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'),
+							__d('users', 'password')
+						),
 						'allowEmpty' => false,
 						'required' => true,
 					),
@@ -487,7 +497,9 @@ class User extends UsersAppModel {
 			),
 			'conditions' => $conditions,
 		));
-		$user[$this->UsersLanguage->alias] = Hash::extract($usersLanguage, '{n}.' . $this->UsersLanguage->alias);
+		$user[$this->UsersLanguage->alias] = Hash::extract(
+			$usersLanguage, '{n}.' . $this->UsersLanguage->alias
+		);
 
 		return $user;
 	}
@@ -525,7 +537,8 @@ class User extends UsersAppModel {
 		} elseif (Hash::get($data, 'User.' . UserAttribute::AVATAR_FIELD . '.name')) {
 			$data['User']['is_avatar_auto_created'] = false;
 		} else {
-			$data['User']['is_avatar_auto_created'] = (bool)Hash::get($beforeUser, 'User.is_avatar_auto_created', true);
+			$isAvatarAutoCreated = Hash::get($beforeUser, 'User.is_avatar_auto_created', true);
+			$data['User']['is_avatar_auto_created'] = (bool)$isAvatarAutoCreated;
 		}
 
 		//バリデーション

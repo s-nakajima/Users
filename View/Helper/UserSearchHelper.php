@@ -51,7 +51,9 @@ class UserSearchHelper extends AppHelper {
 		$this->User = ClassRegistry::init('Users.User');
 		$this->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
 
-		$this->userAttributes = Hash::combine($this->_View->viewVars['userAttributes'], '{n}.{n}.{n}.UserAttribute.key', '{n}.{n}.{n}');
+		$this->userAttributes = Hash::combine(
+			$this->_View->viewVars['userAttributes'], '{n}.{n}.{n}.UserAttribute.key', '{n}.{n}.{n}'
+		);
 	}
 
 /**
@@ -67,8 +69,12 @@ class UserSearchHelper extends AppHelper {
 			if ($fieldName === 'room_role_key') {
 				$output .= $this->_View->Paginator->sort('RoomRole.level', __d('rooms', 'Room role'));
 			} else {
-				$userAttribute = Hash::extract($this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']');
-				$output .= $this->_View->Paginator->sort($this->User->getOriginalUserField($fieldName), $userAttribute[0]['name']);
+				$userAttribute = Hash::extract(
+					$this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']'
+				);
+				$output .= $this->_View->Paginator->sort(
+					$this->User->getOriginalUserField($fieldName), $userAttribute[0]['name']
+				);
 			}
 			$output .= '</th>';
 		}
@@ -119,6 +125,7 @@ class UserSearchHelper extends AppHelper {
 	public function tableCell($user, $modelName, $fieldName, $isEdit, $tdElement) {
 		$userAttribute = Hash::get($this->userAttributes, $fieldName);
 
+		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$value = '';
 		if ($fieldName === 'handlename') {
 			//ハンドル
@@ -129,12 +136,16 @@ class UserSearchHelper extends AppHelper {
 		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
 			//選択肢
 			if ($fieldName === 'role_key') {
-				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[key=' . $user[$modelName][$fieldName] . ']');
+				$values = Hash::extract(
+					$userAttribute['UserAttributeChoice'], '{n}[key=' . $user[$modelName][$fieldName] . ']'
+				);
 			} else {
-				$values = Hash::extract($userAttribute['UserAttributeChoice'], '{n}[code=' . $user[$modelName][$fieldName] . ']');
+				$values = Hash::extract(
+					$userAttribute['UserAttributeChoice'], '{n}[code=' . $user[$modelName][$fieldName] . ']'
+				);
 			}
 			$value = h(Hash::get($values, '0.name'));
-		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_DATETIME ||
+		} elseif ($dataTypeKey === DataType::DATA_TYPE_DATETIME ||
 				in_array($userAttribute['UserAttribute']['key'], UserAttribute::$typeDatetime, true)) {
 			//日付型
 			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
@@ -163,9 +174,16 @@ class UserSearchHelper extends AppHelper {
 		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
 				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 
-			return $this->NetCommonsHtml->link($this->DisplayUser->handle($user, array('avatar' => true), 'User'),
-				array('plugin' => 'user_manager', 'controller' => 'user_manager', 'action' => 'edit', $user['User']['id']),
-				array('escape' => false)
+			return $this->NetCommonsHtml->link(
+				$this->DisplayUser->handle($user, array('avatar' => true), 'User'), '#',
+				array(
+					'escape' => false,
+					'ng-controller' => 'UserManager.controller',
+					'ng-click' => 'showUser(' . $user['User']['id'] . ')'
+				),
+				array(
+					'escape' => false
+				)
 			);
 		} else {
 			return $this->DisplayUser->handle($user, array('avatar' => true), 'User');

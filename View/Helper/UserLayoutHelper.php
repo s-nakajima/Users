@@ -119,7 +119,9 @@ class UserLayoutHelper extends AppHelper {
 					'user-attribute-label'
 				));
 			} else {
-				$element .= '<div class="user-attribute-label">' . h($userAttribute['UserAttribute']['name']) . '</div>';
+				$element .= '<div class="user-attribute-label">' .
+								h($userAttribute['UserAttribute']['name']) .
+							'</div>';
 			}
 		}
 
@@ -144,7 +146,9 @@ class UserLayoutHelper extends AppHelper {
 					'controller' => 'users',
 					'action' => 'download',
 					'key' => Hash::get($this->_View->viewVars['user'], 'User.id'),
-					Hash::get($this->_View->viewVars['user'], 'UploadFile.' . $userAttributeKey . '.field_name'),
+					'key2' => Hash::get(
+						$this->_View->viewVars['user'], 'UploadFile.' . $userAttributeKey . '.field_name'
+					),
 					'medium',
 				));
 			} else {
@@ -168,7 +172,8 @@ class UserLayoutHelper extends AppHelper {
 			foreach ($this->_View->viewVars['user']['UsersLanguage'] as $index => $usersLanguage) {
 				$el = Hash::get($this->_View->viewVars['user'], sprintf($fieldName, $index));
 				if ($el) {
-					$element .= '<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
+					$element .=
+						'<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
 					$element .= $el;
 					$element .= '</div>';
 				}
@@ -219,7 +224,9 @@ class UserLayoutHelper extends AppHelper {
 		}
 
 		//各自で公開に設定 = true、各自で公開に設定 = false
-		$isPublicField = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
+		$isPublicField = sprintf(
+			UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']
+		);
 		return Hash::get($this->_View->viewVars['user']['User'], $isPublicField);
 	}
 

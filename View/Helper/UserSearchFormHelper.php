@@ -44,7 +44,8 @@ class UserSearchFormHelper extends AppHelper {
 		// * パスワードは項目表示しない
 		// * 他人の項目が読めない && 他人の項目が編集できない
 		if ($dataTypeKey === DataType::DATA_TYPE_PASSWORD ||
-				! $userAttribute['UserAttributesRole']['other_readable'] && ! $userAttribute['UserAttributesRole']['other_editable']) {
+				! $userAttribute['UserAttributesRole']['other_readable'] &&
+				! $userAttribute['UserAttributesRole']['other_editable']) {
 
 			return $html;
 		}
@@ -84,7 +85,9 @@ class UserSearchFormHelper extends AppHelper {
 			$html .= '<label>' . h($userAttribute['UserAttribute']['name']) . '</label>';
 			$html .= '</div>';
 		} else {
-			$html .= $this->NetCommonsForm->label($userAttribute['UserAttribute']['key'], $userAttribute['UserAttribute']['name']);
+			$html .= $this->NetCommonsForm->label(
+				$userAttribute['UserAttribute']['key'], $userAttribute['UserAttribute']['name']
+			);
 		}
 
 		return $html;
@@ -120,7 +123,9 @@ class UserSearchFormHelper extends AppHelper {
 				$keyPath = '{n}.code';
 			}
 			//ラジオボタン、チェックボタン、セレクトボタン
-			$options = Hash::combine($userAttribute, 'UserAttributeChoice.' . $keyPath, 'UserAttributeChoice.{n}.name');
+			$options = Hash::combine(
+				$userAttribute, 'UserAttributeChoice.' . $keyPath, 'UserAttributeChoice.{n}.name'
+			);
 		}
 
 		switch ($dataTypeKey) {
@@ -158,13 +163,11 @@ class UserSearchFormHelper extends AppHelper {
 	private function __inputRadio($dataTypeKey, $userAttribute, $options) {
 		$html = '';
 
-		$html .= '<div class="form-control input-sm user-search-conditions nc-data-label">';
+		$html .= '<div class="form-inline input-sm">';
 
 		$options = array('' => __d('user_manager', 'Not specified')) + $options;
 		$html .= $this->NetCommonsForm->radio($userAttribute['UserAttribute']['key'], $options, array(
-			//'div' => array('class' => 'form-control form-inline'),
 			'div' => false,
-			'separator' => '<span class="radio-separator"></span>',
 			'default' => '',
 			'hiddenField' => false,
 		));
@@ -226,8 +229,10 @@ class UserSearchFormHelper extends AppHelper {
 
 		if ($userAttribute['UserAttribute']['key'] === 'last_login') {
 			//最終ログイン日時の場合、ラベル変更(○日以上ログインしていない、○日以内ログインしている)
-			$moreThanDays = __d('user_manager', 'Not logged more than <span style="color:#ff0000;">X</span>days ago');
-			$withinDays = __d('user_manager', 'Have logged in within <span style="color:#ff0000;">X</span>days');
+			$moreThanDays =
+				__d('user_manager', 'Not logged more than <span style="color:#ff0000;">X</span>days ago');
+			$withinDays =
+				__d('user_manager', 'Have logged in within <span style="color:#ff0000;">X</span>days');
 			$html .= '<div class="user-search-conditions-datetime">';
 		} else {
 			//○日以上前、○日以内
@@ -250,7 +255,8 @@ class UserSearchFormHelper extends AppHelper {
 			)
 		);
 		$html .= $this->NetCommonsForm->label(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::MORE_THAN_DAYS, $moreThanDays,
+			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::MORE_THAN_DAYS,
+			$moreThanDays,
 			array('class' => 'input-group-addon user-search-conditions-datetime-top')
 		);
 		$html .= '</div>';
@@ -308,7 +314,7 @@ class UserSearchFormHelper extends AppHelper {
 	public function userSearchRoomsSelect() {
 		$html = '';
 
-		$options = array('' => __d('user_manager', '-- Not specify --')) + $this->_View->viewVars['rooms'];
+		$options = ['' => __d('user_manager', '-- Not specify --')] + $this->_View->viewVars['rooms'];
 
 		$html .= '<div class="form-group">';
 		$html .= '<div>';
@@ -335,7 +341,7 @@ class UserSearchFormHelper extends AppHelper {
 	public function userSearchGroupsSelect() {
 		$html = '';
 
-		$options = array('' => __d('user_manager', '-- Not specify --')) + $this->_View->viewVars['groups'];
+		$options = ['' => __d('user_manager', '-- Not specify --')] + $this->_View->viewVars['groups'];
 
 		$html .= '<div class="form-group">';
 		$html .= '<div>';

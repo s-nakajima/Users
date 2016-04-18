@@ -177,7 +177,9 @@ class UsersController extends UsersAppController {
 			//登録処理
 			if ($this->User->saveUser($this->request->data)) {
 				//正常の場合
-				$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
+				$this->NetCommons->setFlashNotification(
+					__d('net_commons', 'Successfully saved.'), array('class' => 'success')
+				);
 				$this->redirect('/users/users/view/' . Hash::get($this->viewVars['user'], 'User.id'));
 				return;
 			}
@@ -201,7 +203,8 @@ class UsersController extends UsersAppController {
 		$this->__prepare();
 
 		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
-				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+			$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+
 			$this->throwBadRequest();
 			return;
 		}
@@ -240,7 +243,10 @@ class UsersController extends UsersAppController {
 			} else {
 				$noimage = User::AVATAR_IMG;
 			}
-			$this->response->file(App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . $noimage, array('name' => 'No Image'));
+			$this->response->file(
+				App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . $noimage,
+				array('name' => 'No Image')
+			);
 			return $this->response;
 		}
 

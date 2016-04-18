@@ -41,7 +41,8 @@ class SaveUserBehavior extends ModelBehavior {
 		]);
 
 		//UserAttributesRoleデータ取得
-		$userAttributesRoles = $model->UserAttributesRole->getUserAttributesRole(Current::read('User.role_key'));
+		$userAttributesRoles =
+				$model->UserAttributesRole->getUserAttributesRole(Current::read('User.role_key'));
 
 		//バリデーションルールのセット
 		$emails = array();
@@ -60,7 +61,8 @@ class SaveUserBehavior extends ModelBehavior {
 			}
 
 			$userAttributeKey = $userAttribute['UserAttribute']['key'];
-			if ($model->data[$model->alias]['id'] && ! isset($model->data[$model->alias][$userAttributeKey])) {
+			if ($model->data[$model->alias]['id'] &&
+					! isset($model->data[$model->alias][$userAttributeKey])) {
 				continue;
 			}
 			$this->__setValidates($model, $userAttribute);
@@ -75,7 +77,10 @@ class SaveUserBehavior extends ModelBehavior {
 			'email' => array(
 				'notDuplicate' => array(
 					'rule' => array('notDuplicate', $emails),
-					'message' => sprintf(__d('net_commons', 'Your request %s already exists. Please try a different one.'), __d('users', 'E-mail')),
+					'message' => sprintf(
+						__d('net_commons', 'Your request %s already exists. Please try a different one.'),
+						__d('users', 'E-mail')
+					),
 					'allowEmpty' => true,
 					'required' => false,
 				),
@@ -106,15 +111,18 @@ class SaveUserBehavior extends ModelBehavior {
 		$userAttributesRole = $userAttributesRole[0];
 
 		//他人でother_editable=falseの場合、自分でself_editable=falseは、不正エラー
-		if ($model->data[$model->alias]['id'] !== Current::read('User.id') && ! $userAttributesRole['other_editable'] &&
-				$model->data[$model->alias]['id'] === Current::read('User.id') && ! $userAttributesRole['self_editable']) {
+		if ($model->data[$model->alias]['id'] !== Current::read('User.id') &&
+				! $userAttributesRole['other_editable'] &&
+				$model->data[$model->alias]['id'] === Current::read('User.id') &&
+				! $userAttributesRole['self_editable']) {
 
 			throw new BadRequestException(__d('net_commons', 'Bad Request'));
 		}
 
 		//管理者しか強化しない項目のチェック⇒不正エラーとする
 		if ($userAttribute['UserAttributeSetting']['only_administrator_editable'] &&
-				! Current::allowSystemPlugin('user_manager') && isset($model->data[$modelName][$userAttributeKey])) {
+				! Current::allowSystemPlugin('user_manager') &&
+				isset($model->data[$modelName][$userAttributeKey])) {
 
 			throw new BadRequestException(__d('net_commons', 'Bad Request'));
 		}
@@ -141,10 +149,13 @@ class SaveUserBehavior extends ModelBehavior {
 			);
 		}
 
-		if ($userAttributeKey === 'username' || $userAttributeKey === 'handlename' || $userAttributeKey === 'key') {
+		if (in_array($userAttributeKey, ['username', 'handlename', 'key'], true)) {
 			$validates['notDuplicate'] = array(
 				'rule' => array('notDuplicate', array($userAttributeKey)),
-				'message' => sprintf(__d('net_commons', 'Your request %s already exists. Please try a different one.'), $userAttributeName),
+				'message' => sprintf(
+					__d('net_commons', 'Your request %s already exists. Please try a different one.'),
+					$userAttributeName
+				),
 				'allowEmpty' => true,
 				'required' => false,
 			);
@@ -153,7 +164,9 @@ class SaveUserBehavior extends ModelBehavior {
 		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_EMAIL) {
 			$validates['email'] = array(
 				'rule' => array('email'),
-				'message' => sprintf(__d('net_commons', 'Unauthorized pattern for %s.'), $userAttributeName),
+				'message' => sprintf(
+					__d('net_commons', 'Unauthorized pattern for %s.'), $userAttributeName
+				),
 				'allowEmpty' => true,
 				'required' => false,
 			);
@@ -165,7 +178,9 @@ class SaveUserBehavior extends ModelBehavior {
 			} else {
 				$valuePath = '{n}.code';
 			}
-			$inList = array_values(Hash::combine($userAttribute['UserAttributeChoice'], '{n}.key', $valuePath));
+			$inList = array_values(
+				Hash::combine($userAttribute['UserAttributeChoice'], '{n}.key', $valuePath)
+			);
 			$validates['inList'] = array(
 				'rule' => array('inList', $inList),
 				'message' => __d('net_commons', 'Invalid request.'),
