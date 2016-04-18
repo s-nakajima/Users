@@ -65,7 +65,18 @@ class UserSearchHelper extends AppHelper {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
-			$output .= '<th>';
+			$userAttribute = Hash::get($this->userAttributes, $fieldName);
+			$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
+
+			if ($dataTypeKey === DataType::DATA_TYPE_DATETIME ||
+					in_array($userAttribute['UserAttribute']['key'], UserAttribute::$typeDatetime, true)) {
+				//日付型
+				$class = ' class="row-datetime"';
+			} else {
+				$class = '';
+			}
+
+			$output .= '<th' . $class . '>';
 			if ($fieldName === 'room_role_key') {
 				$output .= $this->_View->Paginator->sort('RoomRole.level', __d('rooms', 'Room role'));
 			} else {
@@ -124,9 +135,10 @@ class UserSearchHelper extends AppHelper {
  */
 	public function tableCell($user, $modelName, $fieldName, $isEdit, $tdElement) {
 		$userAttribute = Hash::get($this->userAttributes, $fieldName);
-
 		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$value = '';
+		$class = '';
+
 		if ($fieldName === 'handlename') {
 			//ハンドル
 			$value = $this->linkHandlename($user, $isEdit);
@@ -149,13 +161,14 @@ class UserSearchHelper extends AppHelper {
 				in_array($userAttribute['UserAttribute']['key'], UserAttribute::$typeDatetime, true)) {
 			//日付型
 			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
+			$class = ' class="row-datetime"';
 		} else {
 			//その他
 			$value = h($user[$modelName][$fieldName]);
 		}
 
 		if ($tdElement) {
-			return '<td>' . $value . '</td>';
+			return '<td' . $class . '>' . $value . '</td>';
 		} else {
 			return $value;
 		}
