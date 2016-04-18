@@ -38,7 +38,7 @@ class DisplayUserHelper extends AppHelper {
  * @param array $model モデル名(TrackableCreatorやTrackableUpdaterなど)
  * @return string HTMLタグ
  */
-	public function handleLink($user, $attributes = array(), $options = array(), $model = 'TrackableCreator') {
+	public function handleLink($user, $attributes = [], $options = [], $model = 'TrackableCreator') {
 		$html = '';
 		$handlename = $this->handle($user, $attributes, $model);
 		if (! $handlename) {
@@ -83,7 +83,8 @@ class DisplayUserHelper extends AppHelper {
 		if (Hash::get($user, 'ngModel')) {
 			if (Hash::get($attributes, 'avatar')) {
 				$attributes = Hash::remove($attributes, 'avatar');
-				$handlename .= '<img ng-src="{{' . Hash::get($user, 'ngModel') . '.avatar}}" class="user-avatar-xs"> ';
+				$handlename .=
+					'<img ng-src="{{' . Hash::get($user, 'ngModel') . '.avatar}}" class="user-avatar-xs"> ';
 			}
 			$handlename .= '{{' . Hash::get($user, 'ngModel') . '.handlename}}';
 		} else {
@@ -92,7 +93,8 @@ class DisplayUserHelper extends AppHelper {
 			}
 			if (Hash::get($attributes, 'avatar')) {
 				$attributes = Hash::remove($attributes, 'avatar');
-				$handlename .= $this->avatar($user, Hash::get($attributes, 'avatar'), $model . '.id', true) . ' ';
+				$handlename .=
+					$this->avatar($user, Hash::get($attributes, 'avatar'), $model . '.id', true) . ' ';
 			}
 			$handlename .= h(Hash::get($user, $model . '.handlename'));
 		}
@@ -110,7 +112,8 @@ class DisplayUserHelper extends AppHelper {
  * @return string HTMLタグ
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function avatar($user, $attributes = array(), $modelId = 'TrackableCreator.id', $asImageTag = true) {
+	public function avatar($user, $attributes = [], $modelId = 'TrackableCreator.id',
+							$asImageTag = true) {
 		$html = '';
 
 		//if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
@@ -152,7 +155,8 @@ class DisplayUserHelper extends AppHelper {
  * @param string $modelId モデル名+id(TrackableCreator.idやTrackableUpdater.idなど)
  * @return string HTMLタグ
  */
-	public function avatarLink($user, $attributes = array(), $options = array(), $modelId = 'TrackableCreator.id') {
+	public function avatarLink($user, $attributes = [], $options = [],
+								$modelId = 'TrackableCreator.id') {
 		if (!$user) {
 			return '';
 		}

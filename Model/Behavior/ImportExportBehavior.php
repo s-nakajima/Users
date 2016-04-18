@@ -32,7 +32,8 @@ class ImportExportBehavior extends ModelBehavior {
  * @var const
  */
 	public static $unexportFileds = array(
-		'id', 'key', 'is_deleted', 'created', 'created_user', 'modified', 'modified_user', 'password_modified', 'last_login', 'previous_login'
+		'id', 'key', 'is_deleted', 'created', 'created_user', 'modified', 'modified_user',
+		'password_modified', 'last_login', 'previous_login'
 	);
 
 /**

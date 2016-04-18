@@ -63,20 +63,31 @@ class UserSearchBehavior extends ModelBehavior {
 
 		$this->readableFields = array('id' => 'id');
 		foreach ($results as $field) {
-			$dataType = Hash::extract($userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $field . ']');
+			$dataType = Hash::extract(
+				$userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $field . ']'
+			);
 			$dataTypeKey = Hash::get($dataType, '0.data_type_key', '');
 
 			//Fieldのチェック
 			if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
-				$this->readableFields[$field] = $model->UploadFile->alias . Inflector::classify($field) . '.field_name';
-			} elseif (in_array($field, UserAttribute::$typeDatetime, true) || $dataTypeKey === DataType::DATA_TYPE_DATETIME) {
+				$this->readableFields[$field] =
+						$model->UploadFile->alias . Inflector::classify($field) . '.field_name';
+
+			} elseif (in_array($field, UserAttribute::$typeDatetime, true) ||
+					$dataTypeKey === DataType::DATA_TYPE_DATETIME) {
 				//日時型の場合
 				$this->readableFields[$field] = $model->alias . '.' . $field;
-				$this->readableFields[$field . '.' . UserSearchComponent::MORE_THAN_DAYS] = $model->alias . '.' . $field;
-				$this->readableFields[$field . '.' . UserSearchComponent::WITHIN_DAYS] = $model->alias . '.' . $field;
+
+				$fieldKey = $field . '.' . UserSearchComponent::MORE_THAN_DAYS;
+				$this->readableFields[$fieldKey] = $model->alias . '.' . $field;
+
+				$fieldKey = $field . '.' . UserSearchComponent::WITHIN_DAYS;
+				$this->readableFields[$fieldKey] = $model->alias . '.' . $field;
+
 			} elseif ($model->hasField($field)) {
 				//Userモデル
 				$this->readableFields[$field] = $model->alias . '.' . $field;
+
 			} elseif ($model->UsersLanguage->hasField($field)) {
 				//UsersLanguageモデル
 				$this->readableFields[$field] = $model->UsersLanguage->alias . '.' . $field;
@@ -168,8 +179,14 @@ class UserSearchBehavior extends ModelBehavior {
 	private function __creanSearchCondtion(Model $model, $field, $setting, $value) {
 		$userAttributes = $model->UserAttribute->getUserAttributesForLayout();
 
-		$dataType = Hash::extract($userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $field . ']');
+		$dataType = Hash::extract(
+			$userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $field . ']'
+		);
 		$dataTypeKey = Hash::get($dataType, '0.data_type_key', '');
+
+		$forwardTypes = array(
+			DataType::DATA_TYPE_TEXT, DataType::DATA_TYPE_TEXTAREA, DataType::DATA_TYPE_EMAIL
+		);
 
 		if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
 			if ($value) {
@@ -178,7 +195,8 @@ class UserSearchBehavior extends ModelBehavior {
 				$sign = '';
 			}
 			$value = null;
-		} elseif (in_array($field, UserAttribute::$typeDatetime, true) || $dataTypeKey === DataType::DATA_TYPE_DATETIME) {
+		} elseif (in_array($field, UserAttribute::$typeDatetime, true) ||
+								$dataTypeKey === DataType::DATA_TYPE_DATETIME) {
 			//日付型の場合
 			if ($setting === UserSearchComponent::MORE_THAN_DAYS) {
 				//○日以上前(○日以上ログインしていない)
@@ -191,8 +209,8 @@ class UserSearchBehavior extends ModelBehavior {
 			$date->sub(new DateInterval(sprintf('P%dD', (int)$value)));
 			$value = $date->format('Y-m-d H:i:s');
 
-		} elseif (in_array($dataTypeKey, [DataType::DATA_TYPE_TEXT, DataType::DATA_TYPE_TEXTAREA, DataType::DATA_TYPE_EMAIL], true) ||
-				in_array($field, ['created_user', 'modified_user'], true)) {
+		} elseif (in_array($dataTypeKey, $forwardTypes, true) ||
+					in_array($field, ['created_user', 'modified_user'], true)) {
 			// テキスト型、テキストエリア型、メールアドレス型、作成者、更新者の場合
 			// ->あいまい検索※今後、MatchAgainstもしくは、前方一致にする必要あり。
 			$sign = ' LIKE';

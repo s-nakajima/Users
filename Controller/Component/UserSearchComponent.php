@@ -106,10 +106,15 @@ class UserSearchComponent extends Component {
 		$result = $controller->Room->find('all', $controller->Room->getReadableRoomsConditions(array(
 			'Room.space_id !=' => Space::PRIVATE_SPACE_ID
 		)));
-		$rooms = Hash::combine($result, '{n}.Room.id', '{n}.RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . '].name');
+		$rooms = Hash::combine(
+			$result,
+			'{n}.Room.id',
+			'{n}.RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . '].name'
+		);
 		$controller->set('rooms', $rooms);
 
-		$controller->request->data['UserSearch'] = $controller->Session->read(UserSearchComponent::$sessionKey);
+		$controller->request->data['UserSearch'] =
+				$controller->Session->read(UserSearchComponent::$sessionKey);
 	}
 
 /**
@@ -121,7 +126,7 @@ class UserSearchComponent extends Component {
  * @param int $limit 表示件数
  * @return array void
  */
-	public function search($conditions = array(), $joins = array(), $orders = array(), $limit = self::DEFAULT_LIMIT) {
+	public function search($conditions = [], $joins = [], $orders = [], $limit = self::DEFAULT_LIMIT) {
 		$controller = $this->controller;
 
 		$defaultConditions = $controller->User->cleanSearchFields($controller->request->query);
@@ -138,7 +143,7 @@ class UserSearchComponent extends Component {
 			} elseif ($field === 'modified_user') {
 				$joins = Hash::merge(array('TrackableUpdater' => true), $joins);
 			} elseif ($controller->User->getOriginalUserField($field) ===
-								$controller->User->UploadFile->alias . Inflector::classify($field) . '.field_name') {
+						$controller->User->UploadFile->alias . Inflector::classify($field) . '.field_name') {
 				$modelName = $controller->User->UploadFile->alias . Inflector::classify($field);
 				$joins = Hash::merge(array($modelName => array(
 					'table' => $controller->User->UploadFile->table,
