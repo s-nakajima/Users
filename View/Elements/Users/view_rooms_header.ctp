@@ -20,7 +20,7 @@
 	<th>
 		<?php echo __d('rooms', 'Status'); ?>
 	</th>
-	<th>
+	<th class="row-datetime">
 		<?php echo __d('rooms', 'Last access datetime'); ?>
 	</th>
 </tr>

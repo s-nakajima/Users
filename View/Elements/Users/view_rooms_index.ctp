@@ -27,7 +27,7 @@
 		?>
 	</td>
 
-	<td>
+	<td class="row-datetime">
 		<?php echo $this->Rooms->roomAccessed($room); ?>
 	</td>
 </tr>
