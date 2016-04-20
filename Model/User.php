@@ -329,13 +329,15 @@ class User extends UsersAppModel {
 		//（ログインとパスワードは、インストール時に使用するため）
 
 		//UsersLanguageのバリデーション実行
-		$usersLanguage = $this->data['UsersLanguage'];
-		if (! $this->UsersLanguage->validateMany($usersLanguage)) {
-			$this->validationErrors = Hash::merge(
-				$this->validationErrors,
-				$this->UsersLanguage->validationErrors
-			);
-			return false;
+		if (isset($this->data['UsersLanguage'])) {
+			$usersLanguage = $this->data['UsersLanguage'];
+			if (! $this->UsersLanguage->validateMany($usersLanguage)) {
+				$this->validationErrors = Hash::merge(
+					$this->validationErrors,
+					$this->UsersLanguage->validationErrors
+				);
+				return false;
+			}
 		}
 
 		return parent::beforeValidate($options);

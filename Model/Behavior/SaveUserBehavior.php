@@ -210,6 +210,7 @@ class SaveUserBehavior extends ModelBehavior {
 
 		try {
 			$update = array(
+				'User.rescue_password' => '\'\'',
 				'User.previous_login' => 'User.last_login',
 				'User.last_login' => '\'' . date('Y-m-d H:i:s') . '\''
 			);

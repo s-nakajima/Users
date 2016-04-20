@@ -47,6 +47,7 @@ class Init extends CakeMigration {
 					'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
 					'username' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'ID | ログインID', 'charset' => 'utf8'),
 					'password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Password | パスワード', 'charset' => 'utf8'),
+					'rescue_password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '再発行により一時的に発行したパスワード', 'charset' => 'utf8'),
 					'key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Link identifier | リンク識別子', 'charset' => 'utf8'),
 					'is_deleted' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 					'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
