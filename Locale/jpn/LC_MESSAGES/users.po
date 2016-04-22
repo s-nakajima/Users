@@ -72,3 +72,6 @@ msgstr "ハンドルを入力して下さい。"
 
 msgid "Too many results to show. Can you think of more specific search keywords?"
 msgstr "検索結果は、%s件までしか表示できません。もう少し条件を増やしてください。"
+
+msgid "Password does not match. Please try again."
+msgstr "入力したパスワードとパスワード確認が一致しません。再度、入力してください。"

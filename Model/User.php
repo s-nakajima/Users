@@ -275,7 +275,7 @@ class User extends UsersAppModel {
 		}
 
 		//パスワード
-		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
+		if (Hash::check($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
 			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
@@ -329,13 +329,15 @@ class User extends UsersAppModel {
 		//（ログインとパスワードは、インストール時に使用するため）
 
 		//UsersLanguageのバリデーション実行
-		$usersLanguage = $this->data['UsersLanguage'];
-		if (! $this->UsersLanguage->validateMany($usersLanguage)) {
-			$this->validationErrors = Hash::merge(
-				$this->validationErrors,
-				$this->UsersLanguage->validationErrors
-			);
-			return false;
+		if (isset($this->data['UsersLanguage'])) {
+			$usersLanguage = $this->data['UsersLanguage'];
+			if (! $this->UsersLanguage->validateMany($usersLanguage)) {
+				$this->validationErrors = Hash::merge(
+					$this->validationErrors,
+					$this->UsersLanguage->validationErrors
+				);
+				return false;
+			}
 		}
 
 		return parent::beforeValidate($options);
