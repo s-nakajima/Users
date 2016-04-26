@@ -212,6 +212,10 @@ class User extends UsersAppModel {
 /**
  * UserModelの前準備
  *
+ * 自動登録の場合、この処理を呼び出す前に$this->userAttributeDataをセットする。詳しくは、
+ * [Auth.AutoUserRegist::saveAutoUserRegist()](../../Auth/classes/AutoUserRegist.html#method_saveAutoUserRegist)
+ * を参照してください。
+ *
  * @param bool $force 強制的に取得するフラグ
  * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
@@ -219,6 +223,7 @@ class User extends UsersAppModel {
 	public function prepare($force = false) {
 		$this->loadModels([
 			'UserAttribute' => 'UserAttributes.UserAttribute',
+			'UserAttributeSetting' => 'UserAttributes.UserAttributeSetting',
 			'DataType' => 'DataTypes.DataType',
 		]);
 
@@ -229,22 +234,35 @@ class User extends UsersAppModel {
 			);
 		}
 
-		$uploads = Hash::extract(
-			$this->userAttributeData,
-			'{n}.UserAttributeSetting[data_type_key=' . DataType::DATA_TYPE_IMG . ']'
-		);
+		$uploads = $this->UserAttributeSetting->find('list', array(
+			'recursive' => -1,
+			'fields' => array('id', 'user_attribute_key'),
+			'conditions' => array(
+				'data_type_key' => DataType::DATA_TYPE_IMG
+			),
+		));
+
 		foreach ($uploads as $upload) {
-			$this->uploadSettings($upload['user_attribute_key'], array('contentKeyFieldName' => 'id'));
+			$this->uploadSettings($upload, array('contentKeyFieldName' => 'id'));
 		}
 	}
 
 /**
- * Called during validation operations, before validation. Please note that custom
- * validation rules can be defined in $validate.
+ * バリデーションのセット
  *
- * @param array $options Options passed from Model::save().
- * @return bool True if validate operation should continue, false to abort
- * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#beforevalidate
+ * - ログインIDとパスワードのバリデーションルールをセットする。<br>
+ * その他のUserモデルのバリデーションルールのセットは、
+ * [Users.SaveUserBehavior::beforeValidate](../../Users/classes/SaveUserBehavior.html#method_beforeValidate)
+ * で行う。<br>
+ * また、UsersLanguageのバリデーションも実施する。
+ *
+ * - 自動登録のバリデーションの初期値のセットは、
+ * [Auth.AutoUserRegist::validateRequest](../../Users/classes/SaveUserBehavior.html#method_validateRequest)
+ * で行う。
+ *
+ * @param array $options Model::save()のオプション
+ * @return bool
+ * @link http://book.cakephp.org/2.0/ja/models/callback-methods.html#beforevalidate
  * @see Model::save()
  */
 	public function beforeValidate($options = array()) {
@@ -310,12 +328,12 @@ class User extends UsersAppModel {
 					'notBlank' => array(
 						'rule' => array('notBlank'),
 						'allowEmpty' => false,
-						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'Re-enter')),
+						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('net_commons', 'Re-enter')),
 						'required' => true,
 					),
 					'equalToField' => array(
 						'rule' => array('equalToField', 'password'),
-						'message' => __d('users', 'Password does not match. Please try again.'),
+						'message' => __d('net_commons', 'The input data does not match. Please try again.'),
 						'allowEmpty' => false,
 						'required' => true,
 					)
