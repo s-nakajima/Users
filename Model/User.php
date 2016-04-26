@@ -234,16 +234,18 @@ class User extends UsersAppModel {
 			);
 		}
 
-		$uploads = $this->UserAttributeSetting->find('list', array(
-			'recursive' => -1,
-			'fields' => array('id', 'user_attribute_key'),
-			'conditions' => array(
-				'data_type_key' => DataType::DATA_TYPE_IMG
-			),
-		));
+		if (Configure::read('NetCommons.installed')) {
+			$uploads = $this->UserAttributeSetting->find('list', array(
+				'recursive' => -1,
+				'fields' => array('id', 'user_attribute_key'),
+				'conditions' => array(
+					'data_type_key' => DataType::DATA_TYPE_IMG
+				),
+			));
 
-		foreach ($uploads as $upload) {
-			$this->uploadSettings($upload, array('contentKeyFieldName' => 'id'));
+			foreach ($uploads as $upload) {
+				$this->uploadSettings($upload, array('contentKeyFieldName' => 'id'));
+			}
 		}
 	}
 
