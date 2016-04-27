@@ -275,7 +275,7 @@ class User extends UsersAppModel {
 		}
 
 		//パスワード
-		if (Hash::check($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
+		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 			$passwordHasher = new SimplePasswordHasher();
 			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
