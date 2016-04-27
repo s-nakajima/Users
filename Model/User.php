@@ -22,6 +22,7 @@ App::uses('NetCommonsTime', 'NetCommons.Utility');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class User extends UsersAppModel {
 
@@ -295,16 +296,8 @@ class User extends UsersAppModel {
 		}
 
 		//パスワード
-		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id'])) {
-			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-			$passwordHasher = new SimplePasswordHasher();
-			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
-
-			$passwordAgain = $this->data['User']['password_again'];
-			$this->data['User']['password_again'] = $passwordHasher->hash($passwordAgain);
-
-			//パスワード変更日時セット
-			$this->data['User']['password_modified'] = NetCommonsTime::getNowDatetime();
+		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id']) ||
+				Hash::get($options, 'validatePassword', false)) {
 
 			$this->validate = Hash::merge($this->validate, array(
 				'password' => array(
@@ -361,6 +354,26 @@ class User extends UsersAppModel {
 		}
 
 		return parent::beforeValidate($options);
+	}
+
+/**
+ * Called after data has been checked for errors
+ *
+ * @return void
+ */
+	public function afterValidate() {
+		//パスワードのハッシュ化
+		if (Hash::get($this->data['User'], 'password')) {
+			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
+			$passwordHasher = new SimplePasswordHasher();
+			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
+
+			$passwordAgain = $this->data['User']['password_again'];
+			$this->data['User']['password_again'] = $passwordHasher->hash($passwordAgain);
+
+			//パスワード変更日時セット
+			$this->data['User']['password_modified'] = NetCommonsTime::getNowDatetime();
+		}
 	}
 
 /**
