@@ -75,6 +75,7 @@ class UsersSchema extends CakeSchema {
 		'password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'パスワード', 'charset' => 'utf8'),
 		'key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'リンク識別子', 'charset' => 'utf8'),
 		'activate_key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'アクティベートキー', 'charset' => 'utf8'),
+		'activated' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'アクティベート日時', 'charset' => 'utf8'),
 		'is_deleted' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_avatar_auto_created' => array('type' => 'boolean', 'null' => false, 'default' => '1'),
