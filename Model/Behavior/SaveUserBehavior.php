@@ -41,11 +41,11 @@ class SaveUserBehavior extends ModelBehavior {
 		]);
 
 		//UserAttributesRoleデータ取得
-		$userAttributesRoles =
-				$model->UserAttributesRole->getUserAttributesRole(Current::read('User.role_key'));
+		$userAttributesRoles = $model->UserAttributesRole->getUserAttributesRole(
+			Current::read('User.role_key')
+		);
 
 		//バリデーションルールのセット
-		$emails = array();
 		foreach ($model->userAttributeData as $userAttribute) {
 			if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_LABEL) {
 				continue;
@@ -66,19 +66,16 @@ class SaveUserBehavior extends ModelBehavior {
 				continue;
 			}
 			$this->__setValidates($model, $userAttribute);
-
-			if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_EMAIL) {
-				$emails[] = $userAttribute['UserAttribute']['key'];
-			}
 		}
 
 		//emailの重複チェック
+		$emails = $this->__getEmailFields($model);
 		$model->validate = Hash::merge($model->validate, array(
 			'email' => array(
 				'notDuplicate' => array(
 					'rule' => array('notDuplicate', $emails),
 					'message' => sprintf(
-						__d('net_commons', 'Your request %s already exists. Please try a different one.'),
+						__d('net_commons', '%s is already in use. Please choose another.'),
 						__d('users', 'E-mail')
 					),
 					'allowEmpty' => true,
@@ -87,6 +84,29 @@ class SaveUserBehavior extends ModelBehavior {
 			)
 		));
 		return true;
+	}
+
+/**
+ * Emailのフィールド取得
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @return array
+ */
+	private function __getEmailFields(Model $model) {
+		$model->loadModels([
+			'DataType' => 'DataTypes.DataType',
+			'UserAttributeSetting' => 'UserAttributes.UserAttributeSetting',
+		]);
+
+		$result = $model->UserAttributeSetting->find('list', array(
+			'recursive' => -1,
+			'fields' => array('id', 'user_attribute_key'),
+			'conditions' => array(
+				'data_type_key' => DataType::DATA_TYPE_EMAIL
+			),
+		));
+
+		return array_values($result);
 	}
 
 /**
@@ -116,7 +136,7 @@ class SaveUserBehavior extends ModelBehavior {
 				$model->data[$model->alias]['id'] === Current::read('User.id') &&
 				! $userAttributesRole['self_editable']) {
 
-			throw new BadRequestException(__d('net_commons', 'Bad Request'));
+			throw new BadRequestException(__d('net_commons', 'Bad Request 1'));
 		}
 
 		//管理者しか強化しない項目のチェック⇒不正エラーとする
@@ -124,7 +144,7 @@ class SaveUserBehavior extends ModelBehavior {
 				! Current::allowSystemPlugin('user_manager') &&
 				isset($model->data[$modelName][$userAttributeKey])) {
 
-			throw new BadRequestException(__d('net_commons', 'Bad Request'));
+			throw new BadRequestException(__d('net_commons', 'Bad Request 2'));
 		}
 	}
 
@@ -141,6 +161,7 @@ class SaveUserBehavior extends ModelBehavior {
 
 		$validates = array();
 
+		//必須チェック
 		if ($userAttribute['UserAttributeSetting']['required']) {
 			$validates['notBlank'] = array(
 				'rule' => array('notBlank'),
@@ -149,11 +170,12 @@ class SaveUserBehavior extends ModelBehavior {
 			);
 		}
 
+		//重複チェック
 		if (in_array($userAttributeKey, ['username', 'handlename', 'key'], true)) {
 			$validates['notDuplicate'] = array(
 				'rule' => array('notDuplicate', array($userAttributeKey)),
 				'message' => sprintf(
-					__d('net_commons', 'Your request %s already exists. Please try a different one.'),
+					__d('net_commons', '%s is already in use. Please choose another.'),
 					$userAttributeName
 				),
 				'allowEmpty' => true,
@@ -161,6 +183,7 @@ class SaveUserBehavior extends ModelBehavior {
 			);
 		}
 
+		//メールアドレスチェック
 		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_EMAIL) {
 			$validates['email'] = array(
 				'rule' => array('email'),
@@ -172,6 +195,7 @@ class SaveUserBehavior extends ModelBehavior {
 			);
 		}
 
+		//選択肢チェック
 		if (isset($userAttribute['UserAttributeChoice'])) {
 			if ($userAttributeKey === 'role_key') {
 				$valuePath = '{n}.key';
