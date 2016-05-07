@@ -39,7 +39,7 @@
 <div class="tab-content">
 	<div class="tab-pane active" id="user-information">
 		<?php
-			if ($user['User']['id'] === Current::read('User.id') && ! $this->request->is('ajax')) {
+			if ($user['User']['id'] === Current::read('User.id')) {
 				$editLink = true;
 			} else {
 				$editLink = false;

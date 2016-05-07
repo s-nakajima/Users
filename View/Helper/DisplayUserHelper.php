@@ -150,19 +150,18 @@ class DisplayUserHelper extends AppHelper {
  * 投稿者(TrackableCreator)や最終更新者(TrackableUpdater)などのアバターリンクの表示
  *
  * @param array $user ユーザデータ
- * @param array $attributes リンクタグの属性
+ * @param array $attr リンクタグの属性
  * @param array $options リンクタグのオプション
  * @param string $modelId モデル名+id(TrackableCreator.idやTrackableUpdater.idなど)
  * @return string HTMLタグ
  */
-	public function avatarLink($user, $attributes = [], $options = [],
-								$modelId = 'TrackableCreator.id') {
+	public function avatarLink($user, $attr = [], $options = [], $modelId = 'TrackableCreator.id') {
 		if (!$user) {
 			return '';
 		}
 		$html = '';
 
-		$avatar = $this->avatar($user, $attributes, $modelId);
+		$avatar = $this->avatar($user, $attr, $modelId);
 
 		if (Hash::get($user, 'ngModel')) {
 			$userId = Hash::get($user, 'ngModel') . '.id';
@@ -170,14 +169,14 @@ class DisplayUserHelper extends AppHelper {
 			$userId = '\'' . Hash::get($user, $modelId) . '\'';
 		}
 		if (! Current::read('User.id')) {
-			$attributes['ng-click'] = null;
+			$attr['ng-click'] = null;
 		}
 		$html .= $this->NetCommonsHtml->link($avatar, '#',
 			Hash::merge(array(
 				'escape' => false,
 				'ng-controller' => 'Users.controller',
 				'ng-click' => 'showUser(' . $userId . ')'
-			), $attributes),
+			), $attr),
 			Hash::merge(array(
 				'escape' => false
 			), $options)

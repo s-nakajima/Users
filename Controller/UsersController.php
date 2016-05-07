@@ -86,8 +86,7 @@ class UsersController extends UsersAppController {
 
 		$user = $this->User->getUser($userId);
 		if (! $user || $user['User']['is_deleted']) {
-			$this->setAction('throwBadRequest');
-			return;
+			return $this->setAction('throwBadRequest');
 		}
 		$this->set('user', $user);
 		$this->set('title', false);
@@ -105,8 +104,7 @@ class UsersController extends UsersAppController {
 			$conditions = array('Room.id' => $roomId);
 			$count = $this->Room->find('count', $this->Room->getReadableRoomsConditions($conditions));
 			if (! $count) {
-				$this->setAction('throwBadRequest');
-				return;
+				return $this->setAction('throwBadRequest');
 			}
 			$this->set('roomId', $roomId);
 		}
@@ -166,13 +164,13 @@ class UsersController extends UsersAppController {
 			$this->PageLayout = $this->Components->load('Pages.PageLayout');
 		}
 		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
-			$this->throwBadRequest();
-			return;
+			return $this->throwBadRequest();
 		}
 
 		if ($this->request->is('put')) {
 			//不要パラメータ除去
 			unset($this->request->data['save'], $this->request->data['active_lang_id']);
+			$redirectUrl = Hash::get($this->request->data, '_user.redirect');
 
 			//登録処理
 			if ($this->User->saveUser($this->request->data)) {
@@ -180,8 +178,7 @@ class UsersController extends UsersAppController {
 				$this->NetCommons->setFlashNotification(
 					__d('net_commons', 'Successfully saved.'), array('class' => 'success')
 				);
-				$this->redirect('/users/users/view/' . Hash::get($this->viewVars['user'], 'User.id'));
-				return;
+				return $this->redirect($redirectUrl);
 			}
 			$this->NetCommons->handleValidationError($this->User->validationErrors);
 
@@ -189,8 +186,10 @@ class UsersController extends UsersAppController {
 			//表示処理
 			$this->User->languages = $this->viewVars['languages'];
 			$this->request->data = $this->viewVars['user'];
+			$redirectUrl = $this->request->referer(true);
 		}
 
+		$this->set('redirectUrl', $redirectUrl);
 		$this->set('activeUserId', Hash::get($this->viewVars['user'], 'User.id'));
 	}
 

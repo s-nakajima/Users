@@ -39,11 +39,12 @@ echo $this->NetCommonsHtml->css('/users/css/style.css');
 
 			<?php echo $this->element('Users.Users/edit_form', array('element' => 'Users.Users/render_edit_row')); ?>
 
+			<?php echo $this->NetCommonsForm->hidden('_user.redirect', ['value' => $redirectUrl]); ?>
 			<div class="panel-footer text-center">
 				<?php echo $this->Button->cancelAndSave(
 						__d('net_commons', 'Cancel'),
 						__d('net_commons', 'OK'),
-						$this->NetCommonsHtml->url(array('action' => 'view', 'block_id' => null, 'key' => Hash::get($this->data, 'User.id')))
+						$redirectUrl
 					); ?>
 			</div>
 
