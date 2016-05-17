@@ -21,8 +21,6 @@ App::uses('NetCommonsTime', 'NetCommons.Utility');
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class User extends UsersAppModel {
 
@@ -373,66 +371,6 @@ class User extends UsersAppModel {
 
 			//パスワード変更日時セット
 			$this->data['User']['password_modified'] = NetCommonsTime::getNowDatetime();
-		}
-	}
-
-/**
- * Called after each successful save operation.
- *
- * @param bool $created True if this save created a new record
- * @param array $options Options passed from Model::save().
- * @return void
- * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
- * @see Model::save()
- * @throws InternalErrorException
- */
-	public function afterSave($created, $options = array()) {
-		//UsersLanguage登録
-		$usersLanguages = Hash::get($this->data, 'UsersLanguage', array());
-		if ($created) {
-			$usersLanguages = Hash::insert($usersLanguages, '{n}.user_id', $this->data['User']['id']);
-		}
-		foreach ($usersLanguages as $index => $usersLanguage) {
-			if (! $ret = $this->UsersLanguage->save($usersLanguage, false, false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			$this->data['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
-		}
-
-		//インストール時は、言語のCurrentデータをセットする
-		if (! Configure::read('NetCommons.installed')) {
-			(new CurrentSystem())->setLanguage();
-		}
-
-		if ($created) {
-			//プライベートルームの登録
-			$this->loadModels([
-				'PrivateSpace' => 'PrivateSpace.PrivateSpace',
-				'Room' => 'Rooms.Room',
-			]);
-			$room = $this->PrivateSpace->createRoom();
-			$room['RolesRoomsUser']['user_id'] = $this->data['User']['id'];
-			if (! $this->Room->saveRoom($room)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-
-			//デフォルト参加ルームの登録
-			$rooms = $this->Room->find('all', array(
-				'recursive' => -1,
-				'conditions' => array(
-					'OR' => array(
-						'default_participation' => true,
-						'root_id' => null
-					)
-				),
-			));
-			foreach ($rooms as $room) {
-				$room['RolesRoomsUser']['user_id'] = $this->data['User']['id'];
-				if (! Configure::read('NetCommons.installed')) {
-					$room['Room']['default_role_key'] = Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
-				}
-				$this->Room->saveDefaultRolesRoomsUser($room, false);
-			}
 		}
 	}
 

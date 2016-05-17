@@ -10,6 +10,7 @@
  */
 
 App::uses('ModelBehavior', 'Model');
+App::uses('CurrentSystem', 'NetCommons.Utility');
 
 /**
  * SaveUser Behavior
@@ -218,6 +219,90 @@ class SaveUserBehavior extends ModelBehavior {
 		} else {
 			$model->validate[$userAttributeKey] = $validates;
 		}
+	}
+
+/**
+ * beforeSave is called before a model is saved. Returning false from a beforeSave callback
+ * will abort the save operation.
+ *
+ * @param Model $model Model using this behavior
+ * @param array $options Options passed from Model::save().
+ * @return mixed False if the operation should abort. Any other result will continue.
+ * @see Model::save()
+ */
+	public function beforeSave(Model $model, $options = array()) {
+		//インストール時は、言語のCurrentデータをセットする
+		if (! Configure::read('NetCommons.installed')) {
+			(new CurrentSystem())->setLanguage();
+		}
+
+		return true;
+	}
+
+/**
+ * afterSave is called after a model is saved.
+ *
+ * @param Model $model Model using this behavior
+ * @param bool $created True if this save created a new record
+ * @param array $options Options passed from Model::save().
+ * @return bool
+ * @see Model::save()
+ * @throws InternalErrorException
+ */
+	public function afterSave(Model $model, $created, $options = array()) {
+		//UsersLanguage登録
+		$usersLanguages = Hash::get($model->data, 'UsersLanguage', array());
+		if ($created) {
+			$usersLanguages = Hash::insert($usersLanguages, '{n}.user_id', $model->data['User']['id']);
+		}
+		foreach ($usersLanguages as $index => $usersLanguage) {
+			if (! $ret = $model->UsersLanguage->save($usersLanguage, false, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			$model->data['UsersLanguage'][$index] = Hash::extract($ret, 'UsersLanguage');
+		}
+
+		if ($created) {
+			//プライベートルームの登録
+			$model->loadModels([
+				'PrivateSpace' => 'PrivateSpace.PrivateSpace',
+				'Room' => 'Rooms.Room',
+			]);
+			$room = $model->PrivateSpace->createRoom();
+			$room['RolesRoomsUser']['user_id'] = $model->data['User']['id'];
+			$room = $model->Room->saveRoom($room);
+			if (! $room) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			//プライベートルームのデフォルトでプラグイン設置
+			$result = $model->PrivateSpace->saveDefaultFrames($room);
+			if (! $result) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			//デフォルト参加ルームの登録
+			$rooms = $model->Room->find('all', array(
+				'recursive' => -1,
+				'conditions' => array(
+					'OR' => array(
+						'default_participation' => true,
+						'root_id' => null
+					)
+				),
+			));
+
+			if (! Configure::read('NetCommons.installed')) {
+				$rooms = Hash::insert(
+					$rooms, '{n}.Room.default_role_key', Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR
+				);
+			}
+			foreach ($rooms as $room) {
+				$room['RolesRoomsUser']['user_id'] = $model->data['User']['id'];
+				$model->Room->saveDefaultRolesRoomsUser($room, false);
+			}
+		}
+		return true;
 	}
 
 /**
