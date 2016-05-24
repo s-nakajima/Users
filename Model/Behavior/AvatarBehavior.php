@@ -84,11 +84,25 @@ class AvatarBehavior extends ModelBehavior {
  * @throws InternalErrorException
  */
 	public function validAvatarAutomatically(Model $model, $data, $user, $beforeUser) {
-		return Hash::get($data, 'User.' . UserAttribute::AVATAR_FIELD . '.remove') ||
-			$data['User']['is_avatar_auto_created'] &&
-			! Hash::get($user, 'User.' . UserAttribute::AVATAR_FIELD . '.name') &&
-			Hash::get($user, 'User.handlename') &&
-			Hash::get($beforeUser, 'User.handlename') !== Hash::get($user, 'User.handlename');
+		if (! class_exists('Imagick')) {
+			return false;
+		}
+
+		if (Hash::get($data, 'User.' . UserAttribute::AVATAR_FIELD . '.remove')) {
+			return true;
+		}
+
+		$isAvatarAutoCreated = $data['User']['is_avatar_auto_created'] &&
+			! (bool)Hash::get($user, 'User.' . UserAttribute::AVATAR_FIELD . '.name');
+
+		if (! Hash::get($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.original_name', false)) {
+			$modifiedHandle = Hash::get($user, 'User.handlename');
+		} else {
+			$modifiedHandle = Hash::get($user, 'User.handlename') &&
+				Hash::get($beforeUser, 'User.handlename') !== Hash::get($user, 'User.handlename');
+		}
+
+		return $isAvatarAutoCreated && $modifiedHandle;
 	}
 
 }
