@@ -68,7 +68,7 @@ msgid "Not found the select user."
 msgstr "選択されていません。"
 
 msgid "Please enter handle name."
-msgstr "ハンドルを入力して下さい。"
+msgstr "ハンドルを入力してください。"
 
 msgid "Too many results to show. Can you think of more specific search keywords?"
 msgstr "検索結果は、%s件までしか表示できません。もう少し条件を増やしてください。"
