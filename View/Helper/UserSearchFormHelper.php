@@ -193,7 +193,9 @@ class UserSearchFormHelper extends AppHelper {
 		$html = '';
 
 		$html .= '<div class="form-group">';
-		$html .= '<label class="control-label">' . h($userAttribute['UserAttribute']['name']) . '</label>';
+		$html .= '<label class="control-label">' .
+					h($userAttribute['UserAttribute']['name']) .
+				'</label>';
 
 		if ($userAttribute['UserAttribute']['key'] === 'last_login') {
 			//最終ログイン日時の場合、ラベル変更(○日以上ログインしていない、○日以内ログインしている)
