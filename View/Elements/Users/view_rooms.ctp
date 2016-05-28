@@ -33,16 +33,26 @@
 	<div id="user-public-space" class="tab-pane">
 		<article class="rooms-manager">
 			<?php echo $this->Rooms->roomsRender(Space::PUBLIC_SPACE_ID,
-					'Users.Users/view_rooms_index', 'Users.Users/view_rooms_header',
-					$roomTreeLists[Space::PUBLIC_SPACE_ID], false); ?>
+					array(
+						'dataElemen' => 'Users.Users/view_rooms_index',
+						'headElement' => 'Users.Users/view_rooms_header'
+					),
+					$roomTreeLists[Space::PUBLIC_SPACE_ID],
+					array('paginator' => false, 'displaySpace' => true)
+				); ?>
 		</article>
 	</div>
 
 	<div id="user-room-space" class="tab-pane active">
 		<article class="rooms-manager">
 			<?php echo $this->Rooms->roomsRender(Space::ROOM_SPACE_ID,
-					'Users.Users/view_rooms_index', 'Users.Users/view_rooms_header',
-					$roomTreeLists[Space::ROOM_SPACE_ID], false); ?>
+					array(
+						'dataElemen' => 'Users.Users/view_rooms_index',
+						'headElement' => 'Users.Users/view_rooms_header'
+					),
+					$roomTreeLists[Space::ROOM_SPACE_ID],
+					array('paginator' => false, 'displaySpace' => false)
+				); ?>
 		</article>
 	</div>
 </div>

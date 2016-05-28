@@ -54,41 +54,7 @@ class UserSearchFormHelper extends AppHelper {
 			$dataTypeKey = DataType::DATA_TYPE_DATETIME;
 		}
 
-		$html .= '<div class="form-group">';
-		$html .= $this->__label($dataTypeKey, $userAttribute);
 		$html .= $this->__input($dataTypeKey, $userAttribute);
-		$html .= '</div>';
-
-		return $html;
-	}
-
-/**
- * 会員検索のラベルHTMLを生成する
- *
- * @param string $dataTypeKey inputタイプ
- * @param array $userAttribute ユーザ項目属性データ
- * @return string ラベルHTML
- */
-	private function __label($dataTypeKey, $userAttribute) {
-		$html = '';
-
-		$inArray = array(
-			DataType::DATA_TYPE_IMG,
-			DataType::DATA_TYPE_RADIO,
-			DataType::DATA_TYPE_CHECKBOX,
-			//DataType::DATA_TYPE_SELECT,
-			DataType::DATA_TYPE_DATETIME
-		);
-		if (in_array($dataTypeKey, $inArray, true)) {
-			//ラジオボタン、チェックボタン、セレクトボタン、日時
-			$html .= '<div>';
-			$html .= '<label>' . h($userAttribute['UserAttribute']['name']) . '</label>';
-			$html .= '</div>';
-		} else {
-			$html .= $this->NetCommonsForm->label(
-				$userAttribute['UserAttribute']['key'], $userAttribute['UserAttribute']['name']
-			);
-		}
 
 		return $html;
 	}
@@ -163,15 +129,15 @@ class UserSearchFormHelper extends AppHelper {
 	private function __inputRadio($dataTypeKey, $userAttribute, $options) {
 		$html = '';
 
-		$html .= '<div class="form-inline input-sm">';
-
 		$options = array('' => __d('user_manager', 'Not specified')) + $options;
-		$html .= $this->NetCommonsForm->radio($userAttribute['UserAttribute']['key'], $options, array(
-			'div' => false,
-			'default' => '',
+		$html .= $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
+			'type' => 'radio',
+			'label' => $userAttribute['UserAttribute']['name'],
+			'options' => $options,
 			'hiddenField' => false,
+			'error' => false,
+			'inline' => true,
 		));
-		$html .= '</div>';
 
 		return $html;
 	}
@@ -208,8 +174,7 @@ class UserSearchFormHelper extends AppHelper {
 		$html .= $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
 			'type' => 'select',
 			'options' => $options,
-			'label' => false,
-			'div' => false,
+			'label' => $userAttribute['UserAttribute']['name'],
 			'error' => false,
 			'class' => 'form-control input-sm',
 		));
@@ -226,6 +191,11 @@ class UserSearchFormHelper extends AppHelper {
  */
 	private function __inputDatetime($dataTypeKey, $userAttribute) {
 		$html = '';
+
+		$html .= '<div class="form-group">';
+		$html .= '<label class="control-label">' .
+					h($userAttribute['UserAttribute']['name']) .
+				'</label>';
 
 		if ($userAttribute['UserAttribute']['key'] === 'last_login') {
 			//最終ログイン日時の場合、ラベル変更(○日以上ログインしていない、○日以内ログインしている)
@@ -281,6 +251,7 @@ class UserSearchFormHelper extends AppHelper {
 		$html .= '</div>';
 
 		$html .= '</div>';
+		$html .= '</div>';
 
 		return $html;
 	}
@@ -297,8 +268,7 @@ class UserSearchFormHelper extends AppHelper {
 
 		$html .= $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
 			'type' => DataType::DATA_TYPE_TEXT,
-			'label' => false,
-			'div' => false,
+			'label' => $userAttribute['UserAttribute']['name'],
 			'error' => false,
 			'class' => 'form-control input-sm',
 		));
@@ -316,19 +286,13 @@ class UserSearchFormHelper extends AppHelper {
 
 		$options = ['' => __d('user_manager', '-- Not specify --')] + $this->_View->viewVars['rooms'];
 
-		$html .= '<div class="form-group">';
-		$html .= '<div>';
-		$html .= '<label>' . __d('user_manager', 'Rooms') . '</label>';
-		$html .= '</div>';
 		$html .= $this->NetCommonsForm->input('room', array(
 			'type' => 'select',
 			'options' => $options,
-			'label' => false,
-			'div' => false,
+			'label' => __d('user_manager', 'Rooms'),
 			'error' => false,
 			'class' => 'form-control input-sm',
 		));
-		$html .= '</div>';
 
 		return $html;
 	}
@@ -343,19 +307,13 @@ class UserSearchFormHelper extends AppHelper {
 
 		$options = ['' => __d('user_manager', '-- Not specify --')] + $this->_View->viewVars['groups'];
 
-		$html .= '<div class="form-group">';
-		$html .= '<div>';
-		$html .= '<label>' . __d('user_manager', 'Groups') . '</label>';
-		$html .= '</div>';
 		$html .= $this->NetCommonsForm->input('group_id', array(
 			'type' => 'select',
 			'options' => $options,
-			'label' => false,
-			'div' => false,
+			'label' => __d('user_manager', 'Groups'),
 			'error' => false,
 			'class' => 'form-control input-sm',
 		));
-		$html .= '</div>';
 
 		return $html;
 	}

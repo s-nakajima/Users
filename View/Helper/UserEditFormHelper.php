@@ -68,25 +68,16 @@ class UserEditFormHelper extends AppHelper {
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
 		if ($userAttributeKey === 'created_user') {
-			$html .= '<div class="form-group">';
 			$html .= $this->__input('TrackableCreator.handlename', $userAttribute);
-			$html .= '</div>';
 		} elseif ($userAttributeKey === 'modified_user') {
-			$html .= '<div class="form-group">';
 			$html .= $this->__input('TrackableUpdater.handlename', $userAttribute);
-			$html .= '</div>';
 		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
-			//$html .= '<div class="form-group">';
 			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
-			//$html .= '</div>';
 		} elseif ($this->User->hasField($userAttributeKey)) {
-			$html .= '<div class="form-group">';
 			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
-			$html .= '</div>';
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			foreach ($this->_View->request->data['UsersLanguage'] as $index => $usersLanguage) {
-				$html .= '<div class="form-group"' .
-							' ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
+				$html .= '<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
 				$html .= $this->__input(
 						'UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute,
 						$usersLanguage['language_id']
@@ -216,16 +207,18 @@ class UserEditFormHelper extends AppHelper {
 		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
-		$name = $this->SwitchLanguage->inputLabel($userAttribute['UserAttribute']['name'], $languageId);
+		$attributes = array();
+
+		//ラベル
+		$attributes['label'] = $this->SwitchLanguage->inputLabel(
+			$userAttribute['UserAttribute']['name'], $languageId
+		);
+
+		//入力タイプ
+		$attributes['type'] = $dataTypeKey;
 
 		//必須項目ラベルの設定
-		if ($userAttribute['UserAttributeSetting']['required']) {
-			$requireLabel = $this->_View->element('NetCommons.required');
-		} else {
-			$requireLabel = '';
-		}
-
-		$attributes = array();
+		$attributes['required'] = (bool)$userAttribute['UserAttributeSetting']['required'];
 
 		//選択肢の設定
 		if (isset($userAttribute['UserAttributeChoice'])) {
@@ -242,7 +235,7 @@ class UserEditFormHelper extends AppHelper {
 			}
 		}
 
-		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
+		if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
 			if (Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.id')) {
 				$attributes['url'] = NetCommonsUrl::actionUrl(array(
 					'plugin' => 'users',
@@ -263,13 +256,11 @@ class UserEditFormHelper extends AppHelper {
 				$attributes['remove'] = false;
 				$attributes['filename'] = false;
 			}
+		} elseif ($dataTypeKey === DataType::DATA_TYPE_CHECKBOX) {
+			$attributes['default'] = explode(',', Hash::get($this->_View->request->data, $fieldName, ''));
 		}
 
-		$html .= $this->DataTypeForm->inputDataType(
-				$dataTypeKey,
-				$fieldName,
-				$name . $requireLabel,
-				$attributes);
+		$html .= $this->DataTypeForm->inputDataType($fieldName, $attributes);
 
 		$html .= $this->userPublicForSelf($userAttribute);
 
