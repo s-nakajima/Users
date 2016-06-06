@@ -25,6 +25,7 @@ class UserSearchHelper extends AppHelper {
  * @var array
  */
 	public $helpers = array(
+		'NetCommons.LinkButton',
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.Date',
 		'Rooms.Rooms',
@@ -59,9 +60,11 @@ class UserSearchHelper extends AppHelper {
 /**
  * テーブルヘッダーの出力
  *
+ * @param bool $isEdit 編集の有無
  * @return string User value
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function tableHeaders() {
+	public function tableHeaders($isEdit = false) {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
@@ -88,6 +91,11 @@ class UserSearchHelper extends AppHelper {
 				);
 			}
 			$output .= '</th>';
+
+			if ($isEdit) {
+				$output .= '<th></th>';
+				$isEdit = false;
+			}
 		}
 
 		return $output;
@@ -98,9 +106,10 @@ class UserSearchHelper extends AppHelper {
  *
  * @param array $user ユーザデータ
  * @param bool $isEdit 編集の有無
+ * @param array $url 編集リンクURL
  * @return string 行のHTMLタグ
  */
-	public function tableRow($user, $isEdit) {
+	public function tableRow($user, $isEdit, $url = array()) {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
@@ -118,7 +127,33 @@ class UserSearchHelper extends AppHelper {
 			} else {
 				$output .= '<td></td>';
 			}
+
+			if ($isEdit && $url) {
+				$output .= '<td>' . $this->__userEdit($user, $url) . '</td>';
+				$isEdit = false;
+			}
 		}
+
+		return $output;
+	}
+
+/**
+ * テーブル行の出力
+ *
+ * @param array $user ユーザデータ
+ * @param array $url 編集リンクURL
+ * @return string 編集のHTMLタグ
+ */
+	private function __userEdit($user, $url) {
+		$output = '';
+
+		if (Current::read('User.role_key') !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR &&
+				($user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR)) {
+			return $output;
+		}
+
+		$url['key'] = $user['User']['id'];
+		$output .= $this->LinkButton->edit('', $url, ['iconSize' => 'btn-xs']);
 
 		return $output;
 	}
@@ -184,8 +219,7 @@ class UserSearchHelper extends AppHelper {
 	public function linkHandlename($user, $isEdit) {
 		if (! $isEdit) {
 			return $this->DisplayUser->handleLink($user, array('avatar' => true), array(), 'User');
-		} elseif (Current::read('User.role_key') === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR ||
-				$user[$this->User->alias]['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+		} else {
 
 			return $this->NetCommonsHtml->link(
 				$this->DisplayUser->handle($user, array('avatar' => true), 'User'), '#',
@@ -198,8 +232,6 @@ class UserSearchHelper extends AppHelper {
 					'escape' => false
 				)
 			);
-		} else {
-			return $this->DisplayUser->handle($user, array('avatar' => true), 'User');
 		}
 	}
 

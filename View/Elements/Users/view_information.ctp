@@ -12,6 +12,11 @@
 if (! isset($editLink)) {
 	$editLink = false;
 }
+if (Current::read('User.role_key') !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR &&
+		$user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+	$editLink = false;
+}
+
 ?>
 
 <div class="panel panel-default">
