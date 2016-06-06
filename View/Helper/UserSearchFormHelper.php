@@ -356,10 +356,11 @@ class UserSearchFormHelper extends AppHelper {
 /**
  * 対象会員の絞り込みボタン表示
  *
+ * @param string $label ボタンラベル
  * @param array $params URLのパラメータ
  * @return string HTML
  */
-	public function displaySearchButton($params = array()) {
+	public function displaySearchButton($label, $params = array()) {
 		$html = '';
 		$html .= $this->NetCommonsHtml->script(array(
 			'/users/js/user_search.js'
@@ -367,7 +368,7 @@ class UserSearchFormHelper extends AppHelper {
 
 		$html .= '<div class="text-center" ng-controller="UserSearch.controller">';
 
-		$html .= $this->Button->search(__d('users', 'Search for the members'), array(
+		$html .= $this->Button->search($label, array(
 			'type' => 'button',
 			'ng-click' => 'showUserSearch(null, ' .
 									'\'' . h($this->_View->request->params['plugin']) . '\', ' .
