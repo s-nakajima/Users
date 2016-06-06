@@ -100,3 +100,13 @@ label.user-search-conditions-datetime-top {
 label.user-search-conditions-datetime-bottom {
 	border-top-right-radius: 0;
 }
+
+.user-search-conditions-row .col-xs-3 {
+	padding-right: 0px;
+}
+.user-search-conditions-row .radio-inline {
+	padding-left: 0px;
+	padding-right: 20px;
+	margin-left: 0px;
+	margin-right: 10px;
+}
