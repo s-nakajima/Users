@@ -94,6 +94,15 @@ class UserSearchFormHelper extends AppHelper {
 			);
 		}
 
+		$html .= '<div class="form-group row user-search-conditions-row">';
+
+		//ラベル
+		$html .= '<div class="col-xs-3">';
+		$html .= '<label class="control-label">' .
+					h($userAttribute['UserAttribute']['name']) .
+				'</label>';
+		$html .= '</div>';
+
 		switch ($dataTypeKey) {
 			case DataType::DATA_TYPE_RADIO:
 				$html .= $this->__inputRadio($dataTypeKey, $userAttribute, $options);
@@ -115,6 +124,7 @@ class UserSearchFormHelper extends AppHelper {
 				$html .= $this->__inputText($dataTypeKey, $userAttribute);
 		}
 
+		$html .= '</div>';
 		return $html;
 	}
 
@@ -130,14 +140,19 @@ class UserSearchFormHelper extends AppHelper {
 		$html = '';
 
 		$options = array('' => __d('user_manager', 'Not specified')) + $options;
-		$html .= $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
+
+		$input = $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
 			'type' => 'radio',
-			'label' => $userAttribute['UserAttribute']['name'],
+			'label' => false,
 			'options' => $options,
 			'hiddenField' => false,
 			'error' => false,
 			'inline' => true,
+			'div' => false,
+			'default' => ''
 		));
+
+		$html .= $this->NetCommonsHtml->div(null, $input, array('class' => 'col-xs-9'));
 
 		return $html;
 	}
@@ -168,13 +183,15 @@ class UserSearchFormHelper extends AppHelper {
 	private function __inputSelect($dataTypeKey, $userAttribute, $options) {
 		$html = '';
 
+		//入力部品
 		if ($options) {
 			$options = array('' => __d('user_manager', '-- Not specify --')) + $options;
 		}
 		$html .= $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
 			'type' => 'select',
 			'options' => $options,
-			'label' => $userAttribute['UserAttribute']['name'],
+			'label' => false,
+			'div' => array('class' => 'col-xs-9'),
 			'error' => false,
 			'class' => 'form-control input-sm',
 		));
@@ -192,11 +209,8 @@ class UserSearchFormHelper extends AppHelper {
 	private function __inputDatetime($dataTypeKey, $userAttribute) {
 		$html = '';
 
-		$html .= '<div class="form-group">';
-		$html .= '<label class="control-label">' .
-					h($userAttribute['UserAttribute']['name']) .
-				'</label>';
-
+		//入力部品
+		$html .= '<div class="col-xs-9">';
 		if ($userAttribute['UserAttribute']['key'] === 'last_login') {
 			//最終ログイン日時の場合、ラベル変更(○日以上ログインしていない、○日以内ログインしている)
 			$moreThanDays =
@@ -222,6 +236,7 @@ class UserSearchFormHelper extends AppHelper {
 				'label' => false,
 				'div' => false,
 				'error' => false,
+				'placeholder' => false,
 			)
 		);
 		$html .= $this->NetCommonsForm->label(
@@ -242,6 +257,7 @@ class UserSearchFormHelper extends AppHelper {
 				'label' => false,
 				'div' => false,
 				'error' => false,
+				'placeholder' => false,
 			)
 		);
 		$html .= $this->NetCommonsForm->label(
@@ -268,7 +284,8 @@ class UserSearchFormHelper extends AppHelper {
 
 		$html .= $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
 			'type' => DataType::DATA_TYPE_TEXT,
-			'label' => $userAttribute['UserAttribute']['name'],
+			'label' => false,
+			'div' => array('class' => 'col-xs-9'),
 			'error' => false,
 			'class' => 'form-control input-sm',
 		));
@@ -286,14 +303,23 @@ class UserSearchFormHelper extends AppHelper {
 
 		$options = ['' => __d('user_manager', '-- Not specify --')] + $this->_View->viewVars['rooms'];
 
+		$html .= '<div class="form-group row user-search-conditions-row">';
+
+		//ラベル
+		$html .= '<div class="col-xs-3">';
+		$html .= '<label class="control-label">' . __d('user_manager', 'Rooms') . '</label>';
+		$html .= '</div>';
+
 		$html .= $this->NetCommonsForm->input('room', array(
 			'type' => 'select',
 			'options' => $options,
-			'label' => __d('user_manager', 'Rooms'),
+			'label' => false,
+			'div' => array('class' => 'col-xs-9'),
 			'error' => false,
 			'class' => 'form-control input-sm',
 		));
 
+		$html .= '</div>';
 		return $html;
 	}
 
@@ -307,24 +333,34 @@ class UserSearchFormHelper extends AppHelper {
 
 		$options = ['' => __d('user_manager', '-- Not specify --')] + $this->_View->viewVars['groups'];
 
+		$html .= '<div class="form-group row user-search-conditions-row">';
+
+		//ラベル
+		$html .= '<div class="col-xs-3">';
+		$html .= '<label class="control-label">' . __d('user_manager', 'Groups') . '</label>';
+		$html .= '</div>';
+
 		$html .= $this->NetCommonsForm->input('group_id', array(
 			'type' => 'select',
 			'options' => $options,
-			'label' => __d('user_manager', 'Groups'),
+			'label' => false,
+			'div' => array('class' => 'col-xs-9'),
 			'error' => false,
 			'class' => 'form-control input-sm',
 		));
 
+		$html .= '</div>';
 		return $html;
 	}
 
 /**
  * 対象会員の絞り込みボタン表示
  *
+ * @param string $label ボタンラベル
  * @param array $params URLのパラメータ
  * @return string HTML
  */
-	public function displaySearchButton($params = array()) {
+	public function displaySearchButton($label, $params = array()) {
 		$html = '';
 		$html .= $this->NetCommonsHtml->script(array(
 			'/users/js/user_search.js'
@@ -332,7 +368,7 @@ class UserSearchFormHelper extends AppHelper {
 
 		$html .= '<div class="text-center" ng-controller="UserSearch.controller">';
 
-		$html .= $this->Button->search(__d('users', 'Search for the members'), array(
+		$html .= $this->Button->search($label, array(
 			'type' => 'button',
 			'ng-click' => 'showUserSearch(null, ' .
 									'\'' . h($this->_View->request->params['plugin']) . '\', ' .

@@ -42,22 +42,6 @@ class UserLayoutHelper extends AppHelper {
 	}
 
 /**
- * After render file callback.
- * Called after any view fragment is rendered.
- *
- * Overridden in subclasses.
- *
- * @param string $viewFile The file just be rendered.
- * @param string $content The content that was rendered.
- * @return void
- */
-	public function afterRenderFile($viewFile, $content) {
-		$content = $this->NetCommonsHtml->css('/data_types/css/style.css') . $content;
-
-		parent::afterRenderFile($viewFile, $content);
-	}
-
-/**
  * ユーザ属性の表示
  *
  * @param array $userAttribute ユーザ属性データ
@@ -154,7 +138,7 @@ class UserLayoutHelper extends AppHelper {
 			} else {
 				$imageUrl = $this->NetCommonsHtml->url('/users/img/noimage.gif');
 			}
-			$element .= '<div class="thumbnail data-type-thumbnail">';
+			$element .= '<div class="thumbnail user-thumbnail">';
 			$element .= $this->NetCommonsHtml->image($imageUrl, array(
 				'class' => 'img-responsive img-rounded',
 			));

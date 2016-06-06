@@ -37,8 +37,11 @@
 						'dataElemen' => 'Users.Users/view_rooms_index',
 						'headElement' => 'Users.Users/view_rooms_header'
 					),
-					$roomTreeLists[Space::PUBLIC_SPACE_ID],
-					array('paginator' => false, 'displaySpace' => true)
+					array(
+						'paginator' => false,
+						'displaySpace' => true,
+						'roomTreeList' => $roomTreeLists[Space::PUBLIC_SPACE_ID]
+					)
 				); ?>
 		</article>
 	</div>
@@ -50,8 +53,11 @@
 						'dataElemen' => 'Users.Users/view_rooms_index',
 						'headElement' => 'Users.Users/view_rooms_header'
 					),
-					$roomTreeLists[Space::ROOM_SPACE_ID],
-					array('paginator' => false, 'displaySpace' => false)
+					array(
+						'paginator' => false,
+						'displaySpace' => false,
+						'roomTreeList' => $roomTreeLists[Space::ROOM_SPACE_ID]
+					)
 				); ?>
 		</article>
 	</div>

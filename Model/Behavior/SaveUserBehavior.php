@@ -281,27 +281,42 @@ class SaveUserBehavior extends ModelBehavior {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
-			//デフォルト参加ルームの登録
-			$rooms = $model->Room->find('all', array(
-				'recursive' => -1,
-				'conditions' => array(
-					'OR' => array(
-						'default_participation' => true,
-						'root_id' => null
-					)
-				),
-			));
+			//参加ルームの登録
+			$this->__saveDefaultRolesRoomsUser($model);
+		}
+		return true;
+	}
 
-			if (! Configure::read('NetCommons.installed')) {
-				$rooms = Hash::insert(
-					$rooms, '{n}.Room.default_role_key', Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR
-				);
-			}
-			foreach ($rooms as $room) {
-				$room['RolesRoomsUser']['user_id'] = $model->data['User']['id'];
-				$model->Room->saveDefaultRolesRoomsUser($room, false);
+/**
+ * 参加ルームの登録
+ *
+ * @param Model $model Model using this behavior
+ * @return bool
+ * @throws InternalErrorException
+ */
+	private function __saveDefaultRolesRoomsUser(Model $model) {
+		$model->loadModels([
+			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
+			'Room' => 'Rooms.Room',
+		]);
+
+		//参加ルームの登録
+		if (! isset($model->data['RolesRoomsUser'])) {
+			$model->data['RolesRoomsUser'] = $model->Room->getDefaultRolesRoomsUser();
+		}
+		$model->data['RolesRoomsUser'] = Hash::remove(
+			$model->data['RolesRoomsUser'], '{n}[roles_room_id=0]'
+		);
+		$model->data['RolesRoomsUser'] = Hash::insert(
+			$model->data['RolesRoomsUser'], '{n}.user_id', $model->data['User']['id']
+		);
+		if ($model->data['RolesRoomsUser']) {
+			$result = $model->RolesRoomsUser->saveMany($model->data['RolesRoomsUser']);
+			if (! $result) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
+
 		return true;
 	}
 
@@ -333,6 +348,46 @@ class SaveUserBehavior extends ModelBehavior {
 		}
 
 		return true;
+	}
+
+/**
+ * field1とfield2が同じかチェックする
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $field1 field1 parameters
+ * @param string $field2 field2 key
+ * @return bool
+ */
+	public function equalToField(Model $model, $field1, $field2) {
+		$keys = array_keys($field1);
+		return $model->data[$model->alias][$field2] === $model->data[$model->alias][array_pop($keys)];
+	}
+
+/**
+ * 重複チェック
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $check チェック値
+ * @param array $fields フィールドリスト
+ * @return bool
+ */
+	public function notDuplicate(Model $model, $check, $fields) {
+		$User = ClassRegistry::init('Users.User');
+
+		$value = array_shift($check);
+		$conditions = array();
+		if ($model->data[$model->alias]['id']) {
+			$conditions['id !='] = $model->data[$model->alias]['id'];
+		}
+		$conditions['is_deleted'] = false;
+		foreach ($fields as $field) {
+			$conditions['OR'][$field] = $value;
+		}
+
+		return !(bool)$User->find('count', array(
+			'recursive' => -1,
+			'conditions' => $conditions
+		));
 	}
 
 }

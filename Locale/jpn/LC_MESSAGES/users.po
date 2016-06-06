@@ -17,10 +17,6 @@ msgstr ""
 msgid "%s of %s (Total: %s)"
 msgstr "%s / %s ページ (総件数: %s件)"
 
-#: UserManager/View/UserManager/index.ctp:38
-msgid "Search for the members"
-msgstr "対象者の検索"
-
 #: Users/Model/User.php:138;145
 msgid "username"
 msgstr "ログインID"
@@ -32,6 +28,10 @@ msgstr "パスワード"
 #: Users/Model/User.php:165;172
 msgid "Non members"
 msgstr "不参加"
+
+#: Users/Model/User.php:165;172
+msgid "User"
+msgstr "会員"
 
 #: Users/Model/User.php:165;172
 msgid "User information"
