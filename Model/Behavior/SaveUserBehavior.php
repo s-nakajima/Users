@@ -292,9 +292,11 @@ class SaveUserBehavior extends ModelBehavior {
 			$model->data['RolesRoomsUser'] = Hash::insert(
 				$model->data['RolesRoomsUser'], '{n}.user_id', $model->data['User']['id']
 			);
-			$result = $model->RolesRoomsUser->saveMany($model->data['RolesRoomsUser']);
-			if (! $result) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			if ($model->data['RolesRoomsUser']) {
+				$result = $model->RolesRoomsUser->saveMany($model->data['RolesRoomsUser']);
+				if (! $result) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
 			}
 		}
 		return true;
