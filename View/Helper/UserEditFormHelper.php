@@ -52,7 +52,7 @@ class UserEditFormHelper extends AppHelper {
  * @return void
  */
 	public function beforeRender($viewFile) {
-		$this->NetCommonsHtml->css('/data_types/css/style.css');
+		$this->NetCommonsHtml->css('/users/css/style.css');
 		$this->NetCommonsHtml->script('/data_types/js/data_types.jquery.js');
 		parent::beforeRender($viewFile);
 	}
@@ -69,12 +69,16 @@ class UserEditFormHelper extends AppHelper {
 
 		if ($userAttributeKey === 'created_user') {
 			$html .= $this->__input('TrackableCreator.handlename', $userAttribute);
+
 		} elseif ($userAttributeKey === 'modified_user') {
 			$html .= $this->__input('TrackableUpdater.handlename', $userAttribute);
+
 		} elseif ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
 			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
+
 		} elseif ($this->User->hasField($userAttributeKey)) {
 			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
+
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			foreach ($this->_View->request->data['UsersLanguage'] as $index => $usersLanguage) {
 				$html .= '<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
@@ -207,6 +211,11 @@ class UserEditFormHelper extends AppHelper {
 		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
+		if ($dataTypeKey === DataType::DATA_TYPE_LABEL &&
+				! Hash::get($this->_View->request->data, $fieldName)) {
+			return $html;
+		}
+
 		$attributes = array();
 
 		//ラベル
@@ -235,38 +244,162 @@ class UserEditFormHelper extends AppHelper {
 			}
 		}
 
-		if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
-			if (Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.id')) {
-				$attributes['url'] = NetCommonsUrl::actionUrl(array(
-					'plugin' => 'users',
-					'controller' => 'users',
-					'action' => 'download',
-					'key' => Hash::get($this->_View->request->data, 'User.id'),
-					'key2' => Hash::get(
-						$this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.field_name'
-					),
-					'medium',
-				));
-			} else {
-				$attributes['url'] = $this->NetCommonsHtml->url('/users/img/noimage.gif');
-			}
-
-			if (Hash::get($this->_View->request->data, 'User.is_avatar_auto_created') &&
-					$userAttributeKey === UserAttribute::AVATAR_FIELD) {
-				$attributes['remove'] = false;
-				$attributes['filename'] = false;
-			}
-		} elseif ($dataTypeKey === DataType::DATA_TYPE_CHECKBOX) {
-			$attributes['default'] = explode(',', Hash::get($this->_View->request->data, $fieldName, ''));
-		}
-
-		$html .= $this->DataTypeForm->inputDataType($fieldName, $attributes);
+		$html .= $this->__inputDataType($fieldName, $userAttribute, $attributes);
 
 		$html .= $this->userPublicForSelf($userAttribute);
 
 		$html .= $this->userMailReceptionForSelf($userAttribute);
 
 		return $html;
+	}
+
+/**
+ * データタイプに対するinputタグのHTML出力
+ *
+ * @param string $fieldName フィールド名("Modelname.fieldname"形式)
+ * @param array $userAttribute UserAttributeデータ
+ * @param array $attributes HTMLタグ属性
+ * @return string HTML 入力HTML
+ */
+	private function __inputDataType($fieldName, $userAttribute, $attributes = array()) {
+		$output = '';
+
+		switch ($attributes['type']) {
+			case DataType::DATA_TYPE_IMG:
+				$output .= $this->__image($fieldName, $userAttribute, $attributes);
+				break;
+
+			case DataType::DATA_TYPE_PASSWORD:
+				$output .= '<div class="form-group row">';
+				$output .= '<div class="col-xs-12 col-sm-3 user-edit-label">';
+				$output .= $this->NetCommonsForm->label(
+					$fieldName,
+					$attributes['label'],
+					['required' => Hash::get($attributes, 'required'), 'error' => true]
+				);
+				$output .= '</div>';
+
+				$attributes = Hash::insert($attributes, 'label', false);
+				$attributes = Hash::insert($attributes, 'div', false);
+				$attributes = Hash::merge(['again' => true], $attributes);
+
+				$output .= '<div class="col-xs-12 col-sm-9">';
+				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
+				$output .= '</div>';
+				$output .= '</div>';
+				break;
+
+			case DataType::DATA_TYPE_RADIO:
+			case DataType::DATA_TYPE_CHECKBOX:
+				if ($attributes['type'] === DataType::DATA_TYPE_CHECKBOX) {
+					$default = Hash::get($this->_View->request->data, $fieldName, '');
+					$attributes['default'] = explode(',', $default);
+				}
+				$output .= '<div class="form-group row">';
+				$output .= '<div class="col-xs-12 col-sm-3 user-edit-label">';
+				$output .= $this->NetCommonsForm->label(
+					$fieldName,
+					$attributes['label'],
+					['required' => Hash::get($attributes, 'required'), 'error' => true]
+				);
+				$output .= '</div>';
+
+				$attributes = Hash::insert($attributes, 'label', false);
+				$attributes = Hash::insert($attributes, 'div', false);
+				$attributes = Hash::merge(['inline' => true], $attributes);
+
+				$output .= '<div class="col-xs-12 col-sm-9 user-edit-choice">';
+				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
+				$output .= '</div>';
+				$output .= '</div>';
+				break;
+
+			case DataType::DATA_TYPE_TEXTAREA:
+				$attributes['rows'] = 3;
+				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
+				break;
+
+			default:
+				$output .= '<div class="form-group row">';
+				$output .= '<div class="col-xs-12 col-sm-3 user-edit-label">';
+				$output .= $this->NetCommonsForm->label(
+					$fieldName,
+					$attributes['label'],
+					['required' => Hash::get($attributes, 'required'), 'error' => true]
+				);
+				$output .= '</div>';
+
+				$attributes = Hash::insert($attributes, 'label', false);
+				$attributes = Hash::insert($attributes, 'div', false);
+
+				$output .= '<div class="col-xs-12 col-sm-9">';
+				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
+				$output .= '</div>';
+				$output .= '</div>';
+		}
+
+		return $output;
+	}
+
+/**
+ * Generates a form input element complete with label and wrapper div
+ *
+ * @param string $fieldName フィールド名("Modelname.fieldname"形式)
+ * @param array $attributes HTMLタグ属性
+ * @return string imageタグ
+ */
+	private function __image($fieldName, $userAttribute, $attributes = array()) {
+		$output = '';
+		$userAttributeKey = $userAttribute['UserAttribute']['key'];
+
+		if (Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.id')) {
+			$attributes['url'] = NetCommonsUrl::actionUrl(array(
+				'plugin' => 'users',
+				'controller' => 'users',
+				'action' => 'download',
+				'key' => Hash::get($this->_View->request->data, 'User.id'),
+				'key2' => Hash::get(
+					$this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.field_name'
+				),
+				'medium',
+			));
+		} else {
+			$attributes['url'] = $this->NetCommonsHtml->url('/users/img/noimage.gif');
+		}
+		if (Hash::get($this->_View->request->data, 'User.is_avatar_auto_created') &&
+				$userAttributeKey === UserAttribute::AVATAR_FIELD) {
+			$attributes['remove'] = false;
+			$attributes['filename'] = false;
+		}
+
+		if (! isset($attributes['url'])) {
+			return $output;
+		}
+
+		$label = $attributes['label'];
+		if (Hash::get($attributes, 'required')) {
+			$label .= $this->_View->element('NetCommons.required');
+		}
+		$attributes = Hash::remove($attributes, 'label');
+		$attributes = Hash::remove($attributes, 'required');
+
+		$output .= $this->NetCommonsForm->label($fieldName, $label);
+		$output .= '<div class="thumbnail user-thumbnail user-edit-thumbnail">';
+
+		$output .= $this->NetCommonsHtml->image($attributes['url'], array(
+			'class' => 'img-responsive img-rounded',
+			'alt' => Hash::get($attributes, 'alt'),
+			'id' => $this->domId($fieldName . '_image')
+		));
+
+		$output .= '</div>';
+		$output .= $this->NetCommonsForm->uploadFile($fieldName, Hash::merge(array(
+			'label' => false,
+			'data-type-key' => 'image',
+			//'class' => false,
+		), $attributes));
+
+		return $output;
 	}
 
 }
