@@ -267,7 +267,6 @@ class SaveUserBehavior extends ModelBehavior {
 			$model->loadModels([
 				'PrivateSpace' => 'PrivateSpace.PrivateSpace',
 				'Room' => 'Rooms.Room',
-				'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
 			]);
 			$room = $model->PrivateSpace->createRoom();
 			$room['RolesRoomsUser']['user_id'] = $model->data['User']['id'];
@@ -283,22 +282,41 @@ class SaveUserBehavior extends ModelBehavior {
 			}
 
 			//参加ルームの登録
-			if (! isset($model->data['RolesRoomsUser'])) {
-				$model->data['RolesRoomsUser'] = $model->Room->getDefaultRolesRoomsUser();
-			}
-			$model->data['RolesRoomsUser'] = Hash::remove(
-				$model->data['RolesRoomsUser'], '{n}[roles_room_id=0]'
-			);
-			$model->data['RolesRoomsUser'] = Hash::insert(
-				$model->data['RolesRoomsUser'], '{n}.user_id', $model->data['User']['id']
-			);
-			if ($model->data['RolesRoomsUser']) {
-				$result = $model->RolesRoomsUser->saveMany($model->data['RolesRoomsUser']);
-				if (! $result) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
+			$this->__saveDefaultRolesRoomsUser($model);
+		}
+		return true;
+	}
+
+/**
+ * 参加ルームの登録
+ *
+ * @param Model $model Model using this behavior
+ * @return bool
+ * @throws InternalErrorException
+ */
+	private function __saveDefaultRolesRoomsUser(Model $model) {
+		$model->loadModels([
+			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
+			'Room' => 'Rooms.Room',
+		]);
+
+		//参加ルームの登録
+		if (! isset($model->data['RolesRoomsUser'])) {
+			$model->data['RolesRoomsUser'] = $model->Room->getDefaultRolesRoomsUser();
+		}
+		$model->data['RolesRoomsUser'] = Hash::remove(
+			$model->data['RolesRoomsUser'], '{n}[roles_room_id=0]'
+		);
+		$model->data['RolesRoomsUser'] = Hash::insert(
+			$model->data['RolesRoomsUser'], '{n}.user_id', $model->data['User']['id']
+		);
+		if ($model->data['RolesRoomsUser']) {
+			$result = $model->RolesRoomsUser->saveMany($model->data['RolesRoomsUser']);
+			if (! $result) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
+
 		return true;
 	}
 
