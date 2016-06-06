@@ -345,6 +345,7 @@ class UserEditFormHelper extends AppHelper {
  * Generates a form input element complete with label and wrapper div
  *
  * @param string $fieldName フィールド名("Modelname.fieldname"形式)
+ * @param array $userAttribute UserAttributeデータ
  * @param array $attributes HTMLタグ属性
  * @return string imageタグ
  */
