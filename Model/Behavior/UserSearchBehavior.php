@@ -10,6 +10,7 @@
  */
 
 App::uses('ModelBehavior', 'Model');
+App::uses('UserSearchComponent', 'Users.Controller/Component');
 
 /**
  * UserSearch Behavior
@@ -36,6 +37,7 @@ class UserSearchBehavior extends ModelBehavior {
 		$model->loadModels([
 			//'Group' => 'Groups.Group',
 			'GroupsUser' => 'Groups.GroupsUser',
+			'Role' => 'Roles.Role',
 			'RolesRoom' => 'Rooms.RolesRoom',
 			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
 			'Room' => 'Rooms.Room',
@@ -240,6 +242,15 @@ class UserSearchBehavior extends ModelBehavior {
 					$model->UsersLanguage->alias . '.language_id' => Current::read('Language.id'),
 				),
 			),
+			Hash::merge(array(
+				'table' => $model->Role->table,
+				'alias' => $model->Role->alias,
+				'type' => 'INNER',
+				'conditions' => array(
+					$model->alias . '.role_key' . ' = ' . $model->Role->alias . '.key',
+					$model->Role->alias . '.language_id' => Current::read('Language.id'),
+				),
+			), Hash::get($joinModels, 'Role', array())),
 			Hash::merge(array(
 				'table' => $model->RolesRoomsUser->table,
 				'alias' => $model->RolesRoomsUser->alias,

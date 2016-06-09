@@ -118,7 +118,7 @@ class UserSearchComponent extends Component {
 	}
 
 /**
- * 検索処理
+ * 検索処理(会員検索、後で見直し)
  *
  * @param array $conditions 条件
  * @param array $joins JOIN時の条件
@@ -158,12 +158,13 @@ class UserSearchComponent extends Component {
 			}
 		}
 
-		//ユーザデータ取得
+		//ユーザデータ取得(後で見直し)
 		$controller->Paginator->settings = array(
 			'recursive' => -1,
 			'fields' => $controller->User->getSearchFields(),
 			'conditions' => $controller->User->getSearchConditions($conditions),
 			'joins' => $controller->User->getSearchJoinTables($joins),
+			'group' => 'User.id',
 			'order' => Hash::merge($orders, array($controller->User->alias . '.id' => 'asc')),
 			'limit' => $limit
 		);
