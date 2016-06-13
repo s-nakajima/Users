@@ -61,10 +61,11 @@ class UserSearchHelper extends AppHelper {
  * テーブルヘッダーの出力
  *
  * @param bool $isEdit 編集の有無
+ * @param bool $isSort ソートの有無
  * @return string User value
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function tableHeaders($isEdit = false) {
+	public function tableHeaders($isEdit = false, $isSort = true) {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
@@ -81,15 +82,22 @@ class UserSearchHelper extends AppHelper {
 
 			$output .= '<th' . $class . '>';
 			if ($fieldName === 'room_role_key') {
-				$output .= $this->_View->Paginator->sort('RoomRole.level', __d('rooms', 'Room role'));
+				$label = __d('rooms', 'Room role');
+				$key = 'RoomRole.level';
 			} else {
 				$userAttribute = Hash::extract(
 					$this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']'
 				);
-				$output .= $this->_View->Paginator->sort(
-					$this->User->getOriginalUserField($fieldName), $userAttribute[0]['name']
-				);
+				$label = $userAttribute[0]['name'];
+				$key = $this->User->getOriginalUserField($fieldName);
 			}
+
+			if ($isSort) {
+				$output .= $this->_View->Paginator->sort($key, $label);
+			} else {
+				$output .= h($label);
+			}
+
 			$output .= '</th>';
 
 			if ($isEdit) {
