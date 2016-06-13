@@ -14,27 +14,29 @@
 <?php echo __d('users', 'User information'); ?>
 <?php $this->end(); ?>
 
-<?php if (isset($rooms)) : ?>
-	<ul class="nav nav-tabs" role="tablist">
-		<li class="active">
-			<a href="#user-information" aria-controls="user-infomation" role="tab" data-toggle="tab">
-				<?php echo __d('users', 'User information'); ?>
-			</a>
-		</li>
+<ul class="nav nav-tabs" role="tablist">
+	<li class="active">
+		<a href="#user-information" aria-controls="user-infomation" role="tab" data-toggle="tab">
+			<?php echo __d('users', 'User information'); ?>
+		</a>
+	</li>
 
+	<?php if (isset($rooms)) : ?>
 		<li>
 			<a href="#user-rooms" aria-controls="user-rooms" role="tab" data-toggle="tab">
 				<?php echo __d('users', 'Rooms'); ?>
 			</a>
 		</li>
+	<?php endif; ?>
 
+	<?php if (isset($groups)) : ?>
 		<li>
 			<a href="#user-groups" aria-controls="user-groups" role="tab" data-toggle="tab">
 				<?php echo __d('groups', 'Groups management'); ?>
 			</a>
 		</li>
-	</ul>
-<?php endif; ?>
+	<?php endif; ?>
+</ul>
 
 <div class="tab-content">
 	<div class="tab-pane active" id="user-information">
@@ -55,7 +57,9 @@
 		</div>
 	<?php endif; ?>
 
-	<div class="tab-pane" id="user-groups">
-		<?php echo $this->element('Groups.list'); ?>
-	</div>
+	<?php if (isset($groups)) : ?>
+		<div class="tab-pane" id="user-groups">
+			<?php echo $this->element('Groups.list'); ?>
+		</div>
+	<?php endif; ?>
 </div>
