@@ -53,7 +53,8 @@ class UserSearchHelper extends AppHelper {
 		$this->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
 
 		$this->userAttributes = Hash::combine(
-			$this->_View->viewVars['userAttributes'], '{n}.{n}.{n}.UserAttribute.key', '{n}.{n}.{n}'
+			Hash::get($this->_View->viewVars, 'userAttributes', array()),
+			'{n}.{n}.{n}.UserAttribute.key', '{n}.{n}.{n}'
 		);
 	}
 
