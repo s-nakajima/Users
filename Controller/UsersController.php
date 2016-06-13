@@ -128,24 +128,19 @@ class UsersController extends UsersAppController {
 			$this->PageLayout = $this->Components->load('Pages.PageLayout');
 		}
 
-		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id')) {
-			return;
+		//自分自身の場合、ルーム・グループデータ取得する
+		if (Hash::get($this->viewVars['user'], 'User.id') === Current::read('User.id')) {
+			//ルームデータ取得
+			$this->Rooms->setReadableRooms(Hash::get($this->viewVars['user'], 'User.id'));
+
+			// グループデータ取得・設定
+			$this->Groups->setGroupList($this);
+		} else {
+			if (Current::allowSystemPlugin('rooms')) {
+				//ルームデータ取得
+				$this->Rooms->setReadableRooms(Hash::get($this->viewVars['user'], 'User.id'));
+			}
 		}
-
-		//ルームデータ取得
-		$result = $this->Room->find('all', $this->Room->getReadableRoomsConditions());
-		$this->set('rooms', Hash::combine($result, '{n}.Room.id', '{n}'));
-
-		//ルームのTreeリスト取得
-		$roomTreeLists[Space::PUBLIC_SPACE_ID] = $this->Room->generateTreeList(
-				array('Room.space_id' => Space::PUBLIC_SPACE_ID), null, null, Room::$treeParser);
-
-		$roomTreeLists[Space::ROOM_SPACE_ID] = $this->Room->generateTreeList(
-				array('Room.space_id' => Space::ROOM_SPACE_ID), null, null, Room::$treeParser);
-		$this->set('roomTreeLists', $roomTreeLists);
-
-		// グループデータ取得・設定
-		$this->Groups->setGroupList($this);
 	}
 
 /**

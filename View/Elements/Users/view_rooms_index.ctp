@@ -8,6 +8,10 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+
+if (!isset($rolesRoomsUsers)) {
+	$rolesRoomsUsers = array();
+}
 ?>
 
 <tr class="<?php echo $this->Rooms->statusCss($room); ?>">
@@ -16,7 +20,7 @@
 	</td>
 
 	<td>
-		<?php echo $this->Rooms->roomRoleName($room); ?>
+		<?php echo $this->Rooms->roomRoleName(Hash::get($rolesRoomsUsers, $room['Room']['id'])); ?>
 	</td>
 
 	<td>
@@ -28,6 +32,6 @@
 	</td>
 
 	<td class="row-datetime">
-		<?php echo $this->Rooms->roomAccessed($room); ?>
+		<?php echo $this->Rooms->roomAccessed(Hash::get($rolesRoomsUsers, $room['Room']['id'])); ?>
 	</td>
 </tr>
