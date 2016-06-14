@@ -110,6 +110,27 @@ class UserSearchBehavior extends ModelBehavior {
 	}
 
 /**
+ * リクエストキーのパース処理
+ *
+ * @param string $requestKey リクエストキー
+ * @return void
+ */
+	private function __parseRequestKey($requestKey) {
+		if (preg_match('/' . UserSearchComponent::MORE_THAN_DAYS . '$/', $requestKey)) {
+			$field = substr($requestKey, 0, (strlen(UserSearchComponent::MORE_THAN_DAYS) + 1) * -1);
+			$setting = UserSearchComponent::MORE_THAN_DAYS;
+		} elseif (preg_match('/' . UserSearchComponent::WITHIN_DAYS . '$/', $requestKey)) {
+			$field = substr($requestKey, 0, (strlen(UserSearchComponent::WITHIN_DAYS) + 1) * -1);
+			$setting = UserSearchComponent::WITHIN_DAYS;
+		} else {
+			$field = $requestKey;
+			$setting = null;
+		}
+
+		return array($field, $setting);
+	}
+
+/**
  * 検索可能のフィールドをチェックして、検索不可なフィールドは削除する
  *
  * @param Model $model Model ビヘイビア呼び出し前のモデル
@@ -120,8 +141,11 @@ class UserSearchBehavior extends ModelBehavior {
 		$this->__prepare($model);
 
 		$fieldKeys = array_keys($fields);
+
 		foreach ($fieldKeys as $key) {
-			if (! isset($this->readableFields[$key])) {
+			list($field, ) = $this->__parseRequestKey($key);
+
+			if (! isset($this->readableFields[$field])) {
 				unset($fields[$key]);
 			}
 		}
@@ -140,24 +164,22 @@ class UserSearchBehavior extends ModelBehavior {
 
 		$fieldKeys = array_keys($conditions);
 		foreach ($fieldKeys as $key) {
-			$explode = explode('.', $key);
-			$field = Hash::get($explode, '0', null);
-			$setting = Hash::get($explode, '1', null);
+			list($field, $setting) = $this->__parseRequestKey($key);
 
 			list($sign, $value) = $this->__creanSearchCondtion($model, $field, $setting, $conditions[$key]);
 			unset($conditions[$key]);
 
-			if (! isset($this->readableFields[$key])) {
+			if (! isset($this->readableFields[$field])) {
 				continue;
 			}
 
 			if ($setting === UserSearchComponent::MORE_THAN_DAYS) {
 				$conditions[count($conditions)]['OR'] = array(
-					$this->readableFields[$key] => null,
-					$this->readableFields[$key] . $sign => $value
+					$this->readableFields[$field] => null,
+					$this->readableFields[$field] . $sign => $value
 				);
 			} else {
-				$conditions[$this->readableFields[$key] . $sign] = $value;
+				$conditions[$this->readableFields[$field] . $sign] = $value;
 			}
 		}
 

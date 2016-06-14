@@ -211,7 +211,7 @@ class UserSearchFormHelper extends AppHelper {
 
 		//入力部品
 		$html .= '<div class="col-xs-9">';
-		if ($userAttribute['UserAttribute']['key'] === 'last_login') {
+		if (in_array($userAttribute['UserAttribute']['key'], ['last_login', 'previous_login'], true)) {
 			//最終ログイン日時の場合、ラベル変更(○日以上ログインしていない、○日以内ログインしている)
 			$moreThanDays =
 				__d('user_manager', 'Not logged more than <span style="color:#ff0000;">X</span>days ago');
