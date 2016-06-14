@@ -83,11 +83,7 @@ class UserSearchFormHelper extends AppHelper {
 				'1' => __d('user_manager', 'Has avatar.')
 			);
 		} elseif (in_array($dataTypeKey, $choiceInArray, true)) {
-			if ($userAttribute['UserAttribute']['key'] === 'role_key') {
-				$keyPath = '{n}.key';
-			} else {
-				$keyPath = '{n}.code';
-			}
+			$keyPath = '{n}.key';
 			//ラジオボタン、チェックボタン、セレクトボタン
 			$options = Hash::combine(
 				$userAttribute, 'UserAttributeChoice.' . $keyPath, 'UserAttributeChoice.{n}.name'
@@ -211,7 +207,7 @@ class UserSearchFormHelper extends AppHelper {
 
 		//入力部品
 		$html .= '<div class="col-xs-9">';
-		if ($userAttribute['UserAttribute']['key'] === 'last_login') {
+		if (in_array($userAttribute['UserAttribute']['key'], ['last_login', 'previous_login'], true)) {
 			//最終ログイン日時の場合、ラベル変更(○日以上ログインしていない、○日以内ログインしている)
 			$moreThanDays =
 				__d('user_manager', 'Not logged more than <span style="color:#ff0000;">X</span>days ago');
@@ -226,11 +222,12 @@ class UserSearchFormHelper extends AppHelper {
 		}
 
 		//○日以上前(○日以上ログインしていない)の出力
+		$fieldKey = $userAttribute['UserAttribute']['key'] . '_' . UserSearchComponent::MORE_THAN_DAYS;
 		$html .= '<div class="input-group">';
 		$html .= $this->NetCommonsForm->input(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::MORE_THAN_DAYS,
+			$fieldKey,
 			array(
-				'name' => $userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::MORE_THAN_DAYS,
+				'name' => $fieldKey,
 				'type' => 'number',
 				'class' => 'form-control input-sm user-search-conditions-datetime-top',
 				'label' => false,
@@ -240,18 +237,18 @@ class UserSearchFormHelper extends AppHelper {
 			)
 		);
 		$html .= $this->NetCommonsForm->label(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::MORE_THAN_DAYS,
-			$moreThanDays,
+			$fieldKey, $moreThanDays,
 			array('class' => 'input-group-addon user-search-conditions-datetime-top')
 		);
 		$html .= '</div>';
 
 		//○日以内(○日以内ログインしている)の出力
+		$fieldKey = $userAttribute['UserAttribute']['key'] . '_' . UserSearchComponent::WITHIN_DAYS;
 		$html .= '<div class="input-group">';
 		$html .= $this->NetCommonsForm->input(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::WITHIN_DAYS,
+			$fieldKey,
 			array(
-				'name' => $userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::WITHIN_DAYS,
+				'name' => $fieldKey,
 				'type' => 'number',
 				'class' => 'form-control input-sm user-search-conditions-datetime-bottom',
 				'label' => false,
@@ -261,7 +258,7 @@ class UserSearchFormHelper extends AppHelper {
 			)
 		);
 		$html .= $this->NetCommonsForm->label(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::WITHIN_DAYS, $withinDays,
+			$fieldKey, $withinDays,
 			array('class' => 'input-group-addon user-search-conditions-datetime-bottom')
 		);
 		$html .= '</div>';
@@ -310,7 +307,7 @@ class UserSearchFormHelper extends AppHelper {
 		$html .= '<label class="control-label">' . __d('user_manager', 'Rooms') . '</label>';
 		$html .= '</div>';
 
-		$html .= $this->NetCommonsForm->input('room', array(
+		$html .= $this->NetCommonsForm->input('room_id', array(
 			'type' => 'select',
 			'options' => $options,
 			'label' => false,
@@ -361,21 +358,65 @@ class UserSearchFormHelper extends AppHelper {
  * @return string HTML
  */
 	public function displaySearchButton($label, $params = array()) {
+		$User = ClassRegistry::init('Users.User');
+
 		$html = '';
 		$html .= $this->NetCommonsHtml->script(array(
 			'/users/js/user_search.js'
 		));
 
+		if ($this->_View->request->query) {
+			$conditions = '';
+			foreach ($this->_View->request->query as $key => $value) {
+				if ($User->getOriginalUserField($key)) {
+					$conditions .= '<div class="pull-left">';
+					$conditions .=
+						$this->NetCommonsForm->label('', $User->getOriginalUserField($key, 'label'));
+					$conditions .= ': ';
+					$conditions .= $User->getSearchFieldValue($key, $value);
+					$conditions .= '</div>';
+				}
+			}
+			if (! $conditions) {
+				$conditions .= '<div class="pull-left">';
+				$conditions .= __d('users', 'Not search condition.');
+				$conditions .= '</div>';
+			}
+
+			$html .= '<div class="user-search-conditions-frame clearfix well well-sm">';
+			$html .= $conditions;
+			$html .= '</div>';
+		}
+
 		$html .= '<div class="text-center" ng-controller="UserSearch.controller">';
 
 		$html .= $this->Button->search($label, array(
 			'type' => 'button',
-			'ng-click' => 'showUserSearch(null, ' .
-									'\'' . h($this->_View->request->params['plugin']) . '\', ' .
-									'\'' . h($this->_View->request->params['controller']) . '\', ' .
-									'\'' . h($this->_View->request->params['action']) . '\', ' .
-									'\'' . implode('/', array_map('h', $params)) . '\')'
+			'ng-click' => 'showUserSearch(' .
+					h(json_encode($this->_View->request->query, JSON_FORCE_OBJECT)) . ', ' .
+					'\'' . h($this->_View->request->params['plugin']) . '\', ' .
+					'\'' . h($this->_View->request->params['controller']) . '\', ' .
+					'\'' . h($this->_View->request->params['action']) . '\', ' .
+					'\'' . implode('/', array_map('h', $params)) . '\')'
 		));
+
+		if ($this->_View->request->query) {
+			$html .= $this->NetCommonsHtml->link(
+				__d('users', 'Search condition clear'),
+				Hash::merge(
+					array(
+						'plugin' => $this->_View->request->params['plugin'],
+						'controller' => $this->_View->request->params['controller'],
+						'action' => $this->_View->request->params['action']
+					),
+					$params
+				),
+				array(
+					'class' => 'btn btn-default btn-workflow',
+				)
+			);
+		}
+
 		$html .= '</div>';
 
 		return $html;

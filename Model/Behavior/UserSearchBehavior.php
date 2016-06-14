@@ -35,7 +35,7 @@ class UserSearchBehavior extends ModelBehavior {
  */
 	private function __prepare(Model $model) {
 		$model->loadModels([
-			//'Group' => 'Groups.Group',
+			'Group' => 'Groups.Group',
 			'GroupsUser' => 'Groups.GroupsUser',
 			'Role' => 'Roles.Role',
 			'RolesRoom' => 'Rooms.RolesRoom',
@@ -63,50 +63,150 @@ class UserSearchBehavior extends ModelBehavior {
 
 		$userAttributes = $model->UserAttribute->getUserAttributesForLayout();
 
-		$this->readableFields = array('id' => 'id');
+		//通常フィールド
+		$this->readableFields = array('id' => ['field' => 'id']);
 		foreach ($results as $field) {
-			$dataType = Hash::extract(
-				$userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $field . ']'
-			);
-			$dataTypeKey = Hash::get($dataType, '0.data_type_key', '');
-
-			//Fieldのチェック
-			if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
-				$this->readableFields[$field] =
-						$model->UploadFile->alias . Inflector::classify($field) . '.field_name';
-
-			} elseif (in_array($field, UserAttribute::$typeDatetime, true) ||
-					$dataTypeKey === DataType::DATA_TYPE_DATETIME) {
-				//日時型の場合
-				$this->readableFields[$field] = $model->alias . '.' . $field;
-
-				$fieldKey = $field . '.' . UserSearchComponent::MORE_THAN_DAYS;
-				$this->readableFields[$fieldKey] = $model->alias . '.' . $field;
-
-				$fieldKey = $field . '.' . UserSearchComponent::WITHIN_DAYS;
-				$this->readableFields[$fieldKey] = $model->alias . '.' . $field;
-
-			} elseif ($model->hasField($field)) {
-				//Userモデル
-				$this->readableFields[$field] = $model->alias . '.' . $field;
-
-			} elseif ($model->UsersLanguage->hasField($field)) {
-				//UsersLanguageモデル
-				$this->readableFields[$field] = $model->UsersLanguage->alias . '.' . $field;
-			}
-			////Field(is_xxxx_public)のチェック
-			//$fieldKey = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $field);
-			//if ($model->hasField($fieldKey)) {
-			//	$this->readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
-			//}
+			$this->__setReadableField($model, $field, $userAttributes);
 		}
-		$this->readableFields['room_id'] = $model->Room->alias . '.id';
-		$this->readableFields['space_id'] = $model->Room->alias . '.space_id';
-		$this->readableFields['room_role_key'] = $model->RolesRoom->alias . '.role_key';
-		$this->readableFields['group_id'] = $model->GroupsUser->alias . '.group_id';
+		$this->readableFields['created_user']['field'] = 'TrackableCreator.handlename';
+		$this->readableFields['modified_user']['field'] = 'TrackableUpdater.handlename';
 
-		$this->readableFields['created_user'] = 'TrackableCreator.handlename';
-		$this->readableFields['modified_user'] = 'TrackableUpdater.handlename';
+		//参加ルーム
+		$this->readableFields['room_id']['field'] = $model->Room->alias . '.id';
+		$this->readableFields['room_id']['label'] = __d('user_manager', 'Rooms');
+		$result = $model->Room->find('all', $model->Room->getReadableRoomsConditions(array(
+			'Room.space_id !=' => Space::PRIVATE_SPACE_ID
+		)));
+		$this->readableFields['room_id']['options'] = Hash::combine(
+			$result,
+			'{n}.Room.id',
+			'{n}.RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . '].name'
+		);
+
+		//自分自身のグループ
+		$this->readableFields['group_id']['field'] = $model->GroupsUser->alias . '.group_id';
+		$this->readableFields['group_id']['label'] = __d('user_manager', 'Groups');
+		$result = $model->Group->find('list', array(
+			'recursive' => -1,
+			'fields' => array('id', 'name'),
+			'conditions' => array(
+				'created_user' => Current::read('User.id'),
+			),
+			'order' => array('id'),
+		));
+		$this->readableFields['group_id']['options'] = $result;
+
+		//ラベルなし
+		$this->readableFields['space_id']['field'] = $model->Room->alias . '.space_id';
+		$this->readableFields['room_role_key']['field'] = $model->RolesRoom->alias . '.role_key';
+	}
+
+/**
+ * 閲覧可のフィールドセット
+ *
+ * @param Model $model Model using this behavior
+ * @param string $attrKey 会員項目キー
+ * @param array $userAttributes 会員項目データ
+ * @return void
+ */
+	private function __setReadableField(Model $model, $attrKey, $userAttributes) {
+		$userAttrSetting = Hash::extract(
+			$userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $attrKey . ']'
+		);
+		$dataTypeKey = Hash::get($userAttrSetting, '0.data_type_key', '');
+
+		$userAttr = Hash::extract(
+			$userAttributes, '{n}.{n}.{n}.UserAttribute[key=' . $attrKey . ']'
+		);
+		$label = Hash::get($userAttr, '0.name', '');
+
+		//Fieldのチェック
+		if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
+			$this->readableFields[$attrKey]['field'] =
+					$model->UploadFile->alias . Inflector::classify($attrKey) . '.field_name';
+			$this->readableFields[$attrKey]['label'] = $label;
+			$this->readableFields[$attrKey]['options'] = array(
+				'0' => __d('user_manager', 'No avatar.'),
+				'1' => __d('user_manager', 'Has avatar.')
+			);
+
+		} elseif (in_array($attrKey, UserAttribute::$typeDatetime, true) ||
+				$dataTypeKey === DataType::DATA_TYPE_DATETIME) {
+
+			if (in_array($attrKey, ['last_login', 'previous_login'], true)) {
+				//最終ログイン日時の場合、ラベル変更(○日以上ログインしていない、○日以内ログインしている)
+				$moreThanDays =
+					__d('user_manager', 'Not logged more than <span style="color:#ff0000;">%s</span>days ago');
+				$withinDays =
+					__d('user_manager', 'Have logged in within <span style="color:#ff0000;">%s</span>days');
+			} else {
+				//○日以上前、○日以内
+				$moreThanDays =
+					__d('user_manager', 'more than <span style="color:#ff0000;">%s</span>days ago');
+				$withinDays =
+					__d('user_manager', 'within <span style="color:#ff0000;">%s</span>days');
+			}
+
+			//日時型の場合
+			$this->readableFields[$attrKey]['field'] = $model->alias . '.' . $attrKey;
+
+			$fieldKey = $attrKey . '_' . UserSearchComponent::MORE_THAN_DAYS;
+			$this->readableFields[$fieldKey]['field'] = $model->alias . '.' . $attrKey;
+			$this->readableFields[$fieldKey]['label'] = $label;
+			$this->readableFields[$fieldKey]['format'] = $moreThanDays;
+
+			$fieldKey = $attrKey . '_' . UserSearchComponent::WITHIN_DAYS;
+			$this->readableFields[$fieldKey]['field'] = $model->alias . '.' . $attrKey;
+			$this->readableFields[$fieldKey]['label'] = $label;
+			$this->readableFields[$fieldKey]['format'] = $withinDays;
+
+		} elseif ($model->hasField($attrKey)) {
+			//Userモデル
+			$this->readableFields[$attrKey]['field'] = $model->alias . '.' . $attrKey;
+			$this->readableFields[$attrKey]['label'] = $label;
+
+		} elseif ($model->UsersLanguage->hasField($attrKey)) {
+			//UsersLanguageモデル
+			$this->readableFields[$attrKey]['field'] = $model->UsersLanguage->alias . '.' . $attrKey;
+			$this->readableFields[$attrKey]['label'] = $label;
+		}
+
+		$userAttrChoices = Hash::extract(
+			$userAttributes,
+			'{n}.{n}.{n}.UserAttributeChoice.{n}[user_attribute_id=' . Hash::get($userAttr, '0.id', '') . ']'
+		);
+		if ($userAttrChoices) {
+			$this->readableFields[$attrKey]['options'] = Hash::combine(
+				$userAttrChoices, '{n}.key', '{n}.name'
+			);
+		}
+
+		////Field(is_xxxx_public)のチェック
+		//$fieldKey = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $field);
+		//if ($model->hasField($fieldKey)) {
+		//	$this->readableFields[$fieldKey] = $model->alias . '.' . $fieldKey;
+		//}
+	}
+
+/**
+ * リクエストキーのパース処理
+ *
+ * @param string $requestKey リクエストキー
+ * @return void
+ */
+	private function __parseRequestKey($requestKey) {
+		if (preg_match('/' . UserSearchComponent::MORE_THAN_DAYS . '$/', $requestKey)) {
+			$field = substr($requestKey, 0, (strlen(UserSearchComponent::MORE_THAN_DAYS) + 1) * -1);
+			$setting = UserSearchComponent::MORE_THAN_DAYS;
+		} elseif (preg_match('/' . UserSearchComponent::WITHIN_DAYS . '$/', $requestKey)) {
+			$field = substr($requestKey, 0, (strlen(UserSearchComponent::WITHIN_DAYS) + 1) * -1);
+			$setting = UserSearchComponent::WITHIN_DAYS;
+		} else {
+			$field = $requestKey;
+			$setting = null;
+		}
+
+		return array($field, $setting);
 	}
 
 /**
@@ -120,8 +220,11 @@ class UserSearchBehavior extends ModelBehavior {
 		$this->__prepare($model);
 
 		$fieldKeys = array_keys($fields);
+
 		foreach ($fieldKeys as $key) {
-			if (! isset($this->readableFields[$key])) {
+			list($field, ) = $this->__parseRequestKey($key);
+
+			if (! isset($this->readableFields[$field])) {
 				unset($fields[$key]);
 			}
 		}
@@ -140,24 +243,22 @@ class UserSearchBehavior extends ModelBehavior {
 
 		$fieldKeys = array_keys($conditions);
 		foreach ($fieldKeys as $key) {
-			$explode = explode('.', $key);
-			$field = Hash::get($explode, '0', null);
-			$setting = Hash::get($explode, '1', null);
+			list($field, $setting) = $this->__parseRequestKey($key);
 
 			list($sign, $value) = $this->__creanSearchCondtion($model, $field, $setting, $conditions[$key]);
 			unset($conditions[$key]);
 
-			if (! isset($this->readableFields[$key])) {
+			if (! isset($this->readableFields[$field])) {
 				continue;
 			}
 
 			if ($setting === UserSearchComponent::MORE_THAN_DAYS) {
 				$conditions[count($conditions)]['OR'] = array(
-					$this->readableFields[$key] => null,
-					$this->readableFields[$key] . $sign => $value
+					$this->readableFields[$field]['field'] => null,
+					$this->readableFields[$field]['field'] . $sign => $value
 				);
 			} else {
-				$conditions[$this->readableFields[$key] . $sign] = $value;
+				$conditions[$this->readableFields[$field]['field'] . $sign] = $value;
 			}
 		}
 
@@ -348,12 +449,34 @@ class UserSearchBehavior extends ModelBehavior {
  * 検索フィールドを取得する
  *
  * @param Model $model Model ビヘイビア呼び出し前のモデル
- * @param array $field 表示するフィールドリスト
+ * @param string $field 表示するフィールドリスト
+ * @param string $key 取得する内容のキー
  * @return string 実際のフィールド
  */
-	public function getOriginalUserField(Model $model, $field) {
+	public function getOriginalUserField(Model $model, $field, $key = 'field') {
 		$this->__prepare($model);
-		return Hash::get($this->readableFields, $field);
+		return Hash::get($this->readableFields, $field . '.' . $key);
+	}
+
+/**
+ * 検索フィールドの値をフォーマットに当てはめて出力する。
+ *
+ * @param Model $model Model ビヘイビア呼び出し前のモデル
+ * @param string $field 表示するフィールドリスト
+ * @param string $value 値
+ * @return string 実際のフィールド
+ */
+	public function getSearchFieldValue(Model $model, $field, $value) {
+		$this->__prepare($model);
+
+		if (Hash::get($this->readableFields, $field . '.' . 'format')) {
+			return sprintf(Hash::get($this->readableFields, $field . '.' . 'format'), h($value));
+		} elseif (Hash::get($this->readableFields, $field . '.' . 'options')) {
+			$options = Hash::get($this->readableFields, $field . '.' . 'options', array());
+			return Hash::get($options, $value);
+		} else {
+			return h($value);
+		}
 	}
 
 }

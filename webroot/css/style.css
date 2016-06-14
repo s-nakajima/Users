@@ -110,3 +110,13 @@ label.user-search-conditions-datetime-bottom {
 	margin-left: 0px;
 	margin-right: 10px;
 }
+
+.user-search-conditions-frame {
+	margin-bottom: 8px;
+}
+.user-search-conditions-frame div.pull-left {
+	margin-right: 32px;
+}
+.user-search-conditions-frame div.pull-left label {
+	margin-right: 4px;
+}
