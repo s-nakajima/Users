@@ -113,12 +113,11 @@ class UserSearchComponent extends Component {
 		);
 		$controller->set('rooms', $rooms);
 
-		$controller->request->data['UserSearch'] =
-				$controller->Session->read(UserSearchComponent::$sessionKey);
+		$controller->request->data['UserSearch'] = $controller->request->query;
 	}
 
 /**
- * 検索処理(会員検索、後で見直し)
+ * 検索処理
  *
  * @param array $conditions 条件
  * @param array $joins JOIN時の条件
@@ -158,7 +157,7 @@ class UserSearchComponent extends Component {
 			}
 		}
 
-		//ユーザデータ取得(後で見直し)
+		//ユーザデータ取得
 		$controller->Paginator->settings = array(
 			'recursive' => -1,
 			'fields' => $controller->User->getSearchFields(),
@@ -172,5 +171,6 @@ class UserSearchComponent extends Component {
 
 		$controller->set('users', $results);
 		$controller->request->data['UserSearch'] = $defaultConditions;
+		$controller->request->query = $defaultConditions;
 	}
 }

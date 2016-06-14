@@ -226,11 +226,12 @@ class UserSearchFormHelper extends AppHelper {
 		}
 
 		//○日以上前(○日以上ログインしていない)の出力
+		$fieldKey = $userAttribute['UserAttribute']['key'] . '_' . UserSearchComponent::MORE_THAN_DAYS;
 		$html .= '<div class="input-group">';
 		$html .= $this->NetCommonsForm->input(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::MORE_THAN_DAYS,
+			$fieldKey,
 			array(
-				'name' => $userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::MORE_THAN_DAYS,
+				'name' => $fieldKey,
 				'type' => 'number',
 				'class' => 'form-control input-sm user-search-conditions-datetime-top',
 				'label' => false,
@@ -240,18 +241,18 @@ class UserSearchFormHelper extends AppHelper {
 			)
 		);
 		$html .= $this->NetCommonsForm->label(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::MORE_THAN_DAYS,
-			$moreThanDays,
+			$fieldKey, $moreThanDays,
 			array('class' => 'input-group-addon user-search-conditions-datetime-top')
 		);
 		$html .= '</div>';
 
 		//○日以内(○日以内ログインしている)の出力
+		$fieldKey = $userAttribute['UserAttribute']['key'] . '_' . UserSearchComponent::WITHIN_DAYS;
 		$html .= '<div class="input-group">';
 		$html .= $this->NetCommonsForm->input(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::WITHIN_DAYS,
+			$fieldKey,
 			array(
-				'name' => $userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::WITHIN_DAYS,
+				'name' => $fieldKey,
 				'type' => 'number',
 				'class' => 'form-control input-sm user-search-conditions-datetime-bottom',
 				'label' => false,
@@ -261,7 +262,7 @@ class UserSearchFormHelper extends AppHelper {
 			)
 		);
 		$html .= $this->NetCommonsForm->label(
-			$userAttribute['UserAttribute']['key'] . '.' . UserSearchComponent::WITHIN_DAYS, $withinDays,
+			$fieldKey, $withinDays,
 			array('class' => 'input-group-addon user-search-conditions-datetime-bottom')
 		);
 		$html .= '</div>';
@@ -370,11 +371,12 @@ class UserSearchFormHelper extends AppHelper {
 
 		$html .= $this->Button->search($label, array(
 			'type' => 'button',
-			'ng-click' => 'showUserSearch(null, ' .
-									'\'' . h($this->_View->request->params['plugin']) . '\', ' .
-									'\'' . h($this->_View->request->params['controller']) . '\', ' .
-									'\'' . h($this->_View->request->params['action']) . '\', ' .
-									'\'' . implode('/', array_map('h', $params)) . '\')'
+			'ng-click' => 'showUserSearch(' .
+					h(json_encode($this->_View->request->query, JSON_FORCE_OBJECT)) . ', ' .
+					'\'' . h($this->_View->request->params['plugin']) . '\', ' .
+					'\'' . h($this->_View->request->params['controller']) . '\', ' .
+					'\'' . h($this->_View->request->params['action']) . '\', ' .
+					'\'' . implode('/', array_map('h', $params)) . '\')'
 		));
 		$html .= '</div>';
 
