@@ -75,3 +75,9 @@ msgstr "検索結果は、%s件までしか表示できません。もう少し�
 
 msgid "Password does not match. Please try again."
 msgstr "入力したパスワードとパスワード確認が一致しません。再度、入力してください。"
+
+msgid "Search condition clear"
+msgstr "検索条件のクリア"
+
+msgid "Not search condition."
+msgstr "検索条件が指定されていません。"

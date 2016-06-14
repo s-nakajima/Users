@@ -72,9 +72,7 @@ class UserSearchComponent extends Component {
 		//Modelの呼び出し
 		$controller->User = ClassRegistry::init('Users.User');
 		$controller->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
-		$controller->Group = ClassRegistry::init('Groups.Group');
 		$controller->Space = ClassRegistry::init('Rooms.Space');
-		$controller->Room = ClassRegistry::init('Rooms.Room');
 	}
 
 /**
@@ -91,27 +89,11 @@ class UserSearchComponent extends Component {
 		$controller->layout = 'NetCommons.modal';
 		$controller->view = 'Users.UserSearch/conditions';
 
-		//自分自身のグループデータ取得(後でGroupプラグインで用意されれば置き換える)
-		$result = $controller->Group->find('list', array(
-			'recursive' => -1,
-			'fields' => array('id', 'name'),
-			'conditions' => array(
-				'created_user' => Current::read('User.id'),
-			),
-			'order' => array('id'),
-		));
-		$controller->set('groups', $result);
+		//自分自身のグループデータ取得
+		$controller->set('groups', $controller->User->getOriginalUserField('group_id', 'options'));
 
 		//参加ルームデータ取得
-		$result = $controller->Room->find('all', $controller->Room->getReadableRoomsConditions(array(
-			'Room.space_id !=' => Space::PRIVATE_SPACE_ID
-		)));
-		$rooms = Hash::combine(
-			$result,
-			'{n}.Room.id',
-			'{n}.RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . '].name'
-		);
-		$controller->set('rooms', $rooms);
+		$controller->set('rooms', $controller->User->getOriginalUserField('room_id', 'options'));
 
 		$controller->request->data['UserSearch'] = $controller->request->query;
 	}
@@ -171,6 +153,9 @@ class UserSearchComponent extends Component {
 
 		$controller->set('users', $results);
 		$controller->request->data['UserSearch'] = $defaultConditions;
+		if (isset($controller->request->query['search'])) {
+			$defaultConditions['search'] = '1';
+		}
 		$controller->request->query = $defaultConditions;
 	}
 }

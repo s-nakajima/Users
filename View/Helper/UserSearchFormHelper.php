@@ -83,11 +83,7 @@ class UserSearchFormHelper extends AppHelper {
 				'1' => __d('user_manager', 'Has avatar.')
 			);
 		} elseif (in_array($dataTypeKey, $choiceInArray, true)) {
-			if ($userAttribute['UserAttribute']['key'] === 'role_key') {
-				$keyPath = '{n}.key';
-			} else {
-				$keyPath = '{n}.code';
-			}
+			$keyPath = '{n}.key';
 			//ラジオボタン、チェックボタン、セレクトボタン
 			$options = Hash::combine(
 				$userAttribute, 'UserAttributeChoice.' . $keyPath, 'UserAttributeChoice.{n}.name'
@@ -311,7 +307,7 @@ class UserSearchFormHelper extends AppHelper {
 		$html .= '<label class="control-label">' . __d('user_manager', 'Rooms') . '</label>';
 		$html .= '</div>';
 
-		$html .= $this->NetCommonsForm->input('room', array(
+		$html .= $this->NetCommonsForm->input('room_id', array(
 			'type' => 'select',
 			'options' => $options,
 			'label' => false,
@@ -362,10 +358,35 @@ class UserSearchFormHelper extends AppHelper {
  * @return string HTML
  */
 	public function displaySearchButton($label, $params = array()) {
+		$User = ClassRegistry::init('Users.User');
+
 		$html = '';
 		$html .= $this->NetCommonsHtml->script(array(
 			'/users/js/user_search.js'
 		));
+
+		if ($this->_View->request->query) {
+			$conditions = '';
+			foreach ($this->_View->request->query as $key => $value) {
+				if ($User->getOriginalUserField($key)) {
+					$conditions .= '<div class="pull-left">';
+					$conditions .=
+						$this->NetCommonsForm->label('', $User->getOriginalUserField($key, 'label'));
+					$conditions .= ': ';
+					$conditions .= $User->getSearchFieldValue($key, $value);
+					$conditions .= '</div>';
+				}
+			}
+			if (! $conditions) {
+				$conditions .= '<div class="pull-left">';
+				$conditions .= __d('users', 'Not search condition.');
+				$conditions .= '</div>';
+			}
+
+			$html .= '<div class="user-search-conditions-frame clearfix well well-sm">';
+			$html .= $conditions;
+			$html .= '</div>';
+		}
 
 		$html .= '<div class="text-center" ng-controller="UserSearch.controller">';
 
@@ -378,6 +399,24 @@ class UserSearchFormHelper extends AppHelper {
 					'\'' . h($this->_View->request->params['action']) . '\', ' .
 					'\'' . implode('/', array_map('h', $params)) . '\')'
 		));
+
+		if ($this->_View->request->query) {
+			$html .= $this->NetCommonsHtml->link(
+				__d('users', 'Search condition clear'),
+				Hash::merge(
+					array(
+						'plugin' => $this->_View->request->params['plugin'],
+						'controller' => $this->_View->request->params['controller'],
+						'action' => $this->_View->request->params['action']
+					),
+					$params
+				),
+				array(
+					'class' => 'btn btn-default btn-workflow',
+				)
+			);
+		}
+
 		$html .= '</div>';
 
 		return $html;
