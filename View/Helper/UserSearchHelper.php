@@ -115,10 +115,10 @@ class UserSearchHelper extends AppHelper {
  *
  * @param array $user ユーザデータ
  * @param bool $isEdit 編集の有無
- * @param array $url 編集リンクURL
+ * @param array $editUrl 編集リンクURL
  * @return string 行のHTMLタグ
  */
-	public function tableRow($user, $isEdit, $url = array()) {
+	public function tableRow($user, $isEdit, $editUrl = array()) {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
@@ -137,8 +137,8 @@ class UserSearchHelper extends AppHelper {
 				$output .= '<td></td>';
 			}
 
-			if ($isEdit && $url) {
-				$output .= '<td>' . $this->__userEdit($user, $url) . '</td>';
+			if ($isEdit && $editUrl) {
+				$output .= '<td>' . $this->__userEdit($user, $editUrl) . '</td>';
 				$isEdit = false;
 			}
 		}
@@ -234,7 +234,7 @@ class UserSearchHelper extends AppHelper {
 				$this->DisplayUser->handle($user, array('avatar' => true), 'User'), '#',
 				array(
 					'escape' => false,
-					'ng-controller' => 'UserManager.controller',
+					'ng-controller' => 'UserManagerController',
 					'ng-click' => 'showUser(' . $user['User']['id'] . ')'
 				),
 				array(
