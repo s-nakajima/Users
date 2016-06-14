@@ -68,6 +68,8 @@ class UserSearchBehavior extends ModelBehavior {
 		foreach ($results as $field) {
 			$this->__setReadableField($model, $field, $userAttributes);
 		}
+		$this->readableFields['created_user']['field'] = 'TrackableCreator.handlename';
+		$this->readableFields['modified_user']['field'] = 'TrackableUpdater.handlename';
 
 		//参加ルーム
 		$this->readableFields['room_id']['field'] = $model->Room->alias . '.id';
@@ -119,15 +121,7 @@ class UserSearchBehavior extends ModelBehavior {
 		$label = Hash::get($userAttr, '0.name', '');
 
 		//Fieldのチェック
-		if ($attrKey === 'created_user') {
-			$this->readableFields[$attrKey]['field'] = 'TrackableCreator.handlename';
-			$this->readableFields[$attrKey]['label'] = $label;
-
-		} elseif ($attrKey === 'modified_user') {
-			$this->readableFields[$attrKey]['field'] = 'TrackableUpdater.handlename';
-			$this->readableFields[$attrKey]['label'] = $label;
-
-		} elseif ($dataTypeKey === DataType::DATA_TYPE_IMG) {
+		if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
 			$this->readableFields[$attrKey]['field'] =
 					$model->UploadFile->alias . Inflector::classify($attrKey) . '.field_name';
 			$this->readableFields[$attrKey]['label'] = $label;
@@ -455,7 +449,8 @@ class UserSearchBehavior extends ModelBehavior {
  * 検索フィールドを取得する
  *
  * @param Model $model Model ビヘイビア呼び出し前のモデル
- * @param array $field 表示するフィールドリスト
+ * @param string $field 表示するフィールドリスト
+ * @param string $key 取得する内容のキー
  * @return string 実際のフィールド
  */
 	public function getOriginalUserField(Model $model, $field, $key = 'field') {
@@ -467,8 +462,8 @@ class UserSearchBehavior extends ModelBehavior {
  * 検索フィールドの値をフォーマットに当てはめて出力する。
  *
  * @param Model $model Model ビヘイビア呼び出し前のモデル
- * @param array $field 表示するフィールドリスト
- * @param array $value 値
+ * @param string $field 表示するフィールドリスト
+ * @param string $value 値
  * @return string 実際のフィールド
  */
 	public function getSearchFieldValue(Model $model, $field, $value) {
