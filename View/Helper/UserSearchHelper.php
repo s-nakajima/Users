@@ -89,7 +89,7 @@ class UserSearchHelper extends AppHelper {
 				$userAttribute = Hash::extract(
 					$this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']'
 				);
-				$label = $userAttribute[0]['name'];
+				$label = Hash::get($userAttribute, '0.name');
 				$key = $this->User->getOriginalUserField($fieldName, 'order');
 			}
 
