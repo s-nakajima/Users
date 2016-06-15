@@ -146,7 +146,7 @@ class UserSearchComponent extends Component {
 			'conditions' => $controller->User->getSearchConditions($conditions),
 			'joins' => $controller->User->getSearchJoinTables($joins),
 			'group' => 'User.id',
-			'order' => Hash::merge($orders, array($controller->User->alias . '.id' => 'asc')),
+			'order' => Hash::merge($orders, array('Role.id' => 'asc')),
 			'limit' => $limit
 		);
 		$results = $controller->Paginator->paginate('User');

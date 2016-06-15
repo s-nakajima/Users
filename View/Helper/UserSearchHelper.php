@@ -90,7 +90,7 @@ class UserSearchHelper extends AppHelper {
 					$this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']'
 				);
 				$label = $userAttribute[0]['name'];
-				$key = $this->User->getOriginalUserField($fieldName);
+				$key = $this->User->getOriginalUserField($fieldName, 'order');
 			}
 
 			if ($isSort) {
