@@ -116,9 +116,10 @@ class UserSearchHelper extends AppHelper {
  * @param array $user ユーザデータ
  * @param bool $isEdit 編集の有無
  * @param array $editUrl 編集リンクURL
+ * @param array $tdOptions tdのオプション
  * @return string 行のHTMLタグ
  */
-	public function tableRow($user, $isEdit, $editUrl = array()) {
+	public function tableRow($user, $isEdit, $editUrl = array(), $tdOptions = array()) {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
@@ -132,7 +133,7 @@ class UserSearchHelper extends AppHelper {
 			}
 
 			if ($modelName) {
-				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit, true);
+				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit, true, $tdOptions);
 			} else {
 				$output .= '<td></td>';
 			}
@@ -175,9 +176,10 @@ class UserSearchHelper extends AppHelper {
  * @param string $fieldName 表示フィールド
  * @param bool $isEdit 編集の有無
  * @param bool $tdElement tdタグの出力
+ * @param array $tdOptions tdのオプション
  * @return string セルのHTMLタグ
  */
-	public function tableCell($user, $modelName, $fieldName, $isEdit, $tdElement) {
+	public function tableCell($user, $modelName, $fieldName, $isEdit, $tdElement, $tdOptions) {
 		$userAttribute = Hash::get($this->userAttributes, $fieldName);
 		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$value = '';
@@ -209,6 +211,9 @@ class UserSearchHelper extends AppHelper {
 		} else {
 			//その他
 			$value = h($user[$modelName][$fieldName]);
+		}
+		if (Hash::get($tdOptions, 'ng-click') && $fieldName !== 'handlename') {
+			$class = ' ng-click="' . Hash::get($tdOptions, 'ng-click') . '"';
 		}
 
 		if ($tdElement) {
