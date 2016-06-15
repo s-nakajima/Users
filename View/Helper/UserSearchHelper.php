@@ -116,9 +116,10 @@ class UserSearchHelper extends AppHelper {
  * @param array $user ユーザデータ
  * @param bool $isEdit 編集の有無
  * @param array $editUrl 編集リンクURL
+ * @param array $tdOptions tdのオプション
  * @return string 行のHTMLタグ
  */
-	public function tableRow($user, $isEdit, $editUrl = array()) {
+	public function tableRow($user, $isEdit, $editUrl = array(), $tdOptions = array()) {
 		$output = '';
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
@@ -132,7 +133,7 @@ class UserSearchHelper extends AppHelper {
 			}
 
 			if ($modelName) {
-				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit, true);
+				$output .= $this->tableCell($user, $modelName, $fieldName, $isEdit, true, $tdOptions);
 			} else {
 				$output .= '<td></td>';
 			}
@@ -175,14 +176,15 @@ class UserSearchHelper extends AppHelper {
  * @param string $fieldName 表示フィールド
  * @param bool $isEdit 編集の有無
  * @param bool $tdElement tdタグの出力
+ * @param array $tdOptions tdのオプション
  * @return string セルのHTMLタグ
  */
-	public function tableCell($user, $modelName, $fieldName, $isEdit, $tdElement) {
+	public function tableCell($user, $modelName, $fieldName, $isEdit, $tdElement, $tdOptions) {
 		$userAttribute = Hash::get($this->userAttributes, $fieldName);
 		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$value = '';
-		$class = '';
 
+		$tdOptions['escape'] = false;
 		if ($fieldName === 'handlename') {
 			//ハンドル
 			$value = $this->linkHandlename($user, $isEdit);
@@ -205,14 +207,14 @@ class UserSearchHelper extends AppHelper {
 				in_array($userAttribute['UserAttribute']['key'], UserAttribute::$typeDatetime, true)) {
 			//日付型
 			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
-			$class = ' class="row-datetime"';
+			$tdOptions['class'] = 'row-datetime';
 		} else {
 			//その他
 			$value = h($user[$modelName][$fieldName]);
 		}
 
 		if ($tdElement) {
-			return '<td' . $class . '>' . $value . '</td>';
+			return $this->NetCommonsHtml->tag('td', $value, $tdOptions);
 		} else {
 			return $value;
 		}
