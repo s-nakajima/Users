@@ -24,11 +24,7 @@ if (!isset($rolesRoomsUsers)) {
 	</td>
 
 	<td>
-		<?php
-			if ($nest !== 0) {
-				echo $this->Rooms->statusLabel($room, '%s', true);
-			}
-		?>
+		<?php echo $this->Rooms->statusLabel($room, '%s', true); ?>
 	</td>
 
 	<td class="row-datetime">

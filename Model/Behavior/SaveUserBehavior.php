@@ -321,6 +321,37 @@ class SaveUserBehavior extends ModelBehavior {
 	}
 
 /**
+ * ユーザの削除出来るかどうか
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $user ユーザデータ
+ * @return bool
+ */
+	public function canUserEdit(Model $model, $user) {
+		if (Current::read('User.role_key') !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR &&
+				(! $user || $user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR)) {
+			return false;
+		}
+
+		return true;
+	}
+
+/**
+ * UserのValidateチェック
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $data data
+ * @return bool True:正常、False:不正
+ */
+	public function validateUser(Model $model, $data) {
+		$model->prepare();
+
+		//バリデーション
+		$model->set($data);
+		return $model->validates();
+	}
+
+/**
  * ユーザの登録処理
  *
  * @param Model $model ビヘイビア呼び出し元モデル
