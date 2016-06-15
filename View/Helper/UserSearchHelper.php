@@ -183,8 +183,8 @@ class UserSearchHelper extends AppHelper {
 		$userAttribute = Hash::get($this->userAttributes, $fieldName);
 		$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
 		$value = '';
-		$class = '';
 
+		$tdOptions['escape'] = false;
 		if ($fieldName === 'handlename') {
 			//ハンドル
 			$value = $this->linkHandlename($user, $isEdit);
@@ -207,17 +207,14 @@ class UserSearchHelper extends AppHelper {
 				in_array($userAttribute['UserAttribute']['key'], UserAttribute::$typeDatetime, true)) {
 			//日付型
 			$value = h($this->Date->dateFormat($user[$modelName][$fieldName]));
-			$class = ' class="row-datetime"';
+			$tdOptions['class'] = 'row-datetime';
 		} else {
 			//その他
 			$value = h($user[$modelName][$fieldName]);
 		}
-		if (Hash::get($tdOptions, 'ng-click') && $fieldName !== 'handlename') {
-			$class = ' ng-click="' . Hash::get($tdOptions, 'ng-click') . '"';
-		}
 
 		if ($tdElement) {
-			return '<td' . $class . '>' . $value . '</td>';
+			return $this->NetCommonsHtml->tag('td', $value, $tdOptions);
 		} else {
 			return $value;
 		}
