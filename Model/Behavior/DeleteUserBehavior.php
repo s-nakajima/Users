@@ -20,6 +20,45 @@ App::uses('ModelBehavior', 'Model');
 class DeleteUserBehavior extends ModelBehavior {
 
 /**
+ * ユーザの削除
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $data data
+ * @return mixed On success Model::$data, false on failure
+ * @throws InternalErrorException
+ */
+	public function deleteUser(Model $model, $data) {
+		//トランザクションBegin
+		$model->begin();
+		$model->prepare();
+
+		try {
+			//Userデータの削除->論理削除
+			$user = $model->create(array(
+				'id' => $data['User']['id'],
+				'handlename' => $data['User']['handlename'],
+				'is_deleted' => true,
+			));
+
+			if (! $model->save($user, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			//関連DBの削除
+			$model->deleteUserAssociations($user['User']['id']);
+
+			//トランザクションCommit
+			$model->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$model->rollback($ex);
+		}
+
+		return true;
+	}
+
+/**
  * usersテーブルに関連するテーブル削除
  *
  * @param Model $model ビヘイビア呼び出し元モデル
@@ -57,6 +96,34 @@ class DeleteUserBehavior extends ModelBehavior {
 		//}
 
 		return true;
+	}
+
+/**
+ * ユーザの削除出来るかどうか
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $user ユーザデータ
+ * @return bool
+ */
+	public function canUserDelete(Model $model, $user) {
+		if (Current::read('User.role_key') !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR &&
+				(! $user || $user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR)) {
+			return false;
+		}
+
+		if ($user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+			$count = $model->find('count', array(
+				'recursive' => -1,
+				'conditions' => array(
+					$model->alias . '.role_key' => UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR,
+					$model->alias . '.is_deleted' => false,
+				),
+			));
+
+			return ($count > 1);
+		} else {
+			return true;
+		}
 	}
 
 }

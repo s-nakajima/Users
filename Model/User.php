@@ -478,20 +478,6 @@ class User extends UsersAppModel {
 	}
 
 /**
- * UserのValidateチェック
- *
- * @param array $data data
- * @return bool True:正常、False:不正
- */
-	public function validateUser($data) {
-		$this->prepare();
-
-		//バリデーション
-		$this->set($data);
-		return $this->validates();
-	}
-
-/**
  * ユーザの登録処理
  *
  * @param array $data data
@@ -568,44 +554,6 @@ class User extends UsersAppModel {
 		Current::$current['Room'] = $currentRoom;
 
 		return $user;
-	}
-
-/**
- * ユーザの削除
- *
- * @param array $data data
- * @return mixed On success Model::$data, false on failure
- * @throws InternalErrorException
- */
-	public function deleteUser($data) {
-		//トランザクションBegin
-		$this->begin();
-		$this->prepare();
-
-		try {
-			//Userデータの削除->論理削除
-			$user = $this->create(array(
-				'id' => $data['User']['id'],
-				'handlename' => $data['User']['handlename'],
-				'is_deleted' => true,
-			));
-
-			if (! $this->save($user, false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-
-			//関連DBの削除
-			$this->deleteUserAssociations($user['User']['id']);
-
-			//トランザクションCommit
-			$this->commit();
-
-		} catch (Exception $ex) {
-			//トランザクションRollback
-			$this->rollback($ex);
-		}
-
-		return true;
 	}
 
 }
