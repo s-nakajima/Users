@@ -80,4 +80,4 @@ msgid "Search condition clear"
 msgstr "検索条件のクリア"
 
 msgid "Not search condition."
-msgstr "検索条件が指定されていません。"
+msgstr "条件なし"

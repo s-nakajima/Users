@@ -70,6 +70,7 @@ class UserSearchBehavior extends ModelBehavior {
 		}
 		$this->readableFields['created_user']['field'] = 'TrackableCreator.handlename';
 		$this->readableFields['modified_user']['field'] = 'TrackableUpdater.handlename';
+		$this->readableFields['role_key']['order'] = 'Role.id';
 
 		//参加ルーム
 		$this->readableFields['room_id']['field'] = $model->Room->alias . '.id';
@@ -455,6 +456,11 @@ class UserSearchBehavior extends ModelBehavior {
  */
 	public function getOriginalUserField(Model $model, $field, $key = 'field') {
 		$this->__prepare($model);
+
+		if ($key === 'order' && ! Hash::get($this->readableFields, $field . '.' . $key)) {
+			$key = 'field';
+		}
+
 		return Hash::get($this->readableFields, $field . '.' . $key);
 	}
 
