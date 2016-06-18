@@ -23,6 +23,10 @@
 /**
  * アバター
  */
+.small .user-avatar-xs {
+	height: 16px;
+	width: 16px;
+}
 .user-avatar-xs {
 	margin-right: 2px;
 	height: 20px;
