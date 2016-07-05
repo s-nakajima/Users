@@ -405,6 +405,7 @@ class User extends UsersAppModel {
 				'id' => null,
 				'role_key' => UserRole::USER_ROLE_KEY_COMMON_USER,
 				'timezone' => (new NetCommonsTime())->getSiteTimezone(),
+				'language' => Current::read('Language.code'),
 			))
 		);
 
@@ -513,6 +514,8 @@ class User extends UsersAppModel {
 			$isAvatarAutoCreated = Hash::get($beforeUser, 'User.is_avatar_auto_created', true);
 			$data['User']['is_avatar_auto_created'] = (bool)$isAvatarAutoCreated;
 		}
+
+		$data['User']['language'] = Hash::get($data, 'User.language', Current::read('Language.code'));
 
 		//バリデーション
 		$this->set($data);
