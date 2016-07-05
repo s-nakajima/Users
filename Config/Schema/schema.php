@@ -90,6 +90,8 @@ class UsersSchema extends CakeSchema {
 		'is_moblie_mail_reception' => array('type' => 'boolean', 'null' => false, 'default' => '1'),
 		'sex' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '性別', 'charset' => 'utf8'),
 		'is_sex_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'language' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'is_language_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'timezone' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'タイムゾーン', 'charset' => 'utf8'),
 		'is_timezone_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'role_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '権限', 'charset' => 'utf8'),
@@ -113,9 +115,9 @@ class UsersSchema extends CakeSchema {
 		'is_profile_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_search_keywords_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
 		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
 /**
@@ -131,9 +133,9 @@ class UsersSchema extends CakeSchema {
 		'profile' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'プロフィール', 'charset' => 'utf8'),
 		'search_keywords' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '検索キーワード', 'charset' => 'utf8'),
 		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
 		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
 }
