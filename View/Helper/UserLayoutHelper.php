@@ -26,6 +26,7 @@ class UserLayoutHelper extends AppHelper {
  */
 	public $helpers = array(
 		'M17n.SwitchLanguage',
+		'NetCommons.Date',
 		'NetCommons.NetCommonsHtml',
 	);
 
@@ -143,6 +144,7 @@ class UserLayoutHelper extends AppHelper {
 				'class' => 'img-responsive img-rounded',
 			));
 			$element .= '</div>';
+
 		} elseif (isset($userAttribute['UserAttributeChoice'])) {
 			if ($userAttributeKey === 'role_key') {
 				$keyPath = '{n}[key=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
@@ -153,21 +155,40 @@ class UserLayoutHelper extends AppHelper {
 			$element .= $option[0]['name'];
 
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
-			foreach ($this->_View->viewVars['user']['UsersLanguage'] as $index => $usersLanguage) {
-				$el = Hash::get($this->_View->viewVars['user'], sprintf($fieldName, $index));
-				if ($el) {
-					$element .=
-						'<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
-					$element .= $el;
-					$element .= '</div>';
-				}
-			}
+			$element .= $this->__displayLanguageField($fieldName);
+
+		} elseif (in_array($userAttributeKey, UserAttribute::$typeDatetime, true)) {
+			$element .= $this->Date->dateFormat(
+				Hash::get($this->_View->viewVars['user'], $fieldName), UserAttribute::DISPLAY_DATETIME_FORMAT
+			);
 
 		} elseif (isset($fieldName)) {
 			$element .= Hash::get($this->_View->viewVars['user'], $fieldName);
 
 		} else {
 			$element .= '';
+		}
+
+		return $element;
+	}
+
+/**
+ * 多言語のフィールドの値表示
+ *
+ * @param string $fieldName モデルのフィールド名
+ * @return string
+ */
+	private function __displayLanguageField($fieldName) {
+		$element = '';
+
+		foreach ($this->_View->viewVars['user']['UsersLanguage'] as $index => $usersLanguage) {
+			$el = Hash::get($this->_View->viewVars['user'], sprintf($fieldName, $index));
+			if ($el) {
+				$element .=
+					'<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
+				$element .= $el;
+				$element .= '</div>';
+			}
 		}
 
 		return $element;
