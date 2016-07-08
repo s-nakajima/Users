@@ -7,8 +7,8 @@
 /**
  * Users controller
  */
-NetCommonsApp.controller('Users.controller', function(
-    $scope, NetCommonsModal) {
+NetCommonsApp.controller('Users.controller',
+    ['$scope', 'NetCommonsModal', function($scope, NetCommonsModal) {
 
       /**
        * Show user information method
@@ -22,19 +22,21 @@ NetCommonsApp.controller('Users.controller', function(
             $scope.baseUrl + '/users/users/view/' + id + ''
         );
       };
-    });
+    }]);
 
 
 /**
  * User modal controller
  */
-NetCommonsApp.controller('User.view', function($scope, $uibModalInstance) {
-  /**
-   * dialog cancel
-   *
-   * @return {void}
-   */
-  $scope.cancel = function() {
-    $uibModalInstance.dismiss('cancel');
-  };
-});
+NetCommonsApp.controller('User.view',
+    ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
+
+      /**
+       * dialog cancel
+       *
+       * @return {void}
+       */
+      $scope.cancel = function() {
+        $uibModalInstance.dismiss('cancel');
+      };
+    }]);
