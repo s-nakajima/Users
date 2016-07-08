@@ -292,6 +292,11 @@ class UserSearchBehavior extends ModelBehavior {
 			DataType::DATA_TYPE_TEXT, DataType::DATA_TYPE_TEXTAREA, DataType::DATA_TYPE_EMAIL
 		);
 
+		$optionTypes = array(
+			DataType::DATA_TYPE_RADIO, DataType::DATA_TYPE_SELECT, DataType::DATA_TYPE_CHECKBOX,
+			DataType::DATA_TYPE_PREFECTURE, DataType::DATA_TYPE_TIMEZONE, DataType::DATA_TYPE_MULTIPLE_SELECT
+		);
+
 		if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
 			if ($value) {
 				$sign = ' NOT';
@@ -319,6 +324,19 @@ class UserSearchBehavior extends ModelBehavior {
 			// ->あいまい検索※今後、MatchAgainstもしくは、前方一致にする必要あり。
 			$sign = ' LIKE';
 			$value = '%' . $value . '%';
+
+		} elseif (in_array($dataTypeKey, $optionTypes, true)) {
+			$sign = '';
+			$userAttribute = Hash::extract(
+				$userAttributes, '{n}.{n}.{n}.UserAttribute[key=' . $field . ']'
+			);
+			$userAttrId = Hash::get($userAttribute, '0.id');
+			$options = Hash::extract(
+				$userAttributes,
+				'{n}.{n}.{n}.UserAttributeChoice.{n}[user_attribute_id=' . $userAttrId . ']'
+			);
+			$value = Hash::get(Hash::extract($options, '{n}[key=' . $value . ']', array()), '0.code');
+
 		} else {
 			$sign = '';
 		}
