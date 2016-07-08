@@ -27,6 +27,7 @@ class UserEditFormHelper extends AppHelper {
 	public $helpers = array(
 		'DataTypes.DataTypeForm',
 		'M17n.SwitchLanguage',
+		'NetCommons.Date',
 		'NetCommons.NetCommonsHtml',
 		'NetCommons.NetCommonsForm',
 	);
@@ -244,6 +245,12 @@ class UserEditFormHelper extends AppHelper {
 			}
 		}
 
+		if (in_array($userAttributeKey, UserAttribute::$typeDatetime, true)) {
+			$attributes['value'] = $this->Date->dateFormat(
+				Hash::get($this->_View->request->data, $fieldName), UserAttribute::DISPLAY_DATETIME_FORMAT
+			);
+		}
+
 		$html .= $this->__inputDataType($fieldName, $userAttribute, $attributes);
 
 		$html .= $this->userPublicForSelf($userAttribute);
@@ -342,7 +349,7 @@ class UserEditFormHelper extends AppHelper {
 	}
 
 /**
- * Generates a form input element complete with label and wrapper div
+ * イメージ(アバター)の表示処理
  *
  * @param string $fieldName フィールド名("Modelname.fieldname"形式)
  * @param array $userAttribute UserAttributeデータ
