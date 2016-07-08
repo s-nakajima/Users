@@ -16,11 +16,13 @@ NetCommonsApp.controller('Users.controller',
        * @param {number} users.id
        * @return {void}
        */
-      $scope.showUser = function(id) {
+      $scope.showUser = function($event, id) {
         NetCommonsModal.show(
             $scope, 'User.view',
             $scope.baseUrl + '/users/users/view/' + id + ''
         );
+        $event.preventDefault();
+        $event.stopPropagation();
       };
     }]);
 

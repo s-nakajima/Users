@@ -59,7 +59,7 @@ class DisplayUserHelper extends AppHelper {
 			Hash::merge(array(
 				'escape' => false,
 				'ng-controller' => 'Users.controller',
-				'ng-click' => 'showUser(' . $userId . ')'
+				'ng-click' => 'showUser($event, ' . $userId . ')'
 			), $attributes),
 			Hash::merge(array(
 				'escape' => false
@@ -175,7 +175,7 @@ class DisplayUserHelper extends AppHelper {
 			Hash::merge(array(
 				'escape' => false,
 				'ng-controller' => 'Users.controller',
-				'ng-click' => 'showUser(' . $userId . ')'
+				'ng-click' => 'showUser($event, ' . $userId . ')'
 			), $attr),
 			Hash::merge(array(
 				'escape' => false
