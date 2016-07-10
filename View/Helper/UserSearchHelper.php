@@ -50,6 +50,7 @@ class UserSearchHelper extends AppHelper {
 
 		//Modelの呼び出し
 		$this->User = ClassRegistry::init('Users.User');
+		$this->UserSearch = ClassRegistry::init('Users.UserSearch');
 		$this->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
 
 		$this->userAttributes = Hash::combine(
@@ -90,7 +91,7 @@ class UserSearchHelper extends AppHelper {
 					$this->userAttributes, '{s}.UserAttribute[key=' . $fieldName . ']'
 				);
 				$label = Hash::get($userAttribute, '0.name');
-				$key = $this->User->getOriginalUserField($fieldName, 'order');
+				$key = $this->UserSearch->getReadableFieldOrderKey($fieldName);
 			}
 
 			if ($isSort) {
