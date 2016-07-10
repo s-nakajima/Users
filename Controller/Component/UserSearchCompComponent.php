@@ -88,6 +88,7 @@ class UserSearchCompComponent extends Component {
 		$controller->UserSearch = ClassRegistry::init('Users.UserSearch');
 
 		$fields = Hash::get($options, 'fields', []);
+		$displayFields = Hash::get($options, 'displayFields', $fields);
 		$conditions = Hash::get($options, 'conditions', []);
 		$joins = Hash::get($options, 'joins', []);
 		$orders = Hash::get($options, 'orders', []);
@@ -118,7 +119,7 @@ class UserSearchCompComponent extends Component {
 
 		$controller->set(
 			'displayFields',
-			$controller->UserSearch->cleanSearchFields(array_combine($fields, $fields))
+			$controller->UserSearch->cleanSearchFields(array_combine($displayFields, $displayFields))
 		);
 	}
 }
