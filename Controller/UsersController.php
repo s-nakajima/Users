@@ -52,7 +52,7 @@ class UsersController extends UsersAppController {
 		'M17n.SwitchLanguage',
 		'Rooms.Rooms',
 		'UserAttributes.UserAttributeLayout',
-		'Users.UserSearch',
+		'Users.UserSearchComp',
 		'Groups.Groups',
 	);
 

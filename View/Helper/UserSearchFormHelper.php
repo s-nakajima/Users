@@ -222,7 +222,7 @@ class UserSearchFormHelper extends AppHelper {
 		}
 
 		//○日以上前(○日以上ログインしていない)の出力
-		$fieldKey = $userAttribute['UserAttribute']['key'] . '_' . UserSearchComponent::MORE_THAN_DAYS;
+		$fieldKey = $userAttribute['UserAttribute']['key'] . '_' . UserSearch::MORE_THAN_DAYS;
 		$html .= '<div class="input-group">';
 		$html .= $this->NetCommonsForm->input(
 			$fieldKey,
@@ -243,7 +243,7 @@ class UserSearchFormHelper extends AppHelper {
 		$html .= '</div>';
 
 		//○日以内(○日以内ログインしている)の出力
-		$fieldKey = $userAttribute['UserAttribute']['key'] . '_' . UserSearchComponent::WITHIN_DAYS;
+		$fieldKey = $userAttribute['UserAttribute']['key'] . '_' . UserSearch::WITHIN_DAYS;
 		$html .= '<div class="input-group">';
 		$html .= $this->NetCommonsForm->input(
 			$fieldKey,
@@ -358,7 +358,7 @@ class UserSearchFormHelper extends AppHelper {
  * @return string HTML
  */
 	public function displaySearchButton($label, $params = array()) {
-		$User = ClassRegistry::init('Users.User');
+		$UserSearch = ClassRegistry::init('Users.UserSearch');
 
 		$html = '';
 		$html .= $this->NetCommonsHtml->script(array(
@@ -368,12 +368,12 @@ class UserSearchFormHelper extends AppHelper {
 		if ($this->_View->request->query) {
 			$conditions = '';
 			foreach ($this->_View->request->query as $key => $value) {
-				if ($User->getOriginalUserField($key)) {
+				if ($UserSearch->getOriginalField($key)) {
 					$conditions .= '<div class="pull-left">';
 					$conditions .=
-						$this->NetCommonsForm->label('', $User->getOriginalUserField($key, 'label'));
+						$this->NetCommonsForm->label('', $UserSearch->getReadableFieldName($key));
 					$conditions .= ': ';
-					$conditions .= $User->getSearchFieldValue($key, $value);
+					$conditions .= $UserSearch->getSearchFieldValue($key, $value);
 					$conditions .= '</div>';
 				}
 			}
