@@ -93,6 +93,7 @@ class UserSearchCompComponent extends Component {
 		$joins = Hash::get($options, 'joins', []);
 		$orders = Hash::get($options, 'orders', []);
 		$limit = Hash::get($options, 'limit', self::DEFAULT_LIMIT);
+		$extra = Hash::get($options, 'extra', []);
 
 		$defaultConditions = $controller->UserSearch->cleanSearchFields($controller->request->query);
 		if (! $defaultConditions) {
@@ -106,7 +107,8 @@ class UserSearchCompComponent extends Component {
 			'conditions' => $conditions,
 			'joins' => $joins,
 			'defaultOrder' => $orders,
-			'limit' => $limit
+			'limit' => $limit,
+			'extra' => $extra
 		);
 		$results = $controller->Paginator->paginate('UserSearch');
 
