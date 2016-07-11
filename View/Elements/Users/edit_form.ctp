@@ -21,6 +21,7 @@
 			<?php echo $this->NetCommonsForm->hidden('UsersLanguage.' . $index . '.language_id'); ?>
 		<?php endforeach; ?>
 
+		<input type="password" value="" style="display: none;">
 		<?php echo $this->UserAttributeLayout->renderRow($element); ?>
 	</div>
 </div>
