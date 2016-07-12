@@ -271,6 +271,10 @@ class UserEditFormHelper extends AppHelper {
 	private function __inputDataType($fieldName, $userAttribute, $attributes = array()) {
 		$output = '';
 
+		if ($userAttribute['UserAttribute']['description']) {
+			$attributes['help'] = $userAttribute['UserAttribute']['description'];
+		}
+
 		switch ($attributes['type']) {
 			case DataType::DATA_TYPE_IMG:
 				$output .= $this->__image($fieldName, $userAttribute, $attributes);
