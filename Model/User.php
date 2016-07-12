@@ -405,7 +405,7 @@ class User extends UsersAppModel {
 				'id' => null,
 				'role_key' => UserRole::USER_ROLE_KEY_COMMON_USER,
 				'timezone' => (new NetCommonsTime())->getSiteTimezone(),
-				'language' => Current::read('Language.code'),
+				'language' => 'auto',
 			))
 		);
 
