@@ -103,8 +103,12 @@ class UserSearchHelper extends AppHelper {
 			$output .= '</th>';
 
 			if ($isEdit) {
-				$output .= '<th></th>';
-				$isEdit = false;
+				if ($fieldName === 'handlename') {
+					$output .= '<th></th>';
+				}
+				if ($fieldName === 'status') {
+					$output .= '<th></th>';
+				}
 			}
 		}
 
@@ -139,10 +143,33 @@ class UserSearchHelper extends AppHelper {
 				$output .= '<td></td>';
 			}
 
-			if ($isEdit && $editUrl) {
-				$output .= '<td>' . $this->__userEdit($user, $editUrl) . '</td>';
-				$isEdit = false;
+			if ($isEdit) {
+				if ($fieldName === 'handlename') {
+					$output .= '<td>' . $this->__userEdit($user, $editUrl) . '</td>';
+				}
+				if ($fieldName === 'status') {
+					$output .= '<td>' . $this->__editUserStatus($user, $modelName, $fieldName) . '</td>';
+				}
 			}
+		}
+
+		return $output;
+	}
+
+/**
+ * 状態によって、行色を変更する
+ *
+ * @param array $user ユーザデータ
+ * @return string 行のHTMLタグ
+ */
+	public function userActiveClass($user) {
+		$output = '';
+
+		if (Hash::get($user, 'User.status') === UserAttributeChoice::STATUS_CODE_NONACTIVE) {
+			$output .= ' class="danger text-danger"';
+		} elseif (Hash::get($user, 'User.status') === UserAttributeChoice::STATUS_CODE_WAITING ||
+				Hash::get($user, 'User.status') === UserAttributeChoice::STATUS_CODE_APPROVED) {
+			$output .= ' class="warning text-danger"';
 		}
 
 		return $output;
@@ -219,6 +246,42 @@ class UserSearchHelper extends AppHelper {
 		} else {
 			return $value;
 		}
+	}
+
+/**
+ * 状態の値取得。編集可で承認待ち⇒承認、承認済みの場合、再送
+ *
+ * @param array $user ユーザデータ
+ * @param string $modelName モデル名
+ * @param string $fieldName 表示フィールド
+ * @return string 編集のHTMLタグ
+ */
+	private function __editUserStatus($user, $modelName, $fieldName) {
+		$output = '';
+
+		if ($user[$modelName][$fieldName] === UserAttributeChoice::STATUS_CODE_WAITING) {
+			$confirm = __d('user_manager', 'Do you approve?');
+			$output .= $this->_View->element('Users.Users/edit_status_form', array(
+				'user' => $user,
+				'label' => __d('user_manager', 'Approval'),
+				'options' => array(
+					'icon' => 'glyphicon-ok',
+					'class' => 'btn btn-xs btn-warning',
+					'onclick' => 'return confirm(\'' . $confirm . '\')',
+				),
+			));
+		} elseif ($user[$modelName][$fieldName] === UserAttributeChoice::STATUS_CODE_APPROVED) {
+			$output .= $this->_View->element('Users.Users/edit_status_form', array(
+				'user' => $user,
+				'label' => __d('user_manager', 'Resend'),
+				'options' => array(
+					'icon' => 'glyphicon-envelope',
+					'class' => 'btn btn-xs btn-info',
+				),
+			));
+		}
+
+		return $output;
 	}
 
 /**

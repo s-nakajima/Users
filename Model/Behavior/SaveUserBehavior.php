@@ -321,7 +321,7 @@ class SaveUserBehavior extends ModelBehavior {
 	}
 
 /**
- * ユーザの削除出来るかどうか
+ * ユーザの編集出来るかどうか
  *
  * @param Model $model ビヘイビア呼び出し元モデル
  * @param array $user ユーザデータ
