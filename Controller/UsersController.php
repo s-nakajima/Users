@@ -26,7 +26,7 @@ class UsersController extends UsersAppController {
 /**
  * 会員一覧の表示する項目
  */
-	public static $displaField = 'handlename';
+	public static $displaField = array('handlename');
 
 /**
  * use model
@@ -282,21 +282,17 @@ class UsersController extends UsersAppController {
 
 		$query = Hash::remove($this->request->query, 'room_id');
 
-		$this->UserSearch->search(
-			Hash::merge(array(), $query),
-			array('Room' => array(
+		$this->UserSearchComp->search(array(
+			'fields' => self::$displaField,
+			'conditions' => Hash::merge(array(), $query),
+			'joins' => array('Room' => array(
 				'conditions' => array(
 					'Room.page_id_top NOT' => null,
 				)
 			)),
-			array(),
-			UserSelectCount::LIMIT
-		);
-
-		$fields = array(self::$displaField => self::$displaField);
-		$this->set('displayFields', $this->User->cleanSearchFields($fields));
-
-		//CakeLog::debug('UsersController::search() ' . print_r($this->viewVars['users'], true));
+			'order' => array(),
+			'limit' => UserSelectCount::LIMIT
+		));
 	}
 
 /**
