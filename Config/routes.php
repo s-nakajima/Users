@@ -25,8 +25,3 @@ Router::connect(
 	['plugin' => 'users', 'controller' => 'users'],
 	['user_id' => '[0-9]+']
 );
-Router::connect(
-	'/users/users/:action/:user_id',
-	['plugin' => 'users', 'controller' => 'users'],
-	['user_id' => '[0-9]+']
-);
