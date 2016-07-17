@@ -8,8 +8,6 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-$params = array();
-
 Router::connect(
 	'/users/users/download/:user_id/:field_name/:size',
 	['plugin' => 'users', 'controller' => 'users', 'action' => 'download'],
