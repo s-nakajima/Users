@@ -19,6 +19,13 @@ Router::connect(
 	['user_id' => '[0-9]+', 'size' => 'medium']
 );
 Router::connect(
+	'/users/users/download/*',
+	array(
+		'plugin' => 'users', 'controller' => 'users', 'action' => 'throwBadRequest',
+	)
+);
+
+Router::connect(
 	'/users/users/:action/:user_id',
 	['plugin' => 'users', 'controller' => 'users'],
 	['user_id' => '[0-9]+']
