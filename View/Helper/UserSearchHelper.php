@@ -50,7 +50,6 @@ class UserSearchHelper extends AppHelper {
 
 		//Modelの呼び出し
 		$this->User = ClassRegistry::init('Users.User');
-		$this->UserSearch = ClassRegistry::init('Users.UserSearch');
 		$this->UsersLanguage = ClassRegistry::init('Users.UsersLanguage');
 
 		$this->userAttributes = Hash::combine(
@@ -69,6 +68,7 @@ class UserSearchHelper extends AppHelper {
  */
 	public function tableHeaders($isEdit = false, $isSort = true) {
 		$output = '';
+		$this->UserSearch = ClassRegistry::init('Users.UserSearch');
 
 		foreach ($this->_View->viewVars['displayFields'] as $fieldName) {
 			$userAttribute = Hash::get($this->userAttributes, $fieldName);
