@@ -81,7 +81,7 @@ class UsersController extends UsersAppController {
 		if ($this->request->is('put') || $this->request->is('delete')) {
 			$userId = $this->data['User']['id'];
 		} else {
-			$userId = $this->params['pass'][0];
+			$userId = $this->params['user_id'];
 		}
 
 		$user = $this->User->getUser($userId);
@@ -221,7 +221,7 @@ class UsersController extends UsersAppController {
 	public function download() {
 		$this->__prepare();
 
-		$fieldName = $this->params['pass'][1];
+		$fieldName = $this->params['field_name'];
 		//$fileSetting = Hash::extract(
 		//	$this->viewVars['userAttributes'],
 		//	'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
@@ -231,7 +231,7 @@ class UsersController extends UsersAppController {
 		//}
 
 		if (! Hash::get($this->viewVars['user'], 'UploadFile.' . $fieldName . '.field_name')) {
-			$fieldSize = $this->params['pass'][2];
+			$fieldSize = $this->params['size'];
 			if ($fieldSize === 'thumb') {
 				$noimage = User::AVATAR_THUMB;
 			} else {
@@ -250,8 +250,8 @@ class UsersController extends UsersAppController {
 		if (Hash::get($this->viewVars['user'], 'User.is_avatar_auto_created') ||
 				Hash::get($this->viewVars['user'], 'User.id') === Current::read('User.id')) {
 			return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
-				'field' => $this->params['pass'][1],
-				'size' => $this->params['pass'][2])
+				'field' => $this->params['field_name'],
+				'size' => $this->params['size'])
 			);
 		}
 
@@ -260,8 +260,8 @@ class UsersController extends UsersAppController {
 		// * 個人情報設定で閲覧不可、
 
 		return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
-			'field' => $this->params['pass'][1],
-			'size' => $this->params['pass'][2])
+			'field' => $this->params['field_name'],
+			'size' => $this->params['size'])
 		);
 	}
 
