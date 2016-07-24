@@ -93,7 +93,6 @@ class User extends UsersAppModel {
 		'Users.DeleteUser',
 		'Users.ImportExport',
 		'Users.SaveUser',
-		//'Users.UserSearch',
 	);
 
 /**
