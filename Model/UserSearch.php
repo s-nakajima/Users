@@ -672,6 +672,10 @@ class UserSearchAppModel extends UsersAppModel {
 				unset($fields[$key]);
 			}
 		}
+
+		if (! $fields) {
+			$fields = array();
+		}
 		return $fields;
 	}
 

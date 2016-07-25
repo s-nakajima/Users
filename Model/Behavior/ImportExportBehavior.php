@@ -94,9 +94,10 @@ class ImportExportBehavior extends ModelBehavior {
  *
  * @param Model $model 呼び出しもとのModel
  * @param array $options エクスポートのオプション
+ * @param array $queryParams 絞り込みによる条件配列(リクエストデータ)
  * @return bool
  */
-	public function exportUsers(Model $model, $options = array()) {
+	public function exportUsers(Model $model, $options = array(), $queryParams = array()) {
 		App::uses('CsvFileWriter', 'Files.Utility');
 
 		$model->loadModels([
@@ -112,7 +113,8 @@ class ImportExportBehavior extends ModelBehavior {
 		}
 		$header = $this->_getCsvHeader($model, $userAttributes);
 
-		$conditions = Hash::get($options, 'conditions', []);
+		$defaultConditions = $model->UserSearch->cleanSearchFields($queryParams);
+		$conditions = Hash::merge($defaultConditions, Hash::get($options, 'conditions', []));
 		$joins = $model->UserSearch->getSearchJoinTables(
 			Hash::get($options, 'joins', array()), $conditions
 		);
