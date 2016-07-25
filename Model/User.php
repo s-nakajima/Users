@@ -110,13 +110,6 @@ class User extends UsersAppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'Role' => array(
-			'className' => 'Roles.Role',
-			'foreignKey' => false,
-			'conditions' => array('User.role_key = Role.key', 'Role.type = 1'),
-			'fields' => '',
-			'order' => ''
-		),
 		'UserRoleSetting' => array(
 			'className' => 'UserRoles.UserRoleSetting',
 			'foreignKey' => false,
@@ -205,6 +198,23 @@ class User extends UsersAppModel {
 			$this->Behaviors->unload('Files.Attachment');
 			$this->Behaviors->unload('Users.Avatar');
 		}
+
+		//RoleテーブルのbelongsToの定義は、こっちでやる
+		$this->bindModel(array(
+			'belongsTo' => array(
+				'Role' => array(
+					'className' => 'Roles.Role',
+					'foreignKey' => false,
+					'conditions' => array(
+						'User.role_key = Role.key',
+						'Role.type = 1',
+						'Role.language_id' => Current::read('Language.id', '2') //デフォルト日本語
+					),
+					'fields' => '',
+					'order' => ''
+				),
+			)
+		), false);
 	}
 
 /**

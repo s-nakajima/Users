@@ -10,9 +10,11 @@
  */
 
 App::uses('ModelBehavior', 'Model');
+App::uses('CurrentSystem', 'NetCommons.Utility');
 
 /**
- * UserSearch Behavior
+ * User Import/Export Behavior
+ * このビヘイビアは、Userモデルに付与されるもの
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model\Behavior
@@ -31,8 +33,15 @@ class ImportExportBehavior extends ModelBehavior {
  *
  * @var const
  */
+	const MAX_LIMIT = 1000;
+
+/**
+ * エクスポート用のランダム文字列
+ *
+ * @var const
+ */
 	public static $unexportFileds = array(
-		'id', 'key', 'is_deleted', 'created', 'created_user', 'modified', 'modified_user',
+		'id', 'key', 'avatar', 'is_deleted', 'created', 'created_user', 'modified', 'modified_user',
 		'password_modified', 'last_login', 'previous_login'
 	);
 
@@ -82,29 +91,53 @@ class ImportExportBehavior extends ModelBehavior {
 
 /**
  * エクスポート処理
- * 後で、ちゃんと仕様を考えて作る
  *
- * @param Model $model Model using this behavior
- * @return bool True on success, false on failure
+ * @param Model $model 呼び出しもとのModel
+ * @param array $options エクスポートのオプション
+ * @return bool
  */
-	public function exportUsers(Model $model) {
+	public function exportUsers(Model $model, $options = array()) {
 		App::uses('CsvFileWriter', 'Files.Utility');
 
-		$schema = array_flip(array_keys($model->schema(true)));
-		foreach (self::$unexportFileds as $field) {
-			$schema = Hash::remove($schema, $field);
-		}
+		$model->loadModels([
+			'UserSearch' => 'Users.UserSearch',
+			'UsersLanguage' => 'Users.UsersLanguage',
+			'UserAttribute' => 'UserAttributes.UserAttribute',
+		]);
 
-		$header = array_keys(Hash::flatten(array('User' => $schema)));
-		$csvWriter = new CsvFileWriter(array('header' => array_combine($header, $header)));
-		$users = $model->find('all', array(
+		$userAttributes = $model->UserAttribute->getUserAttriburesForAutoUserRegist();
+		$userAttributes = Hash::combine($userAttributes, '{n}.UserAttribute.key', '{n}');
+		foreach (self::$unexportFileds as $field) {
+			$userAttributes = Hash::remove($userAttributes, $field);
+		}
+		$header = $this->_getCsvHeader($model, $userAttributes);
+
+		$conditions = Hash::get($options, 'conditions', []);
+		$joins = $model->UserSearch->getSearchJoinTables(
+			Hash::get($options, 'joins', array()), $conditions
+		);
+		$conditions = $model->UserSearch->getSearchConditions(Hash::get($options, 'conditions', []));
+
+		$userIds = $model->find('list', array(
 			'recursive' => -1,
-			'conditions' => array(
-				'role_key !=' => UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR,
-				'is_deleted' => false,
-			),
+			'conditions' => $conditions,
+			'joins' => $joins,
+			'group' => 'User.id',
+			'limit' => self::MAX_LIMIT,
+			'order' => array('Role.id' => 'asc')
 		));
 
+		$this->_bindModel($model);
+		$users = $model->find('all', array(
+			'fields' => array_keys($header),
+			'recursive' => 0,
+			'conditions' => array(
+				'User.id' => array_values($userIds),
+			),
+			'order' => array('Role.id' => 'asc')
+		));
+
+		$csvWriter = new CsvFileWriter(array('header' => $header));
 		if (! $users && ! is_array($users)) {
 			$csvWriter->close();
 			return false;
@@ -116,6 +149,79 @@ class ImportExportBehavior extends ModelBehavior {
 
 		$csvWriter->close();
 		return $csvWriter;
+	}
+
+/**
+ * Modelのバインド
+ *
+ * @param Model $model 呼び出しもとのModel
+ * @return void
+ */
+	protected function _bindModel(Model $model) {
+		$languages = (new CurrentSystem())->getLanguages();
+		foreach ($languages as $lang) {
+			$modelName = 'UsersLanguage' . ucwords($lang['Language']['code']);
+
+			$model->bindModel(array(
+				'belongsTo' => array(
+					$modelName => array(
+						'className' => 'User.UsersLanguage',
+						'foreignKey' => false,
+						'conditions' => array(
+							$modelName . '.user_id = User.id',
+							$modelName . '.language_id' => $lang['Language']['id']
+						),
+						'fields' => '',
+						'order' => ''
+					),
+				)
+			), true);
+		}
+	}
+
+/**
+ * Modelのバインド
+ *
+ * @param Model $model 呼び出しもとのModel
+ * @param array $userAttributes 会員項目リスト
+ * @return void
+ */
+	protected function _getCsvHeader(Model $model, $userAttributes) {
+		$model->loadModels([
+			'UsersLanguage' => 'Users.UsersLanguage',
+		]);
+		$languages = (new CurrentSystem())->getLanguages();
+
+		$header = array();
+		foreach ($userAttributes as $attrKey => $userAttribute) {
+			//Userテーブル
+			if ($model->hasField($attrKey)) {
+				$key = $model->alias . '.' . $attrKey;
+				$header[$key] = Hash::get($userAttribute, 'UserAttribute.name');
+			}
+			//UsersLanguageテーブル
+			if ($model->UsersLanguage->hasField($attrKey)) {
+				foreach ($languages as $lang) {
+					$alias = $model->UsersLanguage->alias . ucwords($lang['Language']['code']);
+					$name = Hash::get($userAttribute, 'UserAttribute.name') .
+							__d('m17n', '(' . $lang['Language']['code'] . ')');
+					$header[$alias . '.' . $attrKey] = $name;
+				}
+			}
+			//公開設定
+			if ($model->hasField(sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $attrKey))) {
+				$key = $model->alias . '.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $attrKey);
+				$header[$key] = Hash::get($userAttribute, 'UserAttribute.name') .
+								__d('user_manager', '[Public setting]');
+			}
+			//公開設定
+			if ($model->hasField(sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $attrKey))) {
+				$key = $model->alias . '.' . sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $attrKey);
+				$header[$key] = Hash::get($userAttribute, 'UserAttribute.name') .
+								__d('user_manager', '[Public setting]');
+			}
+		}
+		return $header;
 	}
 
 }

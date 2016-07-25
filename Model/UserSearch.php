@@ -50,13 +50,6 @@ class UserSearch extends UserSearchAppModel {
 	public $readableFields = null;
 
 /**
- * 会員項目データ保持
- *
- * @var array
- */
-	public $userAttributeData = array();
-
-/**
  * Constructor. Binds the model's database table to the object.
  *
  * @param bool|int|string|array $id Set this ID for this model on startup,
@@ -164,85 +157,146 @@ class UserSearch extends UserSearchAppModel {
 	}
 
 /**
- * 検索可能のフィールドをチェックして、検索不可なフィールドは削除する
+ * JOINテーブルを取得
  *
- * @param array $fields 表示するフィールドリスト
- * @return array 実際に表示できるフィールドリスト
+ * @param array $joinModels JOINモデルリスト
+ * @param array $conditions 条件(Conditions)リスト
+ * @return array Findで使用するJOIN配列
  */
-	public function cleanSearchFields($fields) {
-		$fieldKeys = array_keys($fields);
+	public function getSearchJoinTables($joinModels, $conditions = array()) {
+		$joinModels = Hash::merge(
+			$joinModels,
+			$this->_getSearchJoinTablesByConditions($conditions)
+		);
 
+		$joins = array(
+			array(
+				'table' => $this->UsersLanguage->table,
+				'alias' => $this->UsersLanguage->alias,
+				'type' => 'INNER',
+				'conditions' => array(
+					$this->UsersLanguage->alias . '.user_id' . ' = ' . $this->alias . '.id',
+					$this->UsersLanguage->alias . '.language_id' => Current::read('Language.id'),
+				),
+			),
+			Hash::merge(array(
+				'table' => $this->Role->table,
+				'alias' => $this->Role->alias,
+				'type' => 'INNER',
+				'conditions' => array(
+					$this->alias . '.role_key' . ' = ' . $this->Role->alias . '.key',
+					$this->Role->alias . '.language_id' => Current::read('Language.id'),
+				),
+			), Hash::get($joinModels, 'Role', array())),
+			Hash::merge(array(
+				'table' => $this->RolesRoomsUser->table,
+				'alias' => $this->RolesRoomsUser->alias,
+				'type' => 'LEFT',
+				'conditions' => array(
+					$this->RolesRoomsUser->alias . '.user_id' . ' = ' . $this->alias . '.id',
+				),
+			), Hash::get($joinModels, 'RolesRoomsUser', array())),
+			Hash::merge(array(
+				'table' => $this->RolesRoom->table,
+				'alias' => $this->RolesRoom->alias,
+				'type' => 'LEFT',
+				'conditions' => array(
+					$this->RolesRoomsUser->alias . '.roles_room_id' . ' = ' . $this->RolesRoom->alias . '.id',
+				),
+			), Hash::get($joinModels, 'RolesRoom', array())),
+			Hash::merge(array(
+				'table' => $this->RoomRole->table,
+				'alias' => $this->RoomRole->alias,
+				'type' => 'LEFT',
+				'conditions' => array(
+					$this->RolesRoom->alias . '.role_key' . ' = ' . $this->RoomRole->alias . '.role_key',
+				),
+			), Hash::get($joinModels, 'RolesRoom', array())),
+			Hash::merge(array(
+				'table' => $this->Room->table,
+				'alias' => $this->Room->alias,
+				'type' => 'LEFT',
+				'conditions' => array(
+					$this->RolesRoomsUser->alias . '.room_id' . ' = ' . $this->Room->alias . '.id',
+				),
+			), Hash::get($joinModels, 'Room', array()))
+		);
+
+		if (Hash::get($joinModels, 'Group')) {
+			$joins[] = array(
+				'table' => $this->GroupsUser->table,
+				'alias' => $this->GroupsUser->alias,
+				'type' => 'INNER',
+				'conditions' => array(
+					$this->GroupsUser->alias . '.user_id' . ' = ' . $this->alias . '.id',
+					$this->GroupsUser->alias . '.created_user' => Current::read('User.id'),
+				),
+			);
+		}
+
+		if (Hash::get($joinModels, 'TrackableCreator')) {
+			$joins[] = array(
+				'table' => $this->table,
+				'alias' => 'TrackableCreator',
+				'type' => 'INNER',
+				'conditions' => array(
+					$this->alias . '.created_user' . ' = ' . 'TrackableCreator.id',
+				),
+			);
+		}
+		if (Hash::get($joinModels, 'TrackableUpdater')) {
+			$joins[] = array(
+				'table' => $this->table,
+				'alias' => 'TrackableUpdater',
+				'type' => 'INNER',
+				'conditions' => array(
+					$this->alias . '.modified_user' . ' = ' . 'TrackableUpdater.id',
+				),
+			);
+		}
+
+		$uploads = Hash::extract($joinModels, '{s}[table=' . $this->UploadFile->table . ']');
+		foreach ($uploads as $upload) {
+			$joins[] = $upload;
+		}
+
+		return $joins;
+	}
+
+/**
+ * 条件(Conditions)を取得
+ *
+ * @param array $conditions 条件(Conditions)リスト
+ * @return array 実際に条件を含められるリスト
+ */
+	public function getSearchConditions($conditions = array()) {
+		$fieldKeys = array_keys($conditions);
 		foreach ($fieldKeys as $key) {
-			list($field, ) = $this->_parseRequestKey($key);
+			list($field, $setting) = $this->_parseRequestKey($key);
+
+			list($sign, $value) = $this->_creanSearchCondtion($field, $setting, $conditions[$key]);
+			unset($conditions[$key]);
 
 			if (! isset($this->readableFields[$field])) {
-				unset($fields[$key]);
+				continue;
+			}
+
+			if ($setting === self::MORE_THAN_DAYS) {
+				$conditions[count($conditions)]['OR'] = array(
+					$this->readableFields[$field]['field'] => null,
+					$this->readableFields[$field]['field'] . $sign => $value
+				);
+			} else {
+				$conditions[$this->readableFields[$field]['field'] . $sign] = $value;
 			}
 		}
-		return $fields;
-	}
 
-/**
- * 検索フィールドから実際のテーブルフィールドを取得する
- *
- * @param string $field 表示するフィールドリスト
- * @return string 実際のフィールド
- */
-	public function getOriginalField($field) {
-		return Hash::get($this->readableFields, $field . '.' . 'field');
-	}
-
-/**
- * 検索フィールド名(ラベル)を取得する
- *
- * @param string $field 表示するフィールド
- * @return string フィールド名(ラベル)
- */
-	public function getReadableFieldName($field) {
-		return Hash::get($this->readableFields, $field . '.' . 'label');
-	}
-
-/**
- * 検索フィールドのオプションを取得する
- *
- * @param string $field 表示するフィールド
- * @return string オプション
- */
-	public function getReadableFieldOptions($field) {
-		return Hash::get($this->readableFields, $field . '.' . 'options');
-	}
-
-/**
- * 検索フィールドのソートキーを取得する
- *
- * @param string $field 表示するフィールド
- * @return string ソートキー
- */
-	public function getReadableFieldOrderKey($field) {
-		$key = 'order';
-		if (! Hash::get($this->readableFields, $field . '.' . $key)) {
-			$key = 'field';
+		if (! isset($this->readableFields['role_key'])) {
+			$conditions['User.status'] = '1';
 		}
+		$conditions['User.is_deleted'] = false;
 
-		return Hash::get($this->readableFields, $field . '.' . $key);
-	}
-
-/**
- * 検索フィールドの値をフォーマットに当てはめて出力する。
- *
- * @param string $field 表示するフィールドリスト
- * @param string $value 値
- * @return string 値
- */
-	public function getSearchFieldValue($field, $value) {
-		if (Hash::get($this->readableFields, $field . '.' . 'format')) {
-			return sprintf(Hash::get($this->readableFields, $field . '.' . 'format'), h($value));
-		} elseif (Hash::get($this->readableFields, $field . '.' . 'options')) {
-			$options = Hash::get($this->readableFields, $field . '.' . 'options', array());
-			return Hash::get($options, $value);
-		} else {
-			return h($value);
-		}
+		return $conditions;
 	}
 
 /**
@@ -261,12 +315,8 @@ class UserSearch extends UserSearchAppModel {
 			$recursive = null, $extra = array()) {
 		$displayRooms = Hash::get($extra, 'extra.plugin') === 'rooms';
 
-		$joins = Hash::merge(
-			Hash::get($extra, 'joins', array()),
-			$this->_getSearchJoinTablesByConditions($conditions)
-		);
-		$joins = $this->_getSearchJoinTables($joins);
-		$conditions = $this->_getSearchConditions($conditions);
+		$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions);
+		$conditions = $this->getSearchConditions($conditions);
 		$recursive = -1;
 		$group = 'User.id';
 		if (! $order) {
@@ -389,12 +439,8 @@ class UserSearch extends UserSearchAppModel {
 	public function paginateCount($conditions = null, $recursive = 0, $extra = array()) {
 		$displayRooms = Hash::get($extra, 'extra.plugin') === 'rooms';
 
-		$joins = Hash::merge(
-			Hash::get($extra, 'joins', array()),
-			$this->_getSearchJoinTablesByConditions($conditions)
-		);
-		$joins = $this->_getSearchJoinTables($joins);
-		$conditions = $this->_getSearchConditions($conditions);
+		$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions);
+		$conditions = $this->getSearchConditions($conditions);
 		$recursive = -1;
 		$group = 'User.id';
 
@@ -437,6 +483,7 @@ class UserSearch extends UserSearchAppModel {
 
 		return $count;
 	}
+
 }
 
 
@@ -610,140 +657,85 @@ class UserSearchAppModel extends UsersAppModel {
 	}
 
 /**
- * JOINテーブルを取得
+ * 検索可能のフィールドをチェックして、検索不可なフィールドは削除する
  *
- * @param array $joinModels JOINモデルリスト
- * @return array Findで使用するJOIN配列
+ * @param array $fields 表示するフィールドリスト
+ * @return array 実際に表示できるフィールドリスト
  */
-	protected function _getSearchJoinTables($joinModels) {
-		$joins = array(
-			array(
-				'table' => $this->UsersLanguage->table,
-				'alias' => $this->UsersLanguage->alias,
-				'type' => 'INNER',
-				'conditions' => array(
-					$this->UsersLanguage->alias . '.user_id' . ' = ' . $this->alias . '.id',
-					$this->UsersLanguage->alias . '.language_id' => Current::read('Language.id'),
-				),
-			),
-			Hash::merge(array(
-				'table' => $this->Role->table,
-				'alias' => $this->Role->alias,
-				'type' => 'INNER',
-				'conditions' => array(
-					$this->alias . '.role_key' . ' = ' . $this->Role->alias . '.key',
-					$this->Role->alias . '.language_id' => Current::read('Language.id'),
-				),
-			), Hash::get($joinModels, 'Role', array())),
-			Hash::merge(array(
-				'table' => $this->RolesRoomsUser->table,
-				'alias' => $this->RolesRoomsUser->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->RolesRoomsUser->alias . '.user_id' . ' = ' . $this->alias . '.id',
-				),
-			), Hash::get($joinModels, 'RolesRoomsUser', array())),
-			Hash::merge(array(
-				'table' => $this->RolesRoom->table,
-				'alias' => $this->RolesRoom->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->RolesRoomsUser->alias . '.roles_room_id' . ' = ' . $this->RolesRoom->alias . '.id',
-				),
-			), Hash::get($joinModels, 'RolesRoom', array())),
-			Hash::merge(array(
-				'table' => $this->RoomRole->table,
-				'alias' => $this->RoomRole->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->RolesRoom->alias . '.role_key' . ' = ' . $this->RoomRole->alias . '.role_key',
-				),
-			), Hash::get($joinModels, 'RolesRoom', array())),
-			Hash::merge(array(
-				'table' => $this->Room->table,
-				'alias' => $this->Room->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->RolesRoomsUser->alias . '.room_id' . ' = ' . $this->Room->alias . '.id',
-				),
-			), Hash::get($joinModels, 'Room', array()))
-		);
+	public function cleanSearchFields($fields) {
+		$fieldKeys = array_keys($fields);
 
-		if (Hash::get($joinModels, 'Group')) {
-			$joins[] = array(
-				'table' => $this->GroupsUser->table,
-				'alias' => $this->GroupsUser->alias,
-				'type' => 'INNER',
-				'conditions' => array(
-					$this->GroupsUser->alias . '.user_id' . ' = ' . $this->alias . '.id',
-					$this->GroupsUser->alias . '.created_user' => Current::read('User.id'),
-				),
-			);
-		}
+		foreach ($fieldKeys as $key) {
+			list($field, ) = $this->_parseRequestKey($key);
 
-		if (Hash::get($joinModels, 'TrackableCreator')) {
-			$joins[] = array(
-				'table' => $this->table,
-				'alias' => 'TrackableCreator',
-				'type' => 'INNER',
-				'conditions' => array(
-					$this->alias . '.created_user' . ' = ' . 'TrackableCreator.id',
-				),
-			);
+			if (! isset($this->readableFields[$field])) {
+				unset($fields[$key]);
+			}
 		}
-		if (Hash::get($joinModels, 'TrackableUpdater')) {
-			$joins[] = array(
-				'table' => $this->table,
-				'alias' => 'TrackableUpdater',
-				'type' => 'INNER',
-				'conditions' => array(
-					$this->alias . '.modified_user' . ' = ' . 'TrackableUpdater.id',
-				),
-			);
-		}
-
-		$uploads = Hash::extract($joinModels, '{s}[table=' . $this->UploadFile->table . ']');
-		foreach ($uploads as $upload) {
-			$joins[] = $upload;
-		}
-
-		return $joins;
+		return $fields;
 	}
 
 /**
- * 条件(Conditions)を取得
+ * 検索フィールドから実際のテーブルフィールドを取得する
  *
- * @param array $conditions 条件(Conditions)リスト
- * @return array 実際に条件を含められるリスト
+ * @param string $field 表示するフィールドリスト
+ * @return string 実際のフィールド
  */
-	protected function _getSearchConditions($conditions = array()) {
-		$fieldKeys = array_keys($conditions);
-		foreach ($fieldKeys as $key) {
-			list($field, $setting) = $this->_parseRequestKey($key);
+	public function getOriginalField($field) {
+		return Hash::get($this->readableFields, $field . '.' . 'field');
+	}
 
-			list($sign, $value) = $this->_creanSearchCondtion($field, $setting, $conditions[$key]);
-			unset($conditions[$key]);
+/**
+ * 検索フィールド名(ラベル)を取得する
+ *
+ * @param string $field 表示するフィールド
+ * @return string フィールド名(ラベル)
+ */
+	public function getReadableFieldName($field) {
+		return Hash::get($this->readableFields, $field . '.' . 'label');
+	}
 
-			if (! isset($this->readableFields[$field])) {
-				continue;
-			}
+/**
+ * 検索フィールドのオプションを取得する
+ *
+ * @param string $field 表示するフィールド
+ * @return string オプション
+ */
+	public function getReadableFieldOptions($field) {
+		return Hash::get($this->readableFields, $field . '.' . 'options');
+	}
 
-			if ($setting === self::MORE_THAN_DAYS) {
-				$conditions[count($conditions)]['OR'] = array(
-					$this->readableFields[$field]['field'] => null,
-					$this->readableFields[$field]['field'] . $sign => $value
-				);
-			} else {
-				$conditions[$this->readableFields[$field]['field'] . $sign] = $value;
-			}
+/**
+ * 検索フィールドのソートキーを取得する
+ *
+ * @param string $field 表示するフィールド
+ * @return string ソートキー
+ */
+	public function getReadableFieldOrderKey($field) {
+		$key = 'order';
+		if (! Hash::get($this->readableFields, $field . '.' . $key)) {
+			$key = 'field';
 		}
 
-		if (! isset($this->readableFields['role_key'])) {
-			$conditions['User.status'] = '1';
-		}
-		$conditions['User.is_deleted'] = false;
+		return Hash::get($this->readableFields, $field . '.' . $key);
+	}
 
-		return $conditions;
+/**
+ * 検索フィールドの値をフォーマットに当てはめて出力する。
+ *
+ * @param string $field 表示するフィールドリスト
+ * @param string $value 値
+ * @return string 値
+ */
+	public function getSearchFieldValue($field, $value) {
+		if (Hash::get($this->readableFields, $field . '.' . 'format')) {
+			return sprintf(Hash::get($this->readableFields, $field . '.' . 'format'), h($value));
+		} elseif (Hash::get($this->readableFields, $field . '.' . 'options')) {
+			$options = Hash::get($this->readableFields, $field . '.' . 'options', array());
+			return Hash::get($options, $value);
+		} else {
+			return h($value);
+		}
 	}
 
 /**
