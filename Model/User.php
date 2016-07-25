@@ -15,6 +15,7 @@
 
 App::uses('UsersAppModel', 'Users.Model');
 App::uses('NetCommonsTime', 'NetCommons.Utility');
+App::uses('Current', 'NetCommons.Utility');
 
 /**
  * User Model
@@ -109,15 +110,7 @@ class User extends UsersAppModel {
  *
  * @var array
  */
-	public $belongsTo = array(
-		'UserRoleSetting' => array(
-			'className' => 'UserRoles.UserRoleSetting',
-			'foreignKey' => false,
-			'conditions' => array('User.role_key = UserRoleSetting.role_key'),
-			'fields' => '',
-			'order' => ''
-		),
-	);
+	public $belongsTo = array();
 
 /**
  * hasMany associations
@@ -145,34 +138,7 @@ class User extends UsersAppModel {
  *
  * @var array
  */
-	public $hasAndBelongsToMany = array(
-		'RolesRoom' => array(
-			'className' => 'Rooms.RolesRoom',
-			'joinTable' => 'roles_rooms_users',
-			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'roles_room_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		),
-		'Language' => array(
-			'className' => 'M17n.Language',
-			'joinTable' => 'users_languages',
-			'foreignKey' => 'user_id',
-			'associationForeignKey' => 'language_id',
-			'unique' => 'keepExisting',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
-		)
-	);
+	public $hasAndBelongsToMany = array();
 
 /**
  * Constructor. Binds the model's database table to the object.
@@ -210,6 +176,13 @@ class User extends UsersAppModel {
 						'Role.type = 1',
 						'Role.language_id' => Current::read('Language.id', '2') //デフォルト日本語
 					),
+					'fields' => '',
+					'order' => ''
+				),
+				'UserRoleSetting' => array(
+					'className' => 'UserRoles.UserRoleSetting',
+					'foreignKey' => false,
+					'conditions' => array('User.role_key = UserRoleSetting.role_key'),
 					'fields' => '',
 					'order' => ''
 				),
