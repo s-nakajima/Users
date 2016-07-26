@@ -76,13 +76,12 @@ class ImportExportBehavior extends ModelBehavior {
  */
 	public function importUsers(Model $model, $filePath, $importType = self::IMPORT_TYPE_NEW) {
 		App::uses('CsvFileReader', 'Files.Utility');
-		$this->_bindModel($model);
 
-		//$model->begin();
+		$model->begin();
 		$model->prepare(true);
 
-		$reader = new CsvFileReader($filePath);
-CakeLog::debug(var_export($reader, true));
+//		$reader = new CsvFileReader($filePath);
+//CakeLog::debug(var_export($reader, true));
 //		$fileHeader = $this->_parseCsvHeader($model, $reader[0]);
 //		unset($reader[0]);
 
@@ -93,17 +92,24 @@ CakeLog::debug(var_export($reader, true));
 				continue;
 			}
 
-			$data = $this->_getCsvUser($model, $row, $fileHeader, $importType);
-			CakeLog::debug(var_export($data, true));
-//			if (! $model->saveUser($data)) {
-//				//バリデーションエラーの場合
-//				//CakeLog::debug(var_export($data, true));
-//				return false;
-//			}
+			$data = $this->_getCsvData($model, $row, $fileHeader, $importType);
+			if (! $data) {
+				//falseの場合、スキップする
+				continue;
+			}
+			CakeLog::debug('importUsers 1 ' . var_export($data, true));
+
+			$data = $this->_convSaveData($model, $data);
+
+			CakeLog::debug('importUsers 2 ' . var_export($data, true));
+			if (! $model->saveUser($data)) {
+				//バリデーションエラーの場合
+				return false;
+			}
 		}
 
-		//$model->commit();
-		//$model->rollback();
+		$model->commit();
+//		$model->rollback();
 
 		return true;
 	}
@@ -138,9 +144,9 @@ CakeLog::debug(var_export($reader, true));
  * @param array $csvData CSVファイルのデータ
  * @param array $fileHeader ファイルのヘッダー
  * @param int $importType インポートタイプ
- * @return void
+ * @return array Userデータ
  */
-	protected function _getCsvUser(Model $model, $csvData, $fileHeader, $importType) {
+	protected function _getCsvData(Model $model, $csvData, $fileHeader, $importType) {
 		$model->loadModels([
 			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'UsersLanguage' => 'Users.UsersLanguage',
@@ -152,18 +158,55 @@ CakeLog::debug(var_export($reader, true));
 				$data = Hash::insert($data, $fileHeader[$i], $value);
 			}
 		}
+		$data = Hash::insert($data, 'User.password_again', Hash::get($data, 'User.password'));
 
+		if ($importType === self::IMPORT_TYPE_NEW) {
+			$data = Hash::insert($data, 'User.id', null);
+			return $data;
+		}
 
-//			$row = array_combine($header, $row);
-//			$row['User.id'] = null;
-//			$row['User.password_again'] = $row['User.password'];
-//
-//			$data = Hash::expand($row);
-//			$data = Hash::insert($data, 'UsersLanguage.{n}.id');
-//			$data = Hash::insert($data, 'UsersLanguage.0.language_id', '1');
-//			$data = Hash::insert($data, 'UsersLanguage.1.language_id', '2');
+		$this->_bindModel($model);
+		$user = $model->find('first', array(
+			'recursive' => 0,
+			'conditions' => array(
+				$this->alias . '.username' => Hash::get($data, 'User.username'),
+				$this->alias . '.is_deleted' => false,
+			),
+		));
+
+		if ($importType === self::IMPORT_TYPE_SKIP && $user) {
+			return false;
+		}
+
+		$data = Hash::merge($user, $data);
 
 		return $data;
+	}
+
+/**
+ * saveUserを実行するための形式にコンバートする
+ *
+ *
+ *
+ * @param Model $model 呼び出しもとのModel
+ * @param array $data CSVファイルのヘッダー
+ * @return void
+ */
+	protected function _convSaveData(Model $model, $data) {
+		$convData = array();
+
+		$convData['User'] = Hash::get($data, 'User');
+
+		$languages = (new CurrentSystem())->getLanguages();
+		foreach ($languages as $i => $lang) {
+			$modelName = 'UsersLanguage' . ucwords($lang['Language']['code']);
+			if (Hash::get($data, $modelName)) {
+				$convData['UsersLanguage'][$i] = Hash::get($data, $modelName);
+				$convData['UsersLanguage'][$i]['language_id'] = $lang['Language']['id'];
+			}
+		}
+
+		return $convData;
 	}
 
 /**
@@ -180,7 +223,7 @@ CakeLog::debug(var_export($reader, true));
 		$model->loadModels([
 			'UserSearch' => 'Users.UserSearch',
 		]);
-		$this->_bindModel($model);
+		$this->_bindModel($model, false);
 
 		$header = $this->_getCsvHeader($model);
 
@@ -229,7 +272,7 @@ CakeLog::debug(var_export($reader, true));
  * @param Model $model 呼び出しもとのModel
  * @return void
  */
-	protected function _bindModel(Model $model) {
+	protected function _bindModel(Model $model, $reset = true) {
 		$languages = (new CurrentSystem())->getLanguages();
 		foreach ($languages as $lang) {
 			$modelName = 'UsersLanguage' . ucwords($lang['Language']['code']);
@@ -247,7 +290,7 @@ CakeLog::debug(var_export($reader, true));
 						'order' => ''
 					),
 				)
-			), false);
+			), $reset);
 		}
 	}
 

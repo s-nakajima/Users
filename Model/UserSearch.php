@@ -173,7 +173,7 @@ class UserSearch extends UserSearchAppModel {
 			array(
 				'table' => $this->UsersLanguage->table,
 				'alias' => $this->UsersLanguage->alias,
-				'type' => 'INNER',
+				'type' => 'LEFT',
 				'conditions' => array(
 					$this->UsersLanguage->alias . '.user_id' . ' = ' . $this->alias . '.id',
 					$this->UsersLanguage->alias . '.language_id' => Current::read('Language.id'),
