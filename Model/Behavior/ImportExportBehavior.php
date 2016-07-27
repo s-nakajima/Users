@@ -80,11 +80,6 @@ class ImportExportBehavior extends ModelBehavior {
 		$model->begin();
 		$model->prepare(true);
 
-//		$reader = new CsvFileReader($filePath);
-//CakeLog::debug(var_export($reader, true));
-//		$fileHeader = $this->_parseCsvHeader($model, $reader[0]);
-//		unset($reader[0]);
-
 		$reader = new CsvFileReader($filePath);
 		foreach ($reader as $i => $row) {
 			if ($i === 0) {
@@ -109,7 +104,6 @@ class ImportExportBehavior extends ModelBehavior {
 		}
 
 		$model->commit();
-//		$model->rollback();
 
 		return true;
 	}
@@ -160,6 +154,7 @@ class ImportExportBehavior extends ModelBehavior {
 		}
 		$data = Hash::insert($data, 'User.password_again', Hash::get($data, 'User.password'));
 
+		//新規のみ。重複データはエラーとなる
 		if ($importType === self::IMPORT_TYPE_NEW) {
 			$data = Hash::insert($data, 'User.id', null);
 			return $data;
@@ -169,15 +164,17 @@ class ImportExportBehavior extends ModelBehavior {
 		$user = $model->find('first', array(
 			'recursive' => 0,
 			'conditions' => array(
-				$this->alias . '.username' => Hash::get($data, 'User.username'),
-				$this->alias . '.is_deleted' => false,
+				$model->alias . '.username' => Hash::get($data, 'User.username'),
+				$model->alias . '.is_deleted' => false,
 			),
 		));
 
+		//重複データは無視する
 		if ($importType === self::IMPORT_TYPE_SKIP && $user) {
 			return false;
 		}
 
+		//重複データは上書きするのでマージする
 		$data = Hash::merge($user, $data);
 
 		return $data;
@@ -185,8 +182,6 @@ class ImportExportBehavior extends ModelBehavior {
 
 /**
  * saveUserを実行するための形式にコンバートする
- *
- *
  *
  * @param Model $model 呼び出しもとのModel
  * @param array $data CSVファイルのヘッダー
@@ -270,7 +265,10 @@ class ImportExportBehavior extends ModelBehavior {
  * Modelのバインド
  *
  * @param Model $model 呼び出しもとのModel
+ * @param bool $reset リセットするかどうか
  * @return void
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+ * @link http://book.cakephp.org/2.0/ja/models/associations-linking-models-together.html#dynamic-associations
  */
 	protected function _bindModel(Model $model, $reset = true) {
 		$languages = (new CurrentSystem())->getLanguages();
