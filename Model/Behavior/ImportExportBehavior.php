@@ -155,7 +155,7 @@ class ImportExportBehavior extends ModelBehavior {
  * @return void
  */
 	protected function _parseCsvHeader(Model $model, $fileHeader) {
-		$baseHeader = $this->_getCsvHeader($model);
+		$baseHeader = $this->getCsvHeader($model);
 
 		$result = array();
 
@@ -265,7 +265,7 @@ class ImportExportBehavior extends ModelBehavior {
 		]);
 		$this->_bindModel($model, false);
 
-		$header = $this->_getCsvHeader($model);
+		$header = $this->getCsvHeader($model);
 
 		$defaultConditions = $model->UserSearch->cleanSearchFields($queryParams);
 		$conditions = Hash::merge($defaultConditions, Hash::get($options, 'conditions', []));
@@ -350,7 +350,7 @@ class ImportExportBehavior extends ModelBehavior {
  * @param Model $model 呼び出しもとのModel
  * @return void
  */
-	protected function _getCsvHeader(Model $model) {
+	public function getCsvHeader(Model $model) {
 		$model->loadModels([
 			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'UsersLanguage' => 'Users.UsersLanguage',
