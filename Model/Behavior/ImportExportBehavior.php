@@ -81,6 +81,11 @@ class ImportExportBehavior extends ModelBehavior {
 		$model->prepare(true);
 
 		$reader = new CsvFileReader($filePath);
+
+		$saveData = array();
+		$validationErrors = array();
+
+		//入力チェック
 		foreach ($reader as $i => $row) {
 			if ($i === 0) {
 				$fileHeader = $this->_parseCsvHeader($model, $row);
@@ -92,20 +97,54 @@ class ImportExportBehavior extends ModelBehavior {
 				//falseの場合、スキップする
 				continue;
 			}
-			CakeLog::debug('importUsers 1 ' . var_export($data, true));
 
 			$data = $this->_convSaveData($model, $data);
 
-			CakeLog::debug('importUsers 2 ' . var_export($data, true));
-			if (! $model->saveUser($data)) {
+			$model->set($data);
+			if (! $model->validates()) {
 				//バリデーションエラーの場合
+				$validationErrors[$i] = $this->_getValidationErrors($model, $i);
+				$model->validationErrors = array();
+				continue;
+			}
+			$saveData[$i] = $data;
+		}
+
+		//バリデーションエラー
+		if ($validationErrors) {
+			$model->validationErrors = $validationErrors;
+			return false;
+		}
+
+		foreach ($saveData as $i => $data) {
+			if (! $model->saveUser($data)) {
+				//ここでバリデーションエラーになった場合、登録中に発生したエラー
+				//可能性があるのは、ファイル内での問題か、処理実行中に他プロセスで登録されたかのどちらか
+				$validationErrors[$i] = $this->_getValidationErrors($model, $i);
+				$model->validationErrors = $validationErrors;
+
+				$model->rollback();
 				return false;
 			}
 		}
 
 		$model->commit();
-
 		return true;
+	}
+
+/**
+ * バリデーションエラー
+ *
+ * @param Model $model 呼び出しもとのModel
+ * @param int $line 行数
+ * @return array
+ */
+	protected function _getValidationErrors(Model $model, $line) {
+		$flatten = Hash::flatten($model->validationErrors);
+		foreach ($flatten as $key => $message) {
+			$flatten[$key] = sprintf(__d('user_manager', 'Line %s: %s'), $line, $message);
+		}
+		return Hash::expand($flatten);
 	}
 
 /**
@@ -160,9 +199,11 @@ class ImportExportBehavior extends ModelBehavior {
 			return $data;
 		}
 
-		$this->_bindModel($model);
+		$userLangIdfields = $this->_bindModel($model, true, true);
+
 		$user = $model->find('first', array(
 			'recursive' => 0,
+			'fields' => array_merge(array('User.id'), $userLangIdfields, $fileHeader),
 			'conditions' => array(
 				$model->alias . '.username' => Hash::get($data, 'User.username'),
 				$model->alias . '.is_deleted' => false,
@@ -172,6 +213,9 @@ class ImportExportBehavior extends ModelBehavior {
 		//重複データは無視する
 		if ($importType === self::IMPORT_TYPE_SKIP && $user) {
 			return false;
+		}
+		if (! $user) {
+			$user = Hash::insert($user, 'User.id', null);
 		}
 
 		//重複データは上書きするのでマージする
@@ -198,6 +242,7 @@ class ImportExportBehavior extends ModelBehavior {
 			if (Hash::get($data, $modelName)) {
 				$convData['UsersLanguage'][$i] = Hash::get($data, $modelName);
 				$convData['UsersLanguage'][$i]['language_id'] = $lang['Language']['id'];
+				$convData['UsersLanguage'][$i]['user_id'] = Hash::get($data, 'User.id');
 			}
 		}
 
@@ -266,14 +311,17 @@ class ImportExportBehavior extends ModelBehavior {
  *
  * @param Model $model 呼び出しもとのModel
  * @param bool $reset リセットするかどうか
+ * @param bool $retIdFields 戻り値にidのフィールド名を含めるか
  * @return void
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  * @link http://book.cakephp.org/2.0/ja/models/associations-linking-models-together.html#dynamic-associations
  */
-	protected function _bindModel(Model $model, $reset = true) {
+	protected function _bindModel(Model $model, $reset = true, $retIdFields = false) {
 		$languages = (new CurrentSystem())->getLanguages();
+		$idFields = array();
 		foreach ($languages as $lang) {
 			$modelName = 'UsersLanguage' . ucwords($lang['Language']['code']);
+			$idFields[] = $modelName . '.id';
 
 			$model->bindModel(array(
 				'belongsTo' => array(
@@ -289,6 +337,10 @@ class ImportExportBehavior extends ModelBehavior {
 					),
 				)
 			), $reset);
+		}
+
+		if ($retIdFields) {
+			return $idFields;
 		}
 	}
 
