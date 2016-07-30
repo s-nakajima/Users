@@ -355,9 +355,11 @@ class UserSearchFormHelper extends AppHelper {
  *
  * @param string $label ボタンラベル
  * @param array $params URLのパラメータ
+ * @param bool $displayExport エクスポートボタンの表示
  * @return string HTML
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function displaySearchButton($label, $params = array()) {
+	public function displaySearchButton($label, $params = array(), $displayExport = false) {
 		$UserSearch = ClassRegistry::init('Users.UserSearch');
 
 		$html = '';
@@ -380,6 +382,16 @@ class UserSearchFormHelper extends AppHelper {
 			if (! $conditions) {
 				$conditions .= '<div class="pull-left">';
 				$conditions .= __d('users', 'Not search condition.');
+				$conditions .= '</div>';
+			}
+
+			if ($displayExport) {
+				$conditions .= '<div class="pull-right">';
+				$conditions .= $this->NetCommonsHtml->link(
+					'<span class="glyphicon glyphicon-export"></span> ' . __d('user_manager', 'Export'),
+					array('action' => 'export', '?' => $this->_View->request->query),
+					array('name' => 'import', 'class' => 'btn btn-default btn-sm', 'escapeTitle' => false)
+				);
 				$conditions .= '</div>';
 			}
 

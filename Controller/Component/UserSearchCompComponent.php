@@ -96,9 +96,6 @@ class UserSearchCompComponent extends Component {
 		$extra = Hash::get($options, 'extra', []);
 
 		$defaultConditions = $controller->UserSearch->cleanSearchFields($controller->request->query);
-		if (! $defaultConditions) {
-			$defaultConditions = array();
-		}
 		$conditions = Hash::merge($defaultConditions, $conditions);
 
 		//ユーザデータ取得
