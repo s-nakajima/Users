@@ -345,17 +345,18 @@ class ImportExportBehavior extends ModelBehavior {
 	}
 
 /**
- * Modelのバインド
+ * CSVヘッダー
  *
  * @param Model $model 呼び出しもとのModel
+ * @param bool $description 戻り値にidのフィールド名を含めるか
  * @return void
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function getCsvHeader(Model $model) {
+	public function getCsvHeader(Model $model, $description = false) {
 		$model->loadModels([
 			'UserAttribute' => 'UserAttributes.UserAttribute',
 			'UsersLanguage' => 'Users.UsersLanguage',
 		]);
-		$languages = (new CurrentSystem())->getLanguages();
 
 		$userAttributes = $model->UserAttribute->getUserAttriburesForAutoUserRegist();
 		$userAttributes = Hash::combine($userAttributes, '{n}.UserAttribute.key', '{n}');
@@ -363,36 +364,143 @@ class ImportExportBehavior extends ModelBehavior {
 			$userAttributes = Hash::remove($userAttributes, $field);
 		}
 
-		$header = array();
+		$this->__header = array();
+		$this->__descriptions = array();
 		foreach ($userAttributes as $attrKey => $userAttribute) {
+			$this->__prepareCsvHeader($model, $attrKey, $userAttribute);
+		}
+
+		if ($description) {
+			return $this->__descriptions;
+		} else {
+			return $this->__header;
+		}
+	}
+
+/**
+ * Importファイルのヘルプ詳細
+ *
+ * @param Model $model 呼び出しもとのModel
+ * @param string $attrKey 会員属性キー
+ * @param array $userAttribute 会員項目データ
+ * @return void
+ */
+	private function __prepareCsvHeader(Model $model, $attrKey, $userAttribute) {
+		$languages = (new CurrentSystem())->getLanguages();
+
+		if ($model->hasField($attrKey)) {
 			//Userテーブル
-			if ($model->hasField($attrKey)) {
-				$key = $model->alias . '.' . $attrKey;
-				$header[$key] = Hash::get($userAttribute, 'UserAttribute.name');
-			}
+			$key = $model->alias . '.' . $attrKey;
+			$this->__header[$key] = Hash::get($userAttribute, 'UserAttribute.name');
+			$this->__setImportDescription($key, $userAttribute);
+
+		} elseif ($model->UsersLanguage->hasField($attrKey)) {
 			//UsersLanguageテーブル
-			if ($model->UsersLanguage->hasField($attrKey)) {
-				foreach ($languages as $lang) {
-					$alias = $model->UsersLanguage->alias . ucwords($lang['Language']['code']);
-					$name = Hash::get($userAttribute, 'UserAttribute.name') .
-							__d('m17n', '(' . $lang['Language']['code'] . ')');
-					$header[$alias . '.' . $attrKey] = $name;
-				}
-			}
-			//公開設定
-			if ($model->hasField(sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $attrKey))) {
-				$key = $model->alias . '.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $attrKey);
-				$header[$key] = Hash::get($userAttribute, 'UserAttribute.name') .
-								__d('user_manager', '[Public setting]');
-			}
-			//公開設定
-			if ($model->hasField(sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $attrKey))) {
-				$key = $model->alias . '.' . sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $attrKey);
-				$header[$key] = Hash::get($userAttribute, 'UserAttribute.name') .
-								__d('user_manager', '[Public setting]');
+			foreach ($languages as $lang) {
+				$key = $model->UsersLanguage->alias . ucwords($lang['Language']['code']) . '.' . $attrKey;
+				$name = Hash::get($userAttribute, 'UserAttribute.name') .
+						__d('m17n', '(' . $lang['Language']['code'] . ')');
+				$this->__header[$key] = $name;
+				$this->__setImportDescription($key, $userAttribute);
 			}
 		}
-		return $header;
+
+		//公開設定
+		if ($model->hasField(sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $attrKey))) {
+			$key = $model->alias . '.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $attrKey);
+			$this->__header[$key] = Hash::get($userAttribute, 'UserAttribute.name') .
+							__d('user_manager', '[Public setting]');
+
+			$this->__descriptions[$key]['key'] = $key;
+			$this->__descriptions[$key]['title'] = $this->__header[$key];
+			$this->__descriptions[$key]['description'] = array();
+			$this->__descriptions[$key]['description'][] = __d(
+				'user_manager',
+				'Set public/private status for %s.',
+				h(Hash::get($userAttribute, 'UserAttribute.name'))
+			);
+
+			$this->__descriptions[$key]['options']['1'] = __d('user_manager', 'Disclose');
+			$this->__descriptions[$key]['options']['0'] = __d('user_manager', 'Do not disclose');
+		}
+
+		//受信可否設定
+		if ($model->hasField(sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $attrKey))) {
+			$key = $model->alias . '.' . sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $attrKey);
+			$this->__header[$key] = Hash::get($userAttribute, 'UserAttribute.name') .
+							__d('user_manager', '[Reception setting]');
+
+			$this->__descriptions[$key]['key'] = $key;
+			$this->__descriptions[$key]['title'] = $this->__header[$key];
+			$this->__descriptions[$key]['description'] = array();
+			$this->__descriptions[$key]['description'][] = __d(
+				'user_manager',
+				'Set `%s can/cannot be used` (can/cannot receive) status.',
+				h(Hash::get($userAttribute, 'UserAttribute.name'))
+			);
+
+			$this->__descriptions[$key]['options']['1'] = __d(
+				'user_manager', 'Receipt (condition when email is received)'
+			);
+			$this->__descriptions[$key]['options']['0'] = __d(
+				'user_manager', 'Non-receipt (condition when email cannot be received)'
+			);
+		}
+	}
+
+/**
+ * Importファイルのヘルプ詳細
+ *
+ * @param string $key キー
+ * @param array $userAttribute 会員項目データ
+ * @return void
+ */
+	private function __setImportDescription($key, $userAttribute) {
+		$this->__descriptions[$key]['key'] = $key;
+		$this->__descriptions[$key]['title'] = $this->__header[$key];
+		$this->__descriptions[$key]['description'] = array();
+		$this->__descriptions[$key]['description'][] = __d(
+			'user_manager',
+			'Set %s.',
+			h($this->__descriptions[$key]['title'])
+		);
+		if (Hash::get($userAttribute, 'UserAttributeSetting.required')) {
+			$this->__descriptions[$key]['description'][] = __d(
+				'user_manager',
+				'<span class="text-danger">Required.</span>'
+			);
+		}
+		if (Hash::get($userAttribute, 'UserAttribute.description')) {
+			$this->__descriptions[$key]['description'][] = Hash::get(
+				$userAttribute, 'UserAttribute.description'
+			);
+		}
+
+		if (Hash::get($userAttribute, 'UserAttribute.key') === 'role_key') {
+			$userAttribute = Hash::remove(
+				$userAttribute,
+				'UserAttributeChoice.{n}[key=' . UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR . ']'
+			);
+			$this->__descriptions[$key]['options'] = Hash::combine(
+				$userAttribute, 'UserAttributeChoice.{n}.key', 'UserAttributeChoice.{n}.name'
+			);
+		} elseif (Hash::get($userAttribute, 'UserAttribute.key') === 'status') {
+			$userAttribute = Hash::remove(
+				$userAttribute,
+				'UserAttributeChoice.{n}[key=' . UserAttributeChoice::STATUS_KEY_WAITING . ']'
+			);
+			$userAttribute = Hash::remove(
+				$userAttribute,
+				'UserAttributeChoice.{n}[key=' . UserAttributeChoice::STATUS_KEY_APPROVED . ']'
+			);
+			$this->__descriptions[$key]['options'] = Hash::combine(
+				$userAttribute, 'UserAttributeChoice.{n}.code', 'UserAttributeChoice.{n}.name'
+			);
+		} elseif (Hash::get($userAttribute, 'UserAttributeChoice')) {
+			$this->__descriptions[$key]['options'] = Hash::combine(
+				$userAttribute, 'UserAttributeChoice.{n}.code', 'UserAttributeChoice.{n}.name'
+			);
+		}
 	}
 
 }
