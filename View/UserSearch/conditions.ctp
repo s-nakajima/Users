@@ -50,4 +50,4 @@ $domId = $this->NetCommonsForm->domId('UserSearch.' . $this->params['action'] . 
 	</div>
 </div>
 
-<?php $this->end();
+<?php echo $this->Form->end();
