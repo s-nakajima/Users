@@ -8,7 +8,7 @@
  * Users controller
  */
 NetCommonsApp.controller('Users.controller',
-    ['$scope', 'NetCommonsModal', function($scope, NetCommonsModal) {
+    ['$scope', 'NetCommonsModal', 'NC3_URL', function($scope, NetCommonsModal, NC3_URL) {
 
       /**
        * Show user information method
@@ -19,7 +19,7 @@ NetCommonsApp.controller('Users.controller',
       $scope.showUser = function($event, id) {
         NetCommonsModal.show(
             $scope, 'User.view',
-            $scope.baseUrl + '/users/users/view/' + id + ''
+            NC3_URL + '/users/users/view/' + id + ''
         );
         $event.preventDefault();
         $event.stopPropagation();

@@ -401,7 +401,7 @@ class UserSearch extends UserSearchAppModel {
 			$query = $this->buildQuery('all',
 				compact('conditions', 'fields', 'joins')
 			);
-			$query['table'] = $this->table;
+			$query['table'] = $dbSource->fullTableName($this);
 			$query['alias'] = $this->alias;
 
 			$sql .= $dbSource->buildStatement($query, $this);

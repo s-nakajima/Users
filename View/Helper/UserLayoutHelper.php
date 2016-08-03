@@ -137,7 +137,7 @@ class UserLayoutHelper extends AppHelper {
 					'medium',
 				));
 			} else {
-				$imageUrl = $this->NetCommonsHtml->url('/users/img/noimage.gif');
+				$imageUrl = '/users/img/noimage.gif';
 			}
 			$element .= '<div class="thumbnail user-thumbnail">';
 			$element .= $this->NetCommonsHtml->image($imageUrl, array(
