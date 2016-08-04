@@ -12,6 +12,7 @@
 App::uses('Shell', 'Console');
 App::uses('AppShell', 'Console/Command');
 App::uses('AuthComponent', 'Controller/Component');
+App::uses('Controller', 'Controller');
 
 /**
  * UserのImportによるシェル
@@ -47,7 +48,7 @@ class UserImportTask extends AppShell {
 
 		$user = $this->User->findById(1);
 		CakeSession::write(AuthComponent::$sessionKey, $user['User']);
-		Current::initialize(new CakeRequest());
+		Current::initialize(new Controller(new CakeRequest()));
 
 		if (! $this->User->importUsers($file)) {
 			//バリデーションエラーの場合
