@@ -125,7 +125,7 @@ class DisplayUserHelper extends AppHelper {
 		));
 		if ($imgTag) {
 			$html .= $this->NetCommonsHtml->image($url,
-					Hash::merge(array('class' => 'user-avatar-xs', 'alt' => '', 'hasBlock' => false), $attributes));
+					Hash::merge(['class' => 'user-avatar-xs', 'alt' => '', 'hasBlock' => false], $attributes));
 		} else {
 			$html .= Router::url($url);
 		}

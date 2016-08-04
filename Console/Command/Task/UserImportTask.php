@@ -13,6 +13,7 @@ App::uses('Shell', 'Console');
 App::uses('AppShell', 'Console/Command');
 App::uses('AuthComponent', 'Controller/Component');
 App::uses('Controller', 'Controller');
+App::uses('CakeRequest', 'Network');
 
 /**
  * UserのImportによるシェル
