@@ -8,51 +8,52 @@
  * UserSearch controller
  */
 NetCommonsApp.controller('UserSearch.controller',
-    ['$scope', 'NetCommonsModal', '$location', function($scope, NetCommonsModal, $location) {
+    ['$scope', 'NetCommonsModal', '$location', 'NC3_URL',
+      function($scope, NetCommonsModal, $location, NC3_URL) {
 
-      /**
-       * 検索ダイアログ表示
-       *
-       * @param {array} conditions 条件配列
-       * @param {string} callbackUrl callbackするURL
-       * @return {void}
-       */
-      $scope.showUserSearch = function(
-              conditions, plugin, controller, action, pass) {
-        if (pass) {
-          pass = '/' + pass;
-        }
+        /**
+         * 検索ダイアログ表示
+         *
+         * @param {array} conditions 条件配列
+         * @param {string} callbackUrl callbackするURL
+         * @return {void}
+         */
+        $scope.showUserSearch = function(
+                conditions, plugin, controller, action, pass) {
+          if (pass) {
+            pass = '/' + pass;
+          }
 
-        $location.search(conditions);
+          $location.search(conditions);
 
-        NetCommonsModal.show(
-            $scope, 'UserSearch.search',
-            $scope.baseUrl + '/' +
-                plugin + '/' + controller + '/search_conditions' + pass + $location.url(),
-            {
-              backdrop: 'static',
-              size: 'lg',
-              resolve: {
-                options: {
-                  conditions: conditions,
-                  plugin: plugin,
-                  controller: controller,
-                  action: action,
-                  pass: pass
+          NetCommonsModal.show(
+              $scope, 'UserSearch.search',
+              NC3_URL + '/' +
+                  plugin + '/' + controller + '/search_conditions' + pass + $location.url(),
+              {
+                backdrop: 'static',
+                size: 'lg',
+                resolve: {
+                  options: {
+                    conditions: conditions,
+                    plugin: plugin,
+                    controller: controller,
+                    action: action,
+                    pass: pass
+                  }
                 }
               }
-            }
-        );
-      };
-    }]);
+          );
+        };
+      }]);
 
 
 /**
  * UserManager search condtion modal controller
  */
 NetCommonsApp.controller('UserSearch.search',
-    ['$scope', '$uibModalInstance', '$location', '$window', 'options',
-      function($scope, $uibModalInstance, $location, $window, options) {
+    ['$scope', '$uibModalInstance', '$location', '$window', 'options', 'NC3_URL',
+      function($scope, $uibModalInstance, $location, $window, options, NC3_URL) {
 
         /**
          * 検索後に戻すプラグイン
@@ -103,7 +104,7 @@ NetCommonsApp.controller('UserSearch.search',
           }, $scope);
 
           $location.search($scope.conditions);
-          $window.location.href = $scope.baseUrl + '/' + $scope.plugin + '/' +
+          $window.location.href = NC3_URL + '/' + $scope.plugin + '/' +
                   $scope.controller + '/' + $scope.action +
                   $scope.pass + $location.url();
         };

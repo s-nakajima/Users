@@ -363,7 +363,7 @@ class UserEditFormHelper extends AppHelper {
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
 		if (Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.id')) {
-			$attributes['url'] = NetCommonsUrl::actionUrl(array(
+			$attributes['url'] = array(
 				'plugin' => 'users',
 				'controller' => 'users',
 				'action' => 'download',
@@ -372,9 +372,9 @@ class UserEditFormHelper extends AppHelper {
 					$this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.field_name'
 				),
 				'medium',
-			));
+			);
 		} else {
-			$attributes['url'] = $this->NetCommonsHtml->url('/users/img/noimage.gif');
+			$attributes['url'] = '/users/img/noimage.gif';
 		}
 		if (Hash::get($this->_View->request->data, 'User.is_avatar_auto_created') &&
 				$userAttributeKey === UserAttribute::AVATAR_FIELD) {

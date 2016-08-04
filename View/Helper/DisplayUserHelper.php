@@ -108,39 +108,26 @@ class DisplayUserHelper extends AppHelper {
  * @param array $user ユーザデータ
  * @param array $attributes imgタグの属性
  * @param string $modelId モデル名+id(TrackableCreator.idやTrackableUpdater.idなど)
- * @param bool $asImageTag imgタグとするかのフラグ
+ * @param bool $imgTag imgタグとするかのフラグ
  * @return string HTMLタグ
  * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
-	public function avatar($user, $attributes = [], $modelId = 'TrackableCreator.id',
-							$asImageTag = true) {
+	public function avatar($user, $attributes = [], $modelId = 'TrackableCreator.id', $imgTag = true) {
 		$html = '';
 
-		//if (Hash::check($user, 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name')) {
-		//	$keyPath = 'UploadFile.' . UserAttribute::AVATAR_FIELD . '.field_name';
-		//} else {
-		//	$keyPath = 'UploadFile.field_name';
-		//}
-
-		//$avatar = Hash::get(Hash::extract($user, $keyPath), '0');
-		//if ($avatar) {
-			$url = NetCommonsUrl::actionUrl(array(
-				'plugin' => 'users',
-				'controller' => 'users',
-				'action' => 'download',
-				'key' => Hash::get($user, $modelId),
-				UserAttribute::AVATAR_FIELD,
-				'thumb'
-			));
-		//} else {
-		//	$url = '/users/img/avatar.PNG';
-		//}
-
-		if ($asImageTag) {
+		$url = NetCommonsUrl::actionUrl(array(
+			'plugin' => 'users',
+			'controller' => 'users',
+			'action' => 'download',
+			'key' => Hash::get($user, $modelId),
+			UserAttribute::AVATAR_FIELD,
+			'thumb'
+		));
+		if ($imgTag) {
 			$html .= $this->NetCommonsHtml->image($url,
-					Hash::merge(array('class' => 'user-avatar-xs', 'alt' => ''), $attributes));
+					Hash::merge(['class' => 'user-avatar-xs', 'alt' => '', 'hasBlock' => false], $attributes));
 		} else {
-			$html .= $url;
+			$html .= Router::url($url);
 		}
 
 		return $html;
