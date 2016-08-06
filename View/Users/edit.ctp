@@ -44,7 +44,8 @@ echo $this->NetCommonsHtml->css('/users/css/style.css');
 				<?php echo $this->Button->cancelAndSave(
 						__d('net_commons', 'Cancel'),
 						__d('net_commons', 'OK'),
-						$redirectUrl
+						false,
+						array('type' => 'submit', 'ng-click' => null)
 					); ?>
 			</div>
 
