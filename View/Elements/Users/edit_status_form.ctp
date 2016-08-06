@@ -13,7 +13,7 @@
 <?php echo $this->NetCommonsForm->create('User', array(
 		'type' => 'put',
 		'class' => 'form-inline',
-		'url' => array('controller' => 'user_manager', 'action' => 'status')
+		'url' => NetCommonsUrl::actionUrlAsArray(array('controller' => 'user_manager', 'action' => 'status'))
 	)); ?>
 
 	<?php echo $this->NetCommonsForm->hidden('User.id', array('value' => $user['User']['id'])); ?>
