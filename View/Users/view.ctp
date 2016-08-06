@@ -15,14 +15,14 @@
 <?php $this->end(); ?>
 
 <ul class="nav nav-tabs" role="tablist">
-	<li class="active">
+	<li<?php echo (Hash::get($this->request->query, 'tab') === 'user-infomation' ? ' class="active"' : ''); ?>>
 		<a href="#user-information" aria-controls="user-infomation" role="tab" data-toggle="tab">
 			<?php echo __d('users', 'User information'); ?>
 		</a>
 	</li>
 
 	<?php if (isset($rooms)) : ?>
-		<li>
+		<li<?php echo (Hash::get($this->request->query, 'tab') === 'user-rooms' ? ' class="active"' : ''); ?>>
 			<a href="#user-rooms" aria-controls="user-rooms" role="tab" data-toggle="tab">
 				<?php echo __d('users', 'Rooms'); ?>
 			</a>
@@ -30,7 +30,7 @@
 	<?php endif; ?>
 
 	<?php if (isset($groups)) : ?>
-		<li>
+		<li<?php echo (Hash::get($this->request->query, 'tab') === 'user-groups' ? ' class="active"' : ''); ?>>
 			<a href="#user-groups" aria-controls="user-groups" role="tab" data-toggle="tab">
 				<?php echo __d('groups', 'Groups management'); ?>
 			</a>
@@ -39,7 +39,7 @@
 </ul>
 
 <div class="tab-content">
-	<div class="tab-pane active" id="user-information">
+	<div class="tab-pane<?php echo (Hash::get($this->request->query, 'tab') === 'user-infomation' ? ' active' : ''); ?>" id="user-information">
 		<?php
 			if ($user['User']['id'] === Current::read('User.id')) {
 				$editLink = true;
@@ -52,13 +52,13 @@
 	</div>
 
 	<?php if (isset($rooms)) : ?>
-		<div class="tab-pane" id="user-rooms">
+		<div class="tab-pane<?php echo (Hash::get($this->request->query, 'tab') === 'user-rooms' ? ' active' : ''); ?>" id="user-rooms">
 			<?php echo $this->element('Users/view_rooms'); ?>
 		</div>
 	<?php endif; ?>
 
 	<?php if (isset($groups)) : ?>
-		<div class="tab-pane" id="user-groups">
+		<div class="tab-pane<?php echo (Hash::get($this->request->query, 'tab') === 'user-groups' ? ' active' : ''); ?>" id="user-groups">
 			<?php echo $this->element('Groups.list'); ?>
 		</div>
 	<?php endif; ?>

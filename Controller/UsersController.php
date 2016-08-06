@@ -128,6 +128,10 @@ class UsersController extends UsersAppController {
 			$this->PageLayout = $this->Components->load('Pages.PageLayout');
 		}
 
+		if (! Hash::get($this->request->query, 'tab')) {
+			$this->request->query = Hash::insert($this->request->query, 'tab', 'user-infomation');
+		}
+
 		//自分自身の場合、ルーム・グループデータ取得する
 		if (Hash::get($this->viewVars['user'], 'User.id') === Current::read('User.id')) {
 			//ルームデータ取得
@@ -163,15 +167,24 @@ class UsersController extends UsersAppController {
 		}
 
 		if ($this->request->is('put')) {
-			//不要パラメータ除去
-			unset($this->request->data['save'], $this->request->data['active_lang_id']);
 			$redirectUrl = Hash::get($this->request->data, '_user.redirect');
+			if (array_key_exists('cancel', $this->request->data)) {
+				$this->NetCommons->setAppendHtml(
+					'<div class="hidden" ng-controller="Users.controller" ' .
+						'ng-init="showUser(null, ' . Current::read('User.id') . ')"></div>'
+				);
+				return $this->redirect($redirectUrl);
+			}
 
 			//登録処理
 			if ($this->User->saveUser($this->request->data)) {
 				//正常の場合
 				$this->NetCommons->setFlashNotification(
 					__d('net_commons', 'Successfully saved.'), array('class' => 'success')
+				);
+				$this->NetCommons->setAppendHtml(
+					'<div class="hidden" ng-controller="Users.controller" ' .
+						'ng-init="showUser(null, ' . Current::read('User.id') . ')"></div>'
 				);
 				return $this->redirect($redirectUrl);
 			}
