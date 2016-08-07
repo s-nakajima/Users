@@ -268,6 +268,7 @@ class UserSearchHelper extends AppHelper {
 					'icon' => 'glyphicon-ok',
 					'class' => 'btn btn-xs btn-warning',
 					'onclick' => 'return confirm(\'' . $confirm . '\')',
+					'ng-disabled' => 'sending',
 				),
 			));
 		} elseif ($user[$modelName][$fieldName] === UserAttributeChoice::STATUS_CODE_APPROVED) {
@@ -277,6 +278,7 @@ class UserSearchHelper extends AppHelper {
 				'options' => array(
 					'icon' => 'glyphicon-envelope',
 					'class' => 'btn btn-xs btn-info',
+					'ng-disabled' => 'sending',
 				),
 			));
 		}
