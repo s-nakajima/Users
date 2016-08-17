@@ -50,6 +50,13 @@ class UserSearch extends UserSearchAppModel {
 	public $readableFields = null;
 
 /**
+ * 閲覧できるフィールドリスト
+ *
+ * @var array
+ */
+	public $convRealToFieldKey = null;
+
+/**
  * Constructor. Binds the model's database table to the object.
  *
  * @param bool|int|string|array $id Set this ID for this model on startup,
@@ -156,12 +163,12 @@ class UserSearch extends UserSearchAppModel {
 		$this->readableFields['roles_rooms_user_room_id']['field'] =
 				$this->RolesRoomsUser->alias . '.room_id';
 
-		foreach (array_keys($this->readableFields) as $key) {
+		foreach ($this->readableFields as $key => $value) {
 			$this->readableFields[$key]['key'] = $key;
+			if (isset($this->readableFields[$key]['field'])) {
+				$this->convRealToFieldKey[] = $value;
+			}
 		}
-		$this->convRealFieldToFieldKey = Hash::combine(
-			$this->readableFields, '{s}.field', '{s}'
-		);
 	}
 
 /**
@@ -368,8 +375,8 @@ class UserSearch extends UserSearchAppModel {
 
 		$convOrder = array();
 		foreach ($order as $key => $sort) {
-			if (isset($this->convRealFieldToFieldKey[$key])) {
-				$convKey = $this->convRealFieldToFieldKey[$key]['key'];
+			if (isset($this->convRealToFieldKey[$key])) {
+				$convKey = $this->convRealToFieldKey[$key]['key'];
 			} else {
 				$convKey = $key;
 			}
@@ -394,31 +401,31 @@ class UserSearch extends UserSearchAppModel {
 		));
 
 		$selectedUsers = Hash::get($extra, 'extra.selectedUsers', array());
+		$allSelected = Hash::extract(
+			$selectedUsers, '{n}.user_id'
+		);
 
 		//UNIONでデータ取得する
 		$fields = $this->_getSearchFieldsByRoomRoleKey($fields);
-		$notUserIds = array();
 		foreach ($roles as $roleKey) {
-			if ($sql) {
-				$sql .= ' UNION ';
+			$sql .= ' UNION ';
+			if ($roleKey) {
+				$selectUserIds = Hash::extract(
+					$selectedUsers, '{n}[role_key=' . $roleKey . '].user_id'
+				);
+			} else {
+				$selectUserIds = Hash::extract(
+					$selectedUsers, '{n}[delete=true].user_id'
+				);
 			}
 
 			$addConditions = array();
-			$addConditions['RolesRoom.role_key'] = $roleKey;
-			//if ($roleKey) {
-			//	$addConditions['OR']['RolesRoom.role_key'] = $roleKey;
-			//	$addConditions['OR']['User.id'] = Hash::extract(
-			//		$selectedUsers, '{n}[role_key=' . $roleKey . '].user_id'
-			//	);
-			//	$addConditions['User.id NOT'] = $notUserIds;
-			//	var_dump($notUserIds);
-			//	$notUserIds = Hash::merge($notUserIds, $addConditions['OR']['User.id']);
-			//} else {
-			//	$addConditions['RolesRoom.role_key'] = $roleKey;
-			//	$addConditions['User.id NOT'] = Hash::extract(
-			//		$selectedUsers, '{n}.user_id'
-			//	);
-			//}
+			$addConditions['OR']['AND']['RolesRoom.role_key'] = $roleKey;
+			$addConditions['OR']['AND']['User.id NOT'] = array_diff($allSelected, $selectUserIds);
+			if ($selectUserIds) {
+				$addConditions['OR']['User.id'] = $selectUserIds;
+			}
+
 			$conditions[99] = $addConditions;
 			$fields['room_role_level'] = Hash::get($roomRoles, $roleKey, 0) . ' AS ' . 'room_role_level';
 
@@ -437,7 +444,7 @@ class UserSearch extends UserSearchAppModel {
 		$sql .= $dbSource->order($query['order'], 'ASC', $this);
 		$sql .= $dbSource->limit($query['limit'], $query['offset']);
 
-		$queryResult = $this->query($sql);
+		$queryResult = $this->query(substr($sql, 6));
 		$queryResult = Hash::extract($queryResult, '{n}.{n}');
 
 		$results = array();
@@ -749,24 +756,6 @@ class UserSearchAppModel extends UsersAppModel {
 	}
 
 /**
- * 検索フィールドのソートキーを取得する
- *
- * @param string $field 表示するフィールド
- * @return string ソートキー
- */
-	public function getReadableFieldToOrderKey($realField) {
-
-
-
-		$key = 'order';
-		if (! Hash::get($this->readableFields, $field . '.' . $key)) {
-			$key = 'field';
-		}
-
-		return Hash::get($this->readableFields, $field . '.' . $key);
-	}
-
-/**
  * 検索フィールドの値をフォーマットに当てはめて出力する。
  *
  * @param string $field 表示するフィールドリスト
@@ -918,8 +907,6 @@ class UserSearchAppModel extends UsersAppModel {
 		}
 
 		$originalFields = array_unique($originalFields);
-
-
 		return $originalFields;
 	}
 
