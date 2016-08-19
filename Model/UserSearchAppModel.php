@@ -285,7 +285,7 @@ class UserSearchAppModel extends UsersAppModel {
  * @param array $value 値
  * @return array array(符号, SQL値)
  */
-	protected function _creanSearchCondtion($field, $setting, $value) {
+	protected function _creanSearchCondition($field, $setting, $value) {
 		$userAttributes = $this->UserAttribute->getUserAttributesForLayout();
 
 		$dataType = Hash::extract(
