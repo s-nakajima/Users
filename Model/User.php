@@ -254,7 +254,7 @@ class User extends UsersAppModel {
 		]);
 
 		//ログインID
-		if (! isset($this->data['User']['id'])) {
+		if (! Hash::get($this->data, 'User.id')) {
 			$this->validate = Hash::merge($this->validate, array(
 				'username' => array(
 					'notBlank' => array(
@@ -270,6 +270,11 @@ class User extends UsersAppModel {
 						),
 						'allowEmpty' => false,
 						'required' => true,
+					),
+					'minLength' => array(
+						'rule' => array('minLength', 4),
+						'message' => __d('net_commons', 'Please choose at least %s characters string.', 4),
+						'required' => true
 					),
 				),
 			));
@@ -298,6 +303,11 @@ class User extends UsersAppModel {
 						'allowEmpty' => false,
 						'required' => true,
 					),
+					'minLength' => array(
+						'rule' => array('minLength', 4),
+						'message' => __d('net_commons', 'Please choose at least %s characters string.', 4),
+						'required' => true
+					)
 				),
 				'password_again' => array(
 					'notBlank' => array(
