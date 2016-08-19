@@ -287,9 +287,12 @@ class UserSearch extends UserSearchAppModel {
 	public function getSearchConditions($conditions = array()) {
 		$fieldKeys = array_keys($conditions);
 		foreach ($fieldKeys as $key) {
-			list($field, $setting) = $this->_parseRequestKey($key);
+			list($field, $setting, $reqSign) = $this->_parseRequestKey($key);
 
 			list($sign, $value) = $this->_creanSearchCondtion($field, $setting, $conditions[$key]);
+			if (! $sign) {
+				$sign = $reqSign;
+			}
 			unset($conditions[$key]);
 
 			if (! isset($this->readableFields[$field])) {

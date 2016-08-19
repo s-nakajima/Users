@@ -269,6 +269,7 @@ class ImportExportBehavior extends ModelBehavior {
 
 		$defaultConditions = $model->UserSearch->cleanSearchFields($queryParams);
 		$conditions = Hash::merge($defaultConditions, Hash::get($options, 'conditions', []));
+
 		$joins = $model->UserSearch->getSearchJoinTables(
 			Hash::get($options, 'joins', array()), $conditions
 		);

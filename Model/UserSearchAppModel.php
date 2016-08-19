@@ -127,21 +127,31 @@ class UserSearchAppModel extends UsersAppModel {
  * リクエストキーのパース処理
  *
  * @param string $requestKey リクエストキー
- * @return void
+ * @return array array(フィールド名、setting, 符号)
  */
 	protected function _parseRequestKey($requestKey) {
+		$setting = null;
+		$sign = null;
+
 		if (preg_match('/' . self::MORE_THAN_DAYS . '$/', $requestKey)) {
 			$field = substr($requestKey, 0, (strlen(self::MORE_THAN_DAYS) + 1) * -1);
 			$setting = self::MORE_THAN_DAYS;
 		} elseif (preg_match('/' . self::WITHIN_DAYS . '$/', $requestKey)) {
 			$field = substr($requestKey, 0, (strlen(self::WITHIN_DAYS) + 1) * -1);
 			$setting = self::WITHIN_DAYS;
+		} elseif (preg_match('/ NOT$/', $requestKey)) {
+			$field = substr($requestKey, 0, -4);
+			$sign = ' NOT';
+
 		} else {
 			$field = $requestKey;
-			$setting = null;
 		}
 
-		return array($field, $setting);
+		if (isset($this->convRealToFieldKey[$field])) {
+			$field = $this->convRealToFieldKey[$field]['key'];
+		}
+
+		return array($field, $setting, $sign);
 	}
 
 /**
@@ -321,7 +331,7 @@ class UserSearchAppModel extends UsersAppModel {
 			$sign = ' LIKE';
 			$value = '%' . $value . '%';
 
-		} elseif (in_array($dataTypeKey, $optionTypes, true)) {
+		} elseif (in_array($dataTypeKey, $optionTypes, true) && ! is_array($value)) {
 			$sign = '';
 			$userAttribute = Hash::extract(
 				$userAttributes, '{n}.{n}.{n}.UserAttribute[key=' . $field . ']'
