@@ -289,7 +289,12 @@ class UserSearch extends UserSearchAppModel {
 		foreach ($fieldKeys as $key) {
 			list($field, $setting, $reqSign) = $this->_parseRequestKey($key);
 
-			list($sign, $value) = $this->_creanSearchCondition($field, $setting, $conditions[$key]);
+			if (is_array($conditions[$key])) {
+				$sign = '';
+				$value = $conditions[$key];
+			} else {
+				list($sign, $value) = $this->_creanSearchCondition($field, $setting, $conditions[$key]);
+			}
 			if (! $sign) {
 				$sign = $reqSign;
 			}

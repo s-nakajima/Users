@@ -331,7 +331,7 @@ class UserSearchAppModel extends UsersAppModel {
 			$sign = ' LIKE';
 			$value = '%' . $value . '%';
 
-		} elseif (in_array($dataTypeKey, $optionTypes, true) && ! is_array($value)) {
+		} elseif (in_array($dataTypeKey, $optionTypes, true)) {
 			$sign = '';
 			$userAttribute = Hash::extract(
 				$userAttributes, '{n}.{n}.{n}.UserAttribute[key=' . $field . ']'
