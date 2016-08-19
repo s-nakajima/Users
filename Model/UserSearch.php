@@ -345,7 +345,7 @@ class UserSearch extends UserSearchAppModel {
 		}
 		$order += Hash::get($extra, 'defaultOrder', array('Role.id' => 'asc'));
 
-		if ($displayRooms && ($sort === 'room_role_level' || !$sort)) {
+		if ($displayRooms && ($sort === 'room_role_level' || ! $sort)) {
 			$convOrder = array();
 			foreach ($order as $key => $sort) {
 				if (isset($this->convRealToFieldKey[$key])) {

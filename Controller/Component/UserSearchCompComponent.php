@@ -91,7 +91,7 @@ class UserSearchCompComponent extends Component {
 		$displayFields = Hash::get($options, 'displayFields', $fields);
 		$conditions = Hash::get($options, 'conditions', []);
 		$joins = Hash::get($options, 'joins', []);
-		$orders = Hash::get($options, 'orders', []);
+		$orders = Hash::get($options, 'orders');
 		$limit = Hash::get($options, 'limit', self::DEFAULT_LIMIT);
 		$extra = Hash::get($options, 'extra', []);
 
