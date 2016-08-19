@@ -163,9 +163,10 @@ class UserSearch extends UserSearchAppModel {
 				$this->RolesRoomsUser->alias . '.room_id';
 
 		foreach ($this->readableFields as $key => $value) {
-			$this->readableFields[$key]['key'] = $key;
+			$value['key'] = $key;
+			$this->readableFields[$key] = $value;
 			if (isset($this->readableFields[$key]['field'])) {
-				$this->convRealToFieldKey[] = $value;
+				$this->convRealToFieldKey[$this->readableFields[$key]['field']] = $value;
 			}
 		}
 	}
@@ -333,12 +334,35 @@ class UserSearch extends UserSearchAppModel {
 		$conditions = $this->getSearchConditions($conditions);
 		$recursive = -1;
 		$group = 'User.id';
-		if (! $order) {
+
+		$sort = Hash::get($extra, 'sort');
+		$direction = Hash::get($extra, 'direction');
+
+		if (! $order && $sort && $direction) {
+			$order = array($sort => $direction);
+		} else {
 			$order = array();
 		}
 		$order += Hash::get($extra, 'defaultOrder', array('Role.id' => 'asc'));
 
-		if ($displayRooms) {
+		if ($displayRooms && ($sort === 'room_role_level' || !$sort)) {
+			$convOrder = array();
+			foreach ($order as $key => $sort) {
+				if (isset($this->convRealToFieldKey[$key])) {
+					$convKey = $this->convRealToFieldKey[$key]['key'];
+				} else {
+					$convKey = $key;
+				}
+				$convOrder[$convKey] = $sort;
+			}
+			$order = $convOrder;
+
+			$extra = Hash::insert(
+				$extra,
+				'extra.isDifferenceCondition',
+				$this->__isDifferenceConditionByRoomRoleKey($conditions, $order)
+			);
+
 			$result = $this->__paginateByRoomRoleKey(
 				$conditions, $fields, $joins, $order, $limit, $page, $recursive, $group, $extra
 			);
@@ -348,9 +372,76 @@ class UserSearch extends UserSearchAppModel {
 				'all',
 				compact('conditions', 'fields', 'joins', 'order', 'limit', 'page', 'recursive', 'group')
 			);
+			CakeSession::delete('paginateConditionsByRoomRoleKey');
 		}
 
 		return $result;
+	}
+
+/**
+ * 条件に差があるかどうかチェック
+ *
+ * @param array $conditions 条件配列
+ * @param array $order ソート配列
+ * @return bool
+ */
+	private function __isDifferenceConditionByRoomRoleKey($conditions, $order) {
+		$sessConditions = CakeSession::read('paginateConditionsByRoomRoleKey.conditions');
+		$sessOrder = CakeSession::read('paginateConditionsByRoomRoleKey.order');
+
+		if ($sessConditions === serialize($conditions) && $sessOrder === serialize($order)) {
+			return true;
+		} else {
+			CakeSession::write('paginateConditionsByRoomRoleKey.conditions', serialize($conditions));
+			CakeSession::write('paginateConditionsByRoomRoleKey.order', serialize($order));
+			return false;
+		}
+	}
+
+/**
+ * 条件に差があるかどうかチェック
+ *
+ * @param string $roleKey ロールキー
+ * @param array $extra findのオプション
+ * @return bool
+ */
+	private function __getAddConditionByRoomRoleKey($roleKey, $extra) {
+		$addConditions = array();
+
+		if (Hash::get($extra, 'extra.isDifferenceCondition')) {
+			if (! $roleKey) {
+				$roleKey = 'delete';
+			}
+			$addConditions = CakeSession::read('paginateConditionsByRoomRoleKey.addConditions.' . $roleKey);
+
+		} else {
+			$selectedUsers = Hash::get($extra, 'extra.selectedUsers', array());
+			$allSelected = Hash::extract(
+				$selectedUsers, '{n}.user_id'
+			);
+
+			if ($roleKey) {
+				$sessKey = $roleKey;
+				$selectUserIds = Hash::extract(
+					$selectedUsers, '{n}[role_key=' . $roleKey . '].user_id'
+				);
+			} else {
+				$sessKey = 'delete';
+				$selectUserIds = Hash::extract(
+					$selectedUsers, '{n}[delete=true].user_id'
+				);
+			}
+
+			$addConditions['OR']['AND']['RolesRoom.role_key'] = $roleKey;
+			$addConditions['OR']['AND']['User.id NOT'] = array_diff($allSelected, $selectUserIds);
+			if ($selectUserIds) {
+				$addConditions['OR']['User.id'] = $selectUserIds;
+			}
+
+			CakeSession::write('paginateConditionsByRoomRoleKey.addConditions.' . $sessKey, $addConditions);
+		}
+
+		return $addConditions;
 	}
 
 /**
@@ -372,60 +463,19 @@ class UserSearch extends UserSearchAppModel {
 		$dbSource = $this->getDataSource();
 		$sql = '';
 
-		$convOrder = array();
-		foreach ($order as $key => $sort) {
-			if (isset($this->convRealToFieldKey[$key])) {
-				$convKey = $this->convRealToFieldKey[$key]['key'];
-			} else {
-				$convKey = $key;
-			}
-			$convOrder[$convKey] = $sort;
-		}
-		$order = $convOrder;
-
-		$roles = array(
-			Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
-			Role::ROOM_ROLE_KEY_CHIEF_EDITOR,
-			Role::ROOM_ROLE_KEY_EDITOR,
-			Role::ROOM_ROLE_KEY_GENERAL_USER,
-			Role::ROOM_ROLE_KEY_VISITOR,
-		);
-		if (Hash::get($extra, 'extra.search', false)) {
-			$roles[] = null;
-		}
+		$roles = $this->_getRolesByRoomRoleKey($extra);
 
 		$roomRoles = $this->RoomRole->find('list', array(
 			'recursive' => -1,
 			'fields' => array('role_key', 'level')
 		));
 
-		$selectedUsers = Hash::get($extra, 'extra.selectedUsers', array());
-		$allSelected = Hash::extract(
-			$selectedUsers, '{n}.user_id'
-		);
-
 		//UNIONでデータ取得する
 		$fields = $this->_getSearchFieldsByRoomRoleKey($fields);
 		foreach ($roles as $roleKey) {
 			$sql .= ' UNION ';
-			if ($roleKey) {
-				$selectUserIds = Hash::extract(
-					$selectedUsers, '{n}[role_key=' . $roleKey . '].user_id'
-				);
-			} else {
-				$selectUserIds = Hash::extract(
-					$selectedUsers, '{n}[delete=true].user_id'
-				);
-			}
 
-			$addConditions = array();
-			$addConditions['OR']['AND']['RolesRoom.role_key'] = $roleKey;
-			$addConditions['OR']['AND']['User.id NOT'] = array_diff($allSelected, $selectUserIds);
-			if ($selectUserIds) {
-				$addConditions['OR']['User.id'] = $selectUserIds;
-			}
-
-			$conditions[99] = $addConditions;
+			$conditions[99] = $this->__getAddConditionByRoomRoleKey($roleKey, $extra);
 			$fields['room_role_level'] = Hash::get($roomRoles, $roleKey, 0) . ' AS ' . 'room_role_level';
 
 			$query = $this->buildQuery('all',
@@ -473,8 +523,9 @@ class UserSearch extends UserSearchAppModel {
 		$conditions = $this->getSearchConditions($conditions);
 		$recursive = -1;
 		$group = 'User.id';
+		$sort = Hash::get($extra, 'sort');
 
-		if ($displayRooms) {
+		if ($displayRooms && ($sort === 'room_role_level' || !$sort)) {
 			$count = $this->__paginateCountByRoomRoleKey($conditions, $joins, $recursive, $group, $extra);
 		} else {
 			$count = $this->find('count', compact('conditions', 'joins', 'recursive', 'group'));
@@ -494,16 +545,7 @@ class UserSearch extends UserSearchAppModel {
  * @return array 検索結果の件数
  */
 	private function __paginateCountByRoomRoleKey($conditions, $joins, $recursive, $group, $extra) {
-		$roles = array(
-			Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
-			Role::ROOM_ROLE_KEY_CHIEF_EDITOR,
-			Role::ROOM_ROLE_KEY_EDITOR,
-			Role::ROOM_ROLE_KEY_GENERAL_USER,
-			Role::ROOM_ROLE_KEY_VISITOR,
-		);
-		if (Hash::get($extra, 'extra.search', false)) {
-			$roles[] = null;
-		}
+		$roles = $this->_getRolesByRoomRoleKey($extra);
 
 		$count = 0;
 		foreach ($roles as $roleKey) {

@@ -404,4 +404,25 @@ class UserSearchAppModel extends UsersAppModel {
 		return $originalFields;
 	}
 
+/**
+ * 検索取得するためのrolesリスト取得
+ *
+ * @param array $extra findのオプション
+ * @return array 検索取得するためのrolesリスト
+ */
+	protected function _getRolesByRoomRoleKey($extra) {
+		$roles = array(
+			Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR,
+			Role::ROOM_ROLE_KEY_CHIEF_EDITOR,
+			Role::ROOM_ROLE_KEY_EDITOR,
+			Role::ROOM_ROLE_KEY_GENERAL_USER,
+			Role::ROOM_ROLE_KEY_VISITOR,
+		);
+		if (Hash::get($extra, 'extra.search', false)) {
+			$roles[] = null;
+		}
+
+		return $roles;
+	}
+
 }
