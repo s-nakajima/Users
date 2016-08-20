@@ -368,7 +368,9 @@ class UserSearch extends UserSearchAppModel {
 			$extra = Hash::insert(
 				$extra,
 				'extra.isDifferenceCondition',
-				$this->__isDifferenceConditionByRoomRoleKey($conditions, $order)
+				$this->__isDifferenceConditionByRoomRoleKey(
+					$conditions, $order, Hash::get($extra, 'extra.search', false)
+				)
 			);
 
 			$result = $this->__paginateByRoomRoleKey(
@@ -391,17 +393,21 @@ class UserSearch extends UserSearchAppModel {
  *
  * @param array $conditions 条件配列
  * @param array $order ソート配列
+ * @param array $searched 検索されたかどうか
  * @return bool
  */
-	private function __isDifferenceConditionByRoomRoleKey($conditions, $order) {
+	private function __isDifferenceConditionByRoomRoleKey($conditions, $order, $searched) {
 		$sessConditions = CakeSession::read('paginateConditionsByRoomRoleKey.conditions');
 		$sessOrder = CakeSession::read('paginateConditionsByRoomRoleKey.order');
+		$sessSearched = CakeSession::read('paginateConditionsByRoomRoleKey.searched');
 
-		if ($sessConditions === serialize($conditions) && $sessOrder === serialize($order)) {
+		if ($sessConditions === serialize($conditions) &&
+				$sessOrder === serialize($order) && $sessSearched === serialize($searched)) {
 			return true;
 		} else {
 			CakeSession::write('paginateConditionsByRoomRoleKey.conditions', serialize($conditions));
 			CakeSession::write('paginateConditionsByRoomRoleKey.order', serialize($order));
+			CakeSession::write('paginateConditionsByRoomRoleKey.searched', serialize($searched));
 			return false;
 		}
 	}
@@ -441,7 +447,9 @@ class UserSearch extends UserSearchAppModel {
 			}
 
 			$addConditions['OR']['AND']['RolesRoom.role_key'] = $roleKey;
-			$addConditions['OR']['AND']['User.id NOT'] = array_diff($allSelected, $selectUserIds);
+			if ($allSelected) {
+				$addConditions['OR']['AND']['User.id NOT'] = array_diff($allSelected, $selectUserIds);
+			}
 			if ($selectUserIds) {
 				$addConditions['OR']['User.id'] = $selectUserIds;
 			}
