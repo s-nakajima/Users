@@ -292,13 +292,12 @@ class UserSearch extends UserSearchAppModel {
 			list($field, $setting, $reqSign) = $this->_parseRequestKey($key);
 
 			if (is_array($conditions[$key])) {
-				$sign = '';
+				$sign = $reqSign;
 				$value = $conditions[$key];
 			} else {
-				list($sign, $value) = $this->_creanSearchCondition($field, $setting, $conditions[$key]);
-			}
-			if (! $sign) {
-				$sign = $reqSign;
+				list($sign, $value) = $this->_creanSearchCondition(
+					$field, $setting, $conditions[$key], $reqSign
+				);
 			}
 			unset($conditions[$key]);
 
@@ -306,13 +305,27 @@ class UserSearch extends UserSearchAppModel {
 				continue;
 			}
 
-			if ($setting === self::MORE_THAN_DAYS) {
+			$sqlField = $this->readableFields[$field]['field'];
+			if (Hash::get($this->readableFields[$field], 'data_type') === DataType::DATA_TYPE_IMG) {
+				if ($sign) {
+					$conditions[count($conditions)]['AND'] = array(
+						$sqlField . $sign => $value,
+						'is_avatar_auto_created' => false,
+					);
+				} else {
+					$conditions[count($conditions)]['OR'] = array(
+						$sqlField . $sign => $value,
+						'is_avatar_auto_created' => true,
+					);
+				}
+
+			} elseif ($setting === self::MORE_THAN_DAYS) {
 				$conditions[count($conditions)]['OR'] = array(
-					$this->readableFields[$field]['field'] => null,
-					$this->readableFields[$field]['field'] . $sign => $value
+					$sqlField => null,
+					$sqlField . $sign => $value
 				);
 			} else {
-				$conditions[$this->readableFields[$field]['field'] . $sign] = $value;
+				$conditions[$sqlField . $sign] = $value;
 			}
 		}
 

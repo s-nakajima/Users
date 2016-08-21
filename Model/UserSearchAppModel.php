@@ -64,6 +64,7 @@ class UserSearchAppModel extends UsersAppModel {
 				'0' => __d('user_manager', 'No avatar.'),
 				'1' => __d('user_manager', 'Has avatar.')
 			);
+			$this->readableFields[$attrKey]['data_type'] = $dataTypeKey;
 
 		} elseif (in_array($attrKey, UserAttribute::$typeDatetime, true) ||
 				$dataTypeKey === DataType::DATA_TYPE_DATETIME) {
@@ -84,26 +85,31 @@ class UserSearchAppModel extends UsersAppModel {
 
 			//日時型の場合
 			$this->readableFields[$attrKey]['field'] = $this->alias . '.' . $attrKey;
+			$this->readableFields[$attrKey]['data_type'] = $dataTypeKey;
 
 			$fieldKey = $attrKey . '_' . self::MORE_THAN_DAYS;
 			$this->readableFields[$fieldKey]['field'] = $this->alias . '.' . $attrKey;
 			$this->readableFields[$fieldKey]['label'] = $label;
 			$this->readableFields[$fieldKey]['format'] = $moreThanDays;
+			$this->readableFields[$fieldKey]['data_type'] = $dataTypeKey;
 
 			$fieldKey = $attrKey . '_' . self::WITHIN_DAYS;
 			$this->readableFields[$fieldKey]['field'] = $this->alias . '.' . $attrKey;
 			$this->readableFields[$fieldKey]['label'] = $label;
 			$this->readableFields[$fieldKey]['format'] = $withinDays;
+			$this->readableFields[$fieldKey]['data_type'] = $dataTypeKey;
 
 		} elseif ($this->hasField($attrKey)) {
 			//Userモデル
 			$this->readableFields[$attrKey]['field'] = $this->alias . '.' . $attrKey;
 			$this->readableFields[$attrKey]['label'] = $label;
+			$this->readableFields[$attrKey]['data_type'] = $dataTypeKey;
 
 		} elseif ($this->UsersLanguage->hasField($attrKey)) {
 			//UsersLanguageモデル
 			$this->readableFields[$attrKey]['field'] = $this->UsersLanguage->alias . '.' . $attrKey;
 			$this->readableFields[$attrKey]['label'] = $label;
+			$this->readableFields[$attrKey]['data_type'] = $dataTypeKey;
 		}
 
 		$userAttrChoices = Hash::extract(
@@ -283,9 +289,10 @@ class UserSearchAppModel extends UsersAppModel {
  * @param array $field フィールド
  * @param array $setting セッティングモード(日時型のみ使用)
  * @param array $value 値
+ * @param string $defaultSign デフォルトの符号
  * @return array array(符号, SQL値)
  */
-	protected function _creanSearchCondition($field, $setting, $value) {
+	protected function _creanSearchCondition($field, $setting, $value, $defaultSign = null) {
 		$userAttributes = $this->UserAttribute->getUserAttributesForLayout();
 
 		$dataType = Hash::extract(
@@ -306,7 +313,7 @@ class UserSearchAppModel extends UsersAppModel {
 			if ($value) {
 				$sign = ' NOT';
 			} else {
-				$sign = '';
+				$sign = $defaultSign;
 			}
 			$value = null;
 
@@ -332,7 +339,7 @@ class UserSearchAppModel extends UsersAppModel {
 			$value = '%' . $value . '%';
 
 		} elseif (in_array($dataTypeKey, $optionTypes, true)) {
-			$sign = '';
+			$sign = $defaultSign;
 			$userAttribute = Hash::extract(
 				$userAttributes, '{n}.{n}.{n}.UserAttribute[key=' . $field . ']'
 			);
@@ -344,7 +351,7 @@ class UserSearchAppModel extends UsersAppModel {
 			$value = Hash::get(Hash::extract($options, '{n}[key=' . $value . ']', array()), '0.code');
 
 		} else {
-			$sign = '';
+			$sign = $defaultSign;
 		}
 
 		return array($sign, $value);
