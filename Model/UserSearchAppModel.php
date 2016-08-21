@@ -120,6 +120,11 @@ class UserSearchAppModel extends UsersAppModel {
 			$this->readableFields[$attrKey]['options'] = Hash::combine(
 				$userAttrChoices, '{n}.key', '{n}.name'
 			);
+			if ($attrKey === 'role_key') {
+				$this->readableFields[$attrKey]['option_field'] = 'key';
+			} else {
+				$this->readableFields[$attrKey]['option_field'] = 'code';
+			}
 		}
 
 		////Field(is_xxxx_public)のチェック
@@ -348,7 +353,11 @@ class UserSearchAppModel extends UsersAppModel {
 				$userAttributes,
 				'{n}.{n}.{n}.UserAttributeChoice.{n}[user_attribute_id=' . $userAttrId . ']'
 			);
-			$value = Hash::get(Hash::extract($options, '{n}[key=' . $value . ']', array()), '0.code');
+
+			$value = Hash::get(
+				Hash::extract($options, '{n}[key=' . $value . ']', array()),
+				'0.' . Hash::get($this->readableFields, $field . '.' . 'option_field', '')
+			);
 
 		} else {
 			$sign = $defaultSign;

@@ -288,6 +288,7 @@ class UserSearch extends UserSearchAppModel {
  */
 	public function getSearchConditions($conditions = array()) {
 		$fieldKeys = array_keys($conditions);
+
 		foreach ($fieldKeys as $key) {
 			list($field, $setting, $reqSign) = $this->_parseRequestKey($key);
 
@@ -355,6 +356,7 @@ class UserSearch extends UserSearchAppModel {
 
 		$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions);
 		$conditions = $this->getSearchConditions($conditions);
+
 		$recursive = -1;
 		$group = 'User.id';
 
