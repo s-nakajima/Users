@@ -219,7 +219,8 @@ class UserSearchHelper extends AppHelper {
 		} elseif ($fieldName === 'room_role_key') {
 			//ルーム権限
 			$value = $this->Rooms->roomRoleName($user[$modelName]['role_key']);
-		} elseif (isset($userAttribute['UserAttributeChoice']) && $user[$modelName][$fieldName]) {
+		} elseif (isset($userAttribute['UserAttributeChoice']) &&
+				Hash::get($user, $modelName . '.' . $fieldName)) {
 			//選択肢
 			if ($fieldName === 'role_key') {
 				$values = Hash::extract(
@@ -238,7 +239,7 @@ class UserSearchHelper extends AppHelper {
 			$tdOptions['class'] = 'row-datetime';
 		} else {
 			//その他
-			$value = h($user[$modelName][$fieldName]);
+			$value = h(Hash::get($user, $modelName . '.' . $fieldName, ''));
 		}
 
 		if ($tdElement) {

@@ -117,7 +117,9 @@ class UserSearch extends UserSearchAppModel {
 		}
 		$this->readableFields['created_user']['field'] = 'TrackableCreator.handlename';
 		$this->readableFields['modified_user']['field'] = 'TrackableUpdater.handlename';
-		$this->readableFields['role_key']['order'] = 'Role.id';
+		if (isset($this->readableFields['role_key'])) {
+			$this->readableFields['role_key']['order'] = 'Role.id';
+		}
 
 		//参加ルーム
 		$this->readableFields['room_id']['field'] = $this->Room->alias . '.id';

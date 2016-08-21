@@ -407,7 +407,10 @@ class UserSearchAppModel extends UsersAppModel {
 
 		$originalFields = array();
 		foreach ($fields as $field) {
-			$originalFields[$field] = $this->getOriginalField($field) . ' AS ' . $field;
+			$originalField = $this->getOriginalField($field);
+			if ($originalField) {
+				$originalFields[$field] = $originalField . ' AS ' . $field;
+			}
 		}
 
 		$originalFields = array_unique($originalFields);
