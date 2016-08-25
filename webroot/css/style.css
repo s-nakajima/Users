@@ -39,6 +39,12 @@
 .user-thumbnail img {
 	max-height: 128px;
 }
+.hidden-sm a[ng-controller="Users.controller"]{
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	max-width: 240px;
+}
 
 /**
  * 会員選択
