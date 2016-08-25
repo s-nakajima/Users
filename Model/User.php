@@ -551,4 +551,42 @@ class User extends UsersAppModel {
 		return $user;
 	}
 
+/**
+ * field1とfield2が同じかチェックする
+ *
+ * @param array $field1 field1 parameters
+ * @param string $field2 field2 key
+ * @return bool
+ */
+	public function equalToField($field1, $field2) {
+		$keys = array_keys($field1);
+		return $this->data[$this->alias][$field2] === $this->data[$this->alias][array_pop($keys)];
+	}
+
+/**
+ * 重複チェック
+ *
+ * @param array $check チェック値
+ * @param array $fields フィールドリスト
+ * @return bool
+ */
+	public function notDuplicate($check, $fields) {
+		$User = ClassRegistry::init('Users.User');
+
+		$value = array_shift($check);
+		$conditions = array();
+		if ($this->data[$this->alias]['id']) {
+			$conditions['id !='] = $this->data[$this->alias]['id'];
+		}
+		$conditions['is_deleted'] = false;
+		foreach ($fields as $field) {
+			$conditions['OR'][$field] = $value;
+		}
+
+		return !(bool)$User->find('count', array(
+			'recursive' => -1,
+			'conditions' => $conditions
+		));
+	}
+
 }

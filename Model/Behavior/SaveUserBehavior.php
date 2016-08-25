@@ -17,6 +17,7 @@ App::uses('CurrentSystem', 'NetCommons.Utility');
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model\Behavior
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class SaveUserBehavior extends ModelBehavior {
 
@@ -348,14 +349,16 @@ class SaveUserBehavior extends ModelBehavior {
 			)
 		));
 
-		if ($count > 0) {
+		$roomId = Room::ROOM_PARENT_ID;
+
+		if ($count) {
 			$roomRoleKey = Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
 		} else {
 			$room = $model->Room->find('first', array(
 				'recursive' => -1,
 				'fields' => array('id', 'default_role_key'),
 				'conditions' => array(
-					'id' => Room::ROOM_PARENT_ID,
+					'id' => $roomId,
 				)
 			));
 			$roomRoleKey = Hash::get($room, 'Room.default_role_key');
@@ -365,27 +368,28 @@ class SaveUserBehavior extends ModelBehavior {
 			'recursive' => -1,
 			'fields' => array('id', 'roles_room_id'),
 			'conditions' => array(
-				'room_id' => Room::ROOM_PARENT_ID,
+				'room_id' => $roomId,
 				'user_id' => $model->data['User']['id']
 			)
 		));
 		$rolesRooms = $model->RolesRoom->find('first', array(
 			'recursive' => -1,
 			'conditions' => array(
-				'room_id' => Room::ROOM_PARENT_ID,
+				'room_id' => $roomId,
 				'role_key' => $roomRoleKey
 			),
 		));
 
 		$rolesRoomsUser = array(
 			'id' => Hash::get($rolesRoomsUserId, 'RolesRoomsUser.id'),
-			'room_id' => Room::ROOM_PARENT_ID,
+			'room_id' => $roomId,
 			'user_id' => $model->data['User']['id'],
 			'role_key' => $roomRoleKey,
 			'roles_room_id' => Hash::get($rolesRooms, 'RolesRoom.id')
 		);
 
-		if ($rolesRoomsUser['roles_room_id'] !== Hash::get($rolesRoomsUserId, 'RolesRoomsUser.roles_room_id')) {
+		if ($rolesRoomsUser['roles_room_id'] !==
+				Hash::get($rolesRoomsUserId, 'RolesRoomsUser.roles_room_id')) {
 			$result = $model->RolesRoomsUser->save($rolesRoomsUser);
 			if (! $result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
@@ -454,46 +458,6 @@ class SaveUserBehavior extends ModelBehavior {
 		}
 
 		return true;
-	}
-
-/**
- * field1とfield2が同じかチェックする
- *
- * @param Model $model ビヘイビア呼び出し元モデル
- * @param array $field1 field1 parameters
- * @param string $field2 field2 key
- * @return bool
- */
-	public function equalToField(Model $model, $field1, $field2) {
-		$keys = array_keys($field1);
-		return $model->data[$model->alias][$field2] === $model->data[$model->alias][array_pop($keys)];
-	}
-
-/**
- * 重複チェック
- *
- * @param Model $model ビヘイビア呼び出し元モデル
- * @param array $check チェック値
- * @param array $fields フィールドリスト
- * @return bool
- */
-	public function notDuplicate(Model $model, $check, $fields) {
-		$User = ClassRegistry::init('Users.User');
-
-		$value = array_shift($check);
-		$conditions = array();
-		if ($model->data[$model->alias]['id']) {
-			$conditions['id !='] = $model->data[$model->alias]['id'];
-		}
-		$conditions['is_deleted'] = false;
-		foreach ($fields as $field) {
-			$conditions['OR'][$field] = $value;
-		}
-
-		return !(bool)$User->find('count', array(
-			'recursive' => -1,
-			'conditions' => $conditions
-		));
 	}
 
 }
