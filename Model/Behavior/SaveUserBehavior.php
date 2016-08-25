@@ -284,6 +284,10 @@ class SaveUserBehavior extends ModelBehavior {
 			//参加ルームの登録
 			$this->__saveDefaultRolesRoomsUser($model);
 		}
+
+		//コミュニティ（会員全員）の参加者データ生成
+		$this->__saveCommunityRolesRoomsUser($model);
+
 		return true;
 	}
 
@@ -312,6 +316,77 @@ class SaveUserBehavior extends ModelBehavior {
 		);
 		if ($model->data['RolesRoomsUser']) {
 			$result = $model->RolesRoomsUser->saveMany($model->data['RolesRoomsUser']);
+			if (! $result) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
+
+		return true;
+	}
+
+/**
+ * コミュニティのRolesRoomsUserデータ登録
+ *
+ * @param Model $model Model using this behavior
+ * @return bool
+ * @throws InternalErrorException
+ */
+	private function __saveCommunityRolesRoomsUser(Model $model) {
+		$model->loadModels([
+			'RolesRoomsUser' => 'Rooms.RolesRoomsUser',
+			'RolesRoom' => 'Rooms.RolesRoom',
+			'Room' => 'Rooms.Room',
+			'PluginsRole' => 'PluginManager.PluginsRole',
+		]);
+
+		//参加ルームの登録
+		$count = $model->PluginsRole->find('count', array(
+			'recursive' => -1,
+			'conditions' => array(
+				'plugin_key' => 'rooms',
+				'role_key' => Hash::get($model->data, 'User.role_key')
+			)
+		));
+
+		if ($count > 0) {
+			$roomRoleKey = Role::ROOM_ROLE_KEY_ROOM_ADMINISTRATOR;
+		} else {
+			$room = $model->Room->find('first', array(
+				'recursive' => -1,
+				'fields' => array('id', 'default_role_key'),
+				'conditions' => array(
+					'id' => Room::ROOM_PARENT_ID,
+				)
+			));
+			$roomRoleKey = Hash::get($room, 'Room.default_role_key');
+		}
+
+		$rolesRoomsUserId = $model->RolesRoomsUser->find('first', array(
+			'recursive' => -1,
+			'fields' => array('id', 'roles_room_id'),
+			'conditions' => array(
+				'room_id' => Room::ROOM_PARENT_ID,
+				'user_id' => $model->data['User']['id']
+			)
+		));
+		$rolesRooms = $model->RolesRoom->find('first', array(
+			'recursive' => -1,
+			'conditions' => array(
+				'room_id' => Room::ROOM_PARENT_ID,
+				'role_key' => $roomRoleKey
+			),
+		));
+
+		$rolesRoomsUser = array(
+			'id' => Hash::get($rolesRoomsUserId, 'RolesRoomsUser.id'),
+			'room_id' => Room::ROOM_PARENT_ID,
+			'user_id' => $model->data['User']['id'],
+			'role_key' => $roomRoleKey,
+			'roles_room_id' => Hash::get($rolesRooms, 'RolesRoom.id')
+		);
+
+		if ($rolesRoomsUser['roles_room_id'] !== Hash::get($rolesRoomsUserId, 'RolesRoomsUser.roles_room_id')) {
+			$result = $model->RolesRoomsUser->save($rolesRoomsUser);
 			if (! $result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
