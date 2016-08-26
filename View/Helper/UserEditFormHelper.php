@@ -314,7 +314,8 @@ class UserEditFormHelper extends AppHelper {
 	private function __inputDataType($fieldName, $userAttribute, $attributes = array()) {
 		$output = '';
 
-		if (in_array($attributes['type'], [DataType::DATA_TYPE_IMG, DataType::DATA_TYPE_TEXTAREA], true)) {
+		$noneDivOuters = [DataType::DATA_TYPE_IMG, DataType::DATA_TYPE_TEXTAREA];
+		if (in_array($attributes['type'], $noneDivOuters, true)) {
 			$divOuterStart = '';
 			$divOuterEnd = '';
 		} else {
