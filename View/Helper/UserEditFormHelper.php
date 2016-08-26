@@ -84,13 +84,14 @@ class UserEditFormHelper extends AppHelper {
 			$html .= $this->__input('User.' . $userAttributeKey, $userAttribute);
 
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
-			foreach ($this->_View->request->data['UsersLanguage'] as $index => $usersLanguage) {
-				$html .= '<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
+			$index = 0;
+			foreach (array_keys($this->_View->viewVars['languages']) as $langId) {
+				$html .= '<div ng-show="activeLangId === \'' . $langId . '\'" ng-cloak>';
 				$html .= $this->__input(
-						'UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute,
-						$usersLanguage['language_id']
+					'UsersLanguage.' . $index . '.' . $userAttributeKey, $userAttribute, $langId
 				);
 				$html .= '</div>';
+				$index++;
 			}
 
 		} else {
@@ -297,7 +298,6 @@ class UserEditFormHelper extends AppHelper {
 		}
 
 		$attributes['help'] = Hash::get($userAttribute, 'UserAttribute.description', '');
-
 		$html .= $this->__inputDataType($fieldName, $userAttribute, $attributes);
 
 		return $html;

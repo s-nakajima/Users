@@ -16,10 +16,25 @@
 
 	<div class="tab-content">
 		<?php echo $this->NetCommonsForm->hidden('User.id'); ?>
-		<?php foreach (array_keys($this->data['UsersLanguage']) as $index) : ?>
-			<?php echo $this->NetCommonsForm->hidden('UsersLanguage.' . $index . '.id'); ?>
-			<?php echo $this->NetCommonsForm->hidden('UsersLanguage.' . $index . '.language_id'); ?>
-		<?php endforeach; ?>
+		<?php
+			$index = 0;
+			foreach (array_keys($languages) as $langId) {
+				echo $this->NetCommonsForm->hidden('UsersLanguage.' . $index . '.id');
+				echo $this->NetCommonsForm->hidden(
+					'UsersLanguage.' . $index . '.language_id',
+					array(
+						'value' => Hash::get($this->request->data, 'UsersLanguage.' . $index . '.language_id', $langId)
+					)
+				);
+				echo $this->NetCommonsForm->hidden(
+					'UsersLanguage.' . $index . '.user_id',
+					array(
+						'value' => Hash::get($this->request->data, 'UsersLanguage.' . $index . '.user_id', Hash::get($this->request->data, 'User.id'))
+					)
+				);
+				$index++;
+			}
+		?>
 
 		<input type="password" value="" class="hidden">
 		<?php echo $this->UserAttributeLayout->renderRow($element); ?>
