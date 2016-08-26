@@ -341,7 +341,11 @@ class UserEditFormHelper extends AppHelper {
 
 				$attributes = Hash::insert($attributes, 'label', false);
 				$attributes = Hash::insert($attributes, 'div', false);
-				$attributes = Hash::merge(['again' => true], $attributes);
+				if ($this->_View->request->params['plugin'] === 'users') {
+					$attributes = Hash::merge(['again' => true, 'current' => true], $attributes);
+				} else {
+					$attributes = Hash::merge(['again' => true], $attributes);
+				}
 
 				$output .= '<div class="col-xs-12 col-sm-9">';
 				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
@@ -393,7 +397,7 @@ class UserEditFormHelper extends AppHelper {
 				$output .= '</div>';
 		}
 
-		if ($this->request->params['plugin'] === 'user_manager') {
+		if ($this->_View->request->params['plugin'] === 'user_manager') {
 			$output .= $this->userPublic($userAttribute);
 			$output .= $this->userMailReception($userAttribute);
 		} else {

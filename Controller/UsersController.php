@@ -177,7 +177,7 @@ class UsersController extends UsersAppController {
 			}
 
 			//登録処理
-			if ($this->User->saveUser($this->request->data)) {
+			if ($this->User->saveUser($this->request->data, true)) {
 				//正常の場合
 				$this->NetCommons->setFlashNotification(
 					__d('net_commons', 'Successfully saved.'), array('class' => 'success')
@@ -189,6 +189,7 @@ class UsersController extends UsersAppController {
 				return $this->redirect($redirectUrl);
 			}
 			$this->NetCommons->handleValidationError($this->User->validationErrors);
+			$this->request->data = Hash::merge($this->viewVars['user'], $this->request->data);
 
 		} else {
 			//表示処理
@@ -197,6 +198,7 @@ class UsersController extends UsersAppController {
 			$redirectUrl = $this->request->referer(true);
 		}
 
+		$this->set('userCancel', SiteSettingUtil::read('UserCancel.use_cancel_feature', false));
 		$this->set('redirectUrl', $redirectUrl);
 		$this->set('activeUserId', Hash::get($this->viewVars['user'], 'User.id'));
 	}
@@ -209,16 +211,17 @@ class UsersController extends UsersAppController {
 	public function delete() {
 		$this->__prepare();
 
-		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
-			$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+		if (! SiteSettingUtil::read('UserCancel.use_cancel_feature', false)) {
+			return $this->throwBadRequest();
+		}
 
-			$this->throwBadRequest();
-			return;
+		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
+				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+			return $this->throwBadRequest();
 		}
 
 		if (! $this->request->is('delete')) {
-			$this->throwBadRequest();
-			return;
+			return $this->throwBadRequest();
 		}
 
 		$this->User->deleteUser($this->viewVars['user']);

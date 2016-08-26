@@ -52,7 +52,8 @@ echo $this->NetCommonsHtml->css('/users/css/style.css');
 			<?php echo $this->NetCommonsForm->end(); ?>
 		</div>
 
-		<?php if ($this->params['action'] === 'edit' && $user['User']['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) : ?>
+		<?php if ($userCancel && $this->params['action'] === 'edit' &&
+					$user['User']['role_key'] !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) : ?>
 			<?php echo $this->element('Users.Users/delete_form'); ?>
 		<?php endif; ?>
 	</div>

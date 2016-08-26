@@ -254,6 +254,36 @@ class User extends UsersAppModel {
 		]);
 
 		//ログインID
+		$this->__setUsernameValidate();
+
+		//パスワード
+		$this->__setPasswordValidate($options);
+
+		//ログイン、パスワード以外のUserモデルのバリデーションルールのセットは、ビヘイビアで行う
+		//（ログインとパスワードは、インストール時に使用するため）
+
+		//UsersLanguageのバリデーション実行
+		if (isset($this->data['UsersLanguage'])) {
+			$usersLanguage = $this->data['UsersLanguage'];
+			if (! $this->UsersLanguage->validateMany($usersLanguage)) {
+				$this->validationErrors = Hash::merge(
+					$this->validationErrors,
+					$this->UsersLanguage->validationErrors
+				);
+				return false;
+			}
+		}
+
+		return parent::beforeValidate($options);
+	}
+
+/**
+ * バリデーションのセット(ログインID)
+ *
+ * @return void
+ */
+	private function __setUsernameValidate() {
+		//ログインID
 		if (! Hash::get($this->data, 'User.id')) {
 			$this->validate = Hash::merge($this->validate, array(
 				'username' => array(
@@ -279,7 +309,15 @@ class User extends UsersAppModel {
 				),
 			));
 		}
+	}
 
+/**
+ * バリデーションのセット(パスワード)
+ *
+ * @param array $options Model::save()のオプション
+ * @return void
+ */
+	private function __setPasswordValidate($options = array()) {
 		//パスワード
 		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id']) ||
 				Hash::get($options, 'validatePassword', false)) {
@@ -324,26 +362,29 @@ class User extends UsersAppModel {
 					)
 				),
 			));
+
+			if (Hash::get($options, 'self', false)) {
+				$this->validate = Hash::merge($this->validate, array(
+					'password_current' => array(
+						'notBlank' => array(
+							'rule' => array('notBlank'),
+							'allowEmpty' => false,
+							'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('net_commons', 'Current passowrd')),
+							'required' => true,
+						),
+						'currentPassword' => array(
+							'rule' => array('currentPassword'),
+							'message' => __d('net_commons', 'Current password is wrong.'),
+							'allowEmpty' => false,
+							'required' => true,
+						)
+					),
+				));
+			}
+
 		} elseif (isset($this->data['User']['password'])) {
 			unset($this->data['User']['password']);
 		}
-
-		//ログイン、パスワード以外のUserモデルのバリデーションルールのセットは、ビヘイビアで行う
-		//（ログインとパスワードは、インストール時に使用するため）
-
-		//UsersLanguageのバリデーション実行
-		if (isset($this->data['UsersLanguage'])) {
-			$usersLanguage = $this->data['UsersLanguage'];
-			if (! $this->UsersLanguage->validateMany($usersLanguage)) {
-				$this->validationErrors = Hash::merge(
-					$this->validationErrors,
-					$this->UsersLanguage->validationErrors
-				);
-				return false;
-			}
-		}
-
-		return parent::beforeValidate($options);
 	}
 
 /**
@@ -477,7 +518,7 @@ class User extends UsersAppModel {
  * @return mixed On success Model::$data, false on failure
  * @throws InternalErrorException
  */
-	public function saveUser($data) {
+	public function saveUser($data, $self = false) {
 		//トランザクションBegin
 		$this->begin();
 		$this->prepare();
@@ -511,7 +552,7 @@ class User extends UsersAppModel {
 
 		//バリデーション
 		$this->set($data);
-		if (! $this->validates()) {
+		if (! $this->validates(array('self' => $self))) {
 			return false;
 		}
 
@@ -584,6 +625,30 @@ class User extends UsersAppModel {
 		}
 
 		return !(bool)$User->find('count', array(
+			'recursive' => -1,
+			'conditions' => $conditions
+		));
+	}
+
+/**
+ * 現在のパスワード
+ *
+ * @param array $check チェック値
+ * @return bool
+ */
+	public function currentPassword($check) {
+		$User = ClassRegistry::init('Users.User');
+
+		$value = array_shift($check);
+
+		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
+		$passwordHasher = new SimplePasswordHasher();
+		$conditions = array(
+			'id' => $this->data[$this->alias]['id'],
+			'password' => $passwordHasher->hash($value),
+		);
+
+		return (bool)$User->find('count', array(
 			'recursive' => -1,
 			'conditions' => $conditions
 		));
