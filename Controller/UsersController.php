@@ -293,15 +293,24 @@ class UsersController extends UsersAppController {
 			return;
 		}
 
+		$roomId = Hash::get($this->request->query, 'room_id');
 		$query = Hash::remove($this->request->query, 'room_id');
+
+		if ($roomId === Room::ROOM_PARENT_ID) {
+			$conditions = array(
+				'Room.id' => Room::ROOM_PARENT_ID
+			);
+		} else {
+			$conditions = array(
+				'Room.page_id_top NOT' => null
+			);
+		}
 
 		$this->UserSearchComp->search(array(
 			'fields' => self::$displaField,
 			'conditions' => Hash::merge(array(), $query),
 			'joins' => array('Room' => array(
-				'conditions' => array(
-					'Room.page_id_top NOT' => null,
-				)
+				'conditions' => $conditions
 			)),
 			'order' => array(),
 			'limit' => UserSelectCount::LIMIT
