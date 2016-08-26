@@ -201,6 +201,10 @@ class UserLayoutHelper extends AppHelper {
  * @return bool 表示可・不可
  */
 	public function isDisplayable($userAttribute) {
+		if ($this->request->params['plugin'] === 'user_manager') {
+			return true;
+		}
+
 		//非表示項目 = false
 		if (! $userAttribute['UserAttributeSetting']['display']) {
 			return false;
