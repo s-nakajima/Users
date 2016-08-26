@@ -14,8 +14,11 @@ App::uses('AppHelper', 'View/Helper');
 /**
  * UserEditForm Helper
  *
+ * 暫定で、ExcessiveClassComplexityでPHPMDをスキップする
+ *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\View\Helper
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class UserEditFormHelper extends AppHelper {
 

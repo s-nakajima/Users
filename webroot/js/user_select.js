@@ -193,10 +193,10 @@ NetCommonsApp.controller('User.select',
           }, $scope);
 
           saveUserSelectCount()
-            .success(function(data) {
+              .success(function(data) {
                 $uibModalInstance.close($scope.selectors);
               })
-            .error(function(data, status) {
+              .error(function(data, status) {
                 $uibModalInstance.dismiss('error');
               });
         };
@@ -229,7 +229,7 @@ NetCommonsApp.controller('User.select',
           options['params']['room_id'] = $scope.roomId;
 
           $http.get(searchUrl, options)
-            .success(function(data) {
+              .success(function(data) {
                 $scope.searchResults = data['users'];
                 $scope.searched = true;
                 $scope.keyword = keyword;
@@ -242,7 +242,7 @@ NetCommonsApp.controller('User.select',
                   $scope.pages.push(i);
                 }
               })
-            .error(function(data, status) {
+              .error(function(data, status) {
                 $scope.searchResults = [];
                 $scope.keyword = null;
                 $scope.paginator = {};
@@ -260,7 +260,7 @@ NetCommonsApp.controller('User.select',
           var promise = deferred.promise;
 
           $http.get(NC3_URL + '/net_commons/net_commons/csrfToken.json')
-            .success(function(token) {
+              .success(function(token) {
                 $scope.data._Token.key = token.data._Token.key;
 
                 //POSTリクエスト
@@ -281,7 +281,7 @@ NetCommonsApp.controller('User.select',
                       deferred.reject(data, status);
                     });
               })
-            .error(function(data, status) {
+              .error(function(data, status) {
                 //Token error condition
                 deferred.reject(data, status);
               });
