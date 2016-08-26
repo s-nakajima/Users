@@ -305,11 +305,13 @@ class UserEditFormHelper extends AppHelper {
 
 /**
  * データタイプに対するinputタグのHTML出力
+ * ※PHPMD除外は暫定
  *
  * @param string $fieldName フィールド名("Modelname.fieldname"形式)
  * @param array $userAttribute UserAttributeデータ
  * @param array $attributes HTMLタグ属性
  * @return string HTML 入力HTML
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	private function __inputDataType($fieldName, $userAttribute, $attributes = array()) {
 		$output = '';

@@ -369,7 +369,9 @@ class User extends UsersAppModel {
 						'notBlank' => array(
 							'rule' => array('notBlank'),
 							'allowEmpty' => false,
-							'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('net_commons', 'Current passowrd')),
+							'message' => sprintf(
+								__d('net_commons', 'Please input %s.'), __d('net_commons', 'Current passowrd')
+							),
 							'required' => true,
 						),
 						'currentPassword' => array(
@@ -515,8 +517,10 @@ class User extends UsersAppModel {
  * ユーザの登録処理
  *
  * @param array $data data
+ * @param bool $self 自分自身かどうか（＝UsersプラグインかUserManagerかどうか）
  * @return mixed On success Model::$data, false on failure
  * @throws InternalErrorException
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  */
 	public function saveUser($data, $self = false) {
 		//トランザクションBegin
