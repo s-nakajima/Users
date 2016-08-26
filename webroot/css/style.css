@@ -6,18 +6,21 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  */
 
-/**
- * 会員登録
- */
-.user-public-type-form-control {
-	margin-top: -15px;
-}
 .user-edit-label {
 	padding-right: 0px;
 }
 .user-edit-choice .radio-inline:first-child,
 .user-edit-choice .checkbox-inline:first-child {
 	padding-left: 0px;
+}
+
+.user-edit-choice-public .radio-inline:first-child,
+.user-edit-choice-mail .checkbox-inline:first-child {
+	padding-left: 0px;
+}
+.user-edit-choice-public,
+.user-edit-choice-mail {
+	padding-top: 6px;
 }
 
 /**

@@ -152,10 +152,29 @@ class UserEditFormHelper extends AppHelper {
 			return $html;
 		}
 
+		$html .= $this->userPublic($userAttribute);
+		return $html;
+	}
+
+/**
+ * 会員の公開非公開の有無ラジオボタンの表示
+ *
+ * @param array $userAttribute UserAttributeデータ
+ * @return string HTMLタグ
+ */
+	public function userPublic($userAttribute) {
+		$html = '';
+
+		//以下の条件の場合、何も表示しない
+		// * 各自で公開非公開の設定ができない
+		if (! $userAttribute['UserAttributeSetting']['self_public_setting']) {
+			return $html;
+		}
+
 		$fieldName =
 			'User.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
 
-		$html .= '<div class="form-control user-public-type-form-control nc-data-label">';
+		$html .= '<div class="col-xs-12 col-sm-offset-3 col-sm-offset-9 user-edit-choice-public">';
 		$html .= $this->NetCommonsForm->radio($fieldName, User::$publicTypes, array(
 			'div' => array('class' => 'form-inline'),
 		));
@@ -187,13 +206,36 @@ class UserEditFormHelper extends AppHelper {
 			return $html;
 		}
 
+		$html .= $this->userMailReception($userAttribute);
+		return $html;
+	}
+
+/**
+ * 会員のメールの受信可否のチェックボックスボタンの表示
+ *
+ * @param array $userAttribute UserAttributeデータ
+ * @return string HTMLタグ
+ */
+	public function userMailReception($userAttribute) {
+		$html = '';
+
+		//以下の条件の場合、何も表示しない
+		// * メール項目でない
+		// * 各自でメール受信可否の設定ができない
+		if ($userAttribute['UserAttributeSetting']['data_type_key'] !== DataType::DATA_TYPE_EMAIL ||
+				! $userAttribute['UserAttributeSetting']['self_email_setting']) {
+			return $html;
+		}
+
 		$fieldName =
 			'User.' .
 			sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $userAttribute['UserAttribute']['key']);
 
-		$html .= '<div class="form-control nc-data-label">';
-		$html .= $this->NetCommonsForm->inlineCheckbox($fieldName, array(
-			'label' => __d('users', 'Yes, I receive by e-mail.')
+		$html .= '<div class="col-xs-12 col-sm-offset-3 col-sm-offset-9 user-edit-choice-mail">';
+		$html .= $this->NetCommonsForm->checkbox($fieldName, array(
+			'label' => __d('users', 'Yes, I receive by e-mail.'),
+			'div' => array('class' => 'form-inline'),
+			'inline' => true,
 		));
 		$html .= '</div>';
 		return $html;
@@ -255,10 +297,6 @@ class UserEditFormHelper extends AppHelper {
 
 		$html .= $this->__inputDataType($fieldName, $userAttribute, $attributes);
 
-		$html .= $this->userPublicForSelf($userAttribute);
-
-		$html .= $this->userMailReceptionForSelf($userAttribute);
-
 		return $html;
 	}
 
@@ -273,13 +311,22 @@ class UserEditFormHelper extends AppHelper {
 	private function __inputDataType($fieldName, $userAttribute, $attributes = array()) {
 		$output = '';
 
+		if (in_array($attributes['type'], [DataType::DATA_TYPE_IMG, DataType::DATA_TYPE_TEXTAREA], true)) {
+			$divOuterStart = '';
+			$divOuterEnd = '';
+		} else {
+			$divOuterStart = '<div class="form-group row">';
+			$divOuterEnd = '</div>';
+		}
+
+		$output .= $divOuterStart;
+
 		switch ($attributes['type']) {
 			case DataType::DATA_TYPE_IMG:
 				$output .= $this->__image($fieldName, $userAttribute, $attributes);
 				break;
 
 			case DataType::DATA_TYPE_PASSWORD:
-				$output .= '<div class="form-group row">';
 				$output .= '<div class="col-xs-12 col-sm-3 user-edit-label">';
 				$output .= $this->NetCommonsForm->label(
 					$fieldName,
@@ -295,7 +342,6 @@ class UserEditFormHelper extends AppHelper {
 				$output .= '<div class="col-xs-12 col-sm-9">';
 				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
 				$output .= '</div>';
-				$output .= '</div>';
 				break;
 
 			case DataType::DATA_TYPE_RADIO:
@@ -304,7 +350,6 @@ class UserEditFormHelper extends AppHelper {
 					$default = Hash::get($this->_View->request->data, $fieldName, '');
 					$attributes['default'] = explode(',', $default);
 				}
-				$output .= '<div class="form-group row">';
 				$output .= '<div class="col-xs-12 col-sm-3 user-edit-label">';
 				$output .= $this->NetCommonsForm->label(
 					$fieldName,
@@ -320,7 +365,6 @@ class UserEditFormHelper extends AppHelper {
 				$output .= '<div class="col-xs-12 col-sm-9 user-edit-choice">';
 				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
 				$output .= '</div>';
-				$output .= '</div>';
 				break;
 
 			case DataType::DATA_TYPE_TEXTAREA:
@@ -329,7 +373,6 @@ class UserEditFormHelper extends AppHelper {
 				break;
 
 			default:
-				$output .= '<div class="form-group row">';
 				$output .= '<div class="col-xs-12 col-sm-3 user-edit-label">';
 				$output .= $this->NetCommonsForm->label(
 					$fieldName,
@@ -344,9 +387,17 @@ class UserEditFormHelper extends AppHelper {
 				$output .= '<div class="col-xs-12 col-sm-9">';
 				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
 				$output .= '</div>';
-				$output .= '</div>';
 		}
 
+		if ($this->request->params['plugin'] === 'user_manager') {
+			$output .= $this->userPublic($userAttribute);
+			$output .= $this->userMailReception($userAttribute);
+		} else {
+			$output .= $this->userPublicForSelf($userAttribute);
+			$output .= $this->userMailReceptionForSelf($userAttribute);
+		}
+
+		$output .= $divOuterEnd;
 		return $output;
 	}
 
