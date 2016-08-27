@@ -138,7 +138,7 @@ class SaveUserBehavior extends ModelBehavior {
 				$model->data[$model->alias]['id'] === Current::read('User.id') &&
 				! $userAttributesRole['self_editable']) {
 
-			throw new BadRequestException(__d('net_commons', 'Bad Request 1'));
+			throw new BadRequestException(__d('net_commons', 'Bad Request'));
 		}
 
 		//管理者しか強化しない項目のチェック⇒不正エラーとする
@@ -146,7 +146,7 @@ class SaveUserBehavior extends ModelBehavior {
 				! Current::allowSystemPlugin('user_manager') &&
 				isset($model->data[$modelName][$userAttributeKey])) {
 
-			throw new BadRequestException(__d('net_commons', 'Bad Request 2'));
+			throw new BadRequestException(__d('net_commons', 'Bad Request'));
 		}
 	}
 
