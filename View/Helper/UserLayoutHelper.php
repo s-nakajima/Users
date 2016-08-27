@@ -125,20 +125,14 @@ class UserLayoutHelper extends AppHelper {
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
 		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_IMG) {
-			if (Hash::get($this->_View->viewVars['user'], 'UploadFile.' . $userAttributeKey . '.id')) {
-				$imageUrl = NetCommonsUrl::actionUrl(array(
-					'plugin' => 'users',
-					'controller' => 'users',
-					'action' => 'download',
-					'key' => Hash::get($this->_View->viewVars['user'], 'User.id'),
-					'key2' => Hash::get(
-						$this->_View->viewVars['user'], 'UploadFile.' . $userAttributeKey . '.field_name'
-					),
-					'medium',
-				));
-			} else {
-				$imageUrl = '/users/img/noimage.gif';
-			}
+			$imageUrl = NetCommonsUrl::actionUrl(array(
+				'plugin' => 'users',
+				'controller' => 'users',
+				'action' => 'download',
+				'key' => Hash::get($this->_View->viewVars['user'], 'User.id'),
+				'key2' => $userAttributeKey,
+				'medium',
+			));
 			$element .= '<div class="thumbnail user-thumbnail">';
 			$element .= $this->NetCommonsHtml->image($imageUrl, array(
 				'class' => 'img-responsive img-rounded',

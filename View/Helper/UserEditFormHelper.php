@@ -423,20 +423,27 @@ class UserEditFormHelper extends AppHelper {
 		$output = '';
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
-		if (Hash::get($this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.id')) {
+		if ($this->_View->request->params['plugin'] === 'user_manager' &&
+				$this->_View->request->params['controller'] === 'user_manager') {
+			$attributes['url'] = array(
+				'plugin' => 'user_manager',
+				'controller' => 'user_manager',
+				'action' => 'download',
+				'key' => Hash::get($this->_View->request->data, 'User.id'),
+				'key2' => $userAttributeKey,
+				'medium',
+			);
+		} else {
 			$attributes['url'] = array(
 				'plugin' => 'users',
 				'controller' => 'users',
 				'action' => 'download',
 				'key' => Hash::get($this->_View->request->data, 'User.id'),
-				'key2' => Hash::get(
-					$this->_View->request->data, 'UploadFile.' . $userAttributeKey . '.field_name'
-				),
+				'key2' => $userAttributeKey,
 				'medium',
 			);
-		} else {
-			$attributes['url'] = '/users/img/noimage.gif';
 		}
+
 		if (Hash::get($this->_View->request->data, 'User.is_avatar_auto_created') &&
 				$userAttributeKey === UserAttribute::AVATAR_FIELD) {
 			$attributes['remove'] = false;

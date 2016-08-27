@@ -16,6 +16,7 @@ App::uses('ModelBehavior', 'Model');
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model\Behavior
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class AvatarBehavior extends ModelBehavior {
 
@@ -103,6 +104,49 @@ class AvatarBehavior extends ModelBehavior {
 		}
 
 		return $isAvatarAutoCreated && $modifiedHandle;
+	}
+
+/**
+ * 非公開設定等により、一時的に非表示にしたときの画像
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $user ユーザデータ配列
+ * @param string $fieldName フィールド名
+ * @param string|null $size アバター種類
+ * @return bool
+ */
+	public function temporaryAvatar(Model $model, $user, $fieldName, $size = null) {
+		App::uses('File', 'Utility');
+		App::uses('Folder', 'Utility');
+
+		if ($size === 'thumb') {
+			$noimage = User::AVATAR_THUMB;
+		} else {
+			$noimage = User::AVATAR_IMG;
+		}
+		if (! class_exists('Imagick') || ! $model->Behaviors->hasMethod('createAvatarAutomatically')) {
+			return App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . $noimage;
+		}
+
+		$path = TMP . $fieldName;
+		$fileName = Security::hash($user['User']['handlename'], 'md5') . '.png';
+
+		if (file_exists($path . DS . $fileName)) {
+			return $path . DS . $fileName;
+		}
+
+		$Folder = new Folder();
+		$Folder->create($path);
+
+		$filePath = $model->createAvatarAutomatically($user);
+
+		$File = new File($filePath);
+		$File->copy($path . DS . $fileName);
+		if (file_exists($path . DS . $fileName)) {
+			return $path . DS . $fileName;
+		} else {
+			return App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . $noimage;
+		}
 	}
 
 }

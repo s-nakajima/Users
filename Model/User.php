@@ -574,12 +574,7 @@ class User extends UsersAppModel {
 				//     ハンドルを登録(POSTに含まれている)する場合 &&
 				//     登録前のハンドル名と登録後のハンドル名が異なる場合
 				if ($this->validAvatarAutomatically($data, $user, $beforeUser)) {
-					$filePath = $this->createAvatarAutomatically($user);
-
-					$currentDir = getcwd();
-					chdir(APP . WEBROOT_DIR);
-					$this->attachFile($user, UserAttribute::AVATAR_FIELD, $filePath, 'id');
-					chdir($currentDir);
+					$this->temporaryAvatar($user, UserAttribute::AVATAR_FIELD);
 				}
 			}
 

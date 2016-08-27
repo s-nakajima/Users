@@ -14,6 +14,7 @@
 
 App::uses('UsersAppController', 'Users.Controller');
 App::uses('UserSelectCount', 'Users.Model');
+App::uses('UserAttribute', 'UserAttributes.Model');
 
 /**
  * Users Controller
@@ -237,24 +238,29 @@ class UsersController extends UsersAppController {
 	public function download() {
 		$this->__prepare();
 
+		$user = $this->viewVars['user'];
 		$fieldName = $this->params['field_name'];
-		//$fileSetting = Hash::extract(
-		//	$this->viewVars['userAttributes'],
-		//	'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
-		//);
-		//if (! $fileSetting) {
-		//	throw new NotFoundException();
-		//}
+		$fieldSize = $this->params['size'];
 
-		if (! Hash::get($this->viewVars['user'], 'UploadFile.' . $fieldName . '.field_name')) {
-			$fieldSize = $this->params['size'];
-			if ($fieldSize === 'thumb') {
-				$noimage = User::AVATAR_THUMB;
-			} else {
-				$noimage = User::AVATAR_IMG;
-			}
+		$fileSetting = Hash::extract(
+			$this->viewVars['userAttributes'],
+			'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
+		);
+
+		if (! $fileSetting) {
 			$this->response->file(
-				App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . $noimage,
+				$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
+				array('name' => 'No Image')
+			);
+			return $this->response;
+		}
+		$userAttribute = Hash::get($this->viewVars['userAttributes'],
+			$fileSetting[0]['row'] . '.' . $fileSetting[0]['col'] . '.' . $fileSetting[0]['weight']
+		);
+
+		if (! Hash::get($user, 'UploadFile.' . $fieldName . '.field_name')) {
+			$this->response->file(
+				$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
 				array('name' => 'No Image')
 			);
 			return $this->response;
@@ -263,22 +269,38 @@ class UsersController extends UsersAppController {
 		//以下の場合、アバター表示
 		// * 自動生成画像
 		// * 自分自身
-		if (Hash::get($this->viewVars['user'], 'User.is_avatar_auto_created') ||
-				Hash::get($this->viewVars['user'], 'User.id') === Current::read('User.id')) {
-			return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
-				'field' => $this->params['field_name'],
-				'size' => $this->params['size'])
+		if (Hash::get($user, 'User.id') === Current::read('User.id')) {
+			return $this->Download->doDownload($user['User']['id'],
+				array('field' => $fieldName, 'size' => $fieldSize)
 			);
 		}
 
-		// 以下の条件の場合、ハンドル画像を表示する(後で)
+		// 以下の条件の場合、ハンドル画像を表示する(他人)
 		// * 各自で公開・非公開が設定可 && 非公開
-		// * 個人情報設定で閲覧不可、
+		// * 権限設定の個人情報設定で閲覧不可、
+		// * 会員項目設定で非表示(display=OFF)項目、
+		if ($userAttribute['UserAttributeSetting']['self_public_setting'] &&
+					! Hash::get($user, 'User.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $fieldName)) ||
+				! $userAttribute['UserAttributesRole']['other_readable'] ||
+				! $userAttribute['UserAttributeSetting']['display']) {
 
-		return $this->Download->doDownload($this->viewVars['user']['User']['id'], array(
-			'field' => $this->params['field_name'],
-			'size' => $this->params['size'])
-		);
+			if (Hash::get($this->viewVars['user'], 'User.is_avatar_auto_created')) {
+				return $this->Download->doDownload($user['User']['id'],
+					array('field' => $fieldName, 'size' => $fieldSize)
+				);
+			} else {
+				$this->response->file(
+					$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
+					array('name' => 'No Image')
+				);
+				return $this->response;
+			}
+
+		} else {
+			return $this->Download->doDownload($user['User']['id'],
+				array('field' => $fieldName, 'size' => $fieldSize)
+			);
+		}
 	}
 
 /**

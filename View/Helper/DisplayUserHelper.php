@@ -115,14 +115,27 @@ class DisplayUserHelper extends AppHelper {
 	public function avatar($user, $attributes = [], $modelId = 'TrackableCreator.id', $imgTag = true) {
 		$html = '';
 
-		$url = NetCommonsUrl::actionUrl(array(
-			'plugin' => 'users',
-			'controller' => 'users',
-			'action' => 'download',
-			'key' => Hash::get($user, $modelId),
-			UserAttribute::AVATAR_FIELD,
-			'thumb'
-		));
+		if ($this->_View->request->params['plugin'] === 'user_manager' &&
+				$this->_View->request->params['controller'] === 'user_manager') {
+			$url = NetCommonsUrl::actionUrl(array(
+				'plugin' => 'user_manager',
+				'controller' => 'user_manager',
+				'action' => 'download',
+				'key' => Hash::get($user, $modelId),
+				'key2' => UserAttribute::AVATAR_FIELD,
+				'thumb'
+			));
+		} else {
+			$url = NetCommonsUrl::actionUrl(array(
+				'plugin' => 'users',
+				'controller' => 'users',
+				'action' => 'download',
+				'key' => Hash::get($user, $modelId),
+				'key2' => UserAttribute::AVATAR_FIELD,
+				'thumb'
+			));
+		}
+
 		if ($imgTag) {
 			$html .= $this->NetCommonsHtml->image($url,
 					Hash::merge(['class' => 'user-avatar-xs', 'alt' => '', 'hasBlock' => false], $attributes));
