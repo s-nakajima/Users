@@ -359,6 +359,8 @@ class UserEditFormHelper extends AppHelper {
 				if ($attributes['type'] === DataType::DATA_TYPE_CHECKBOX) {
 					$default = Hash::get($this->_View->request->data, $fieldName, '');
 					$attributes['default'] = explode(',', $default);
+				} else {
+					$attributes = Hash::insert($attributes, 'empty', null);
 				}
 				$output .= '<div class="col-xs-12 col-sm-3 user-edit-label">';
 				$output .= $this->NetCommonsForm->label(
