@@ -146,18 +146,19 @@ class UserLayoutHelper extends AppHelper {
 				$keyPath = '{n}[code=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
 			}
 			$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
-			$element .= $option[0]['name'];
+			$element .= h($option[0]['name']);
 
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			$element .= $this->__displayLanguageField($fieldName);
 
 		} elseif (in_array($userAttributeKey, UserAttribute::$typeDatetime, true)) {
 			$element .= $this->Date->dateFormat(
-				Hash::get($this->_View->viewVars['user'], $fieldName), UserAttribute::DISPLAY_DATETIME_FORMAT
+				h(Hash::get($this->_View->viewVars['user'], $fieldName)),
+				UserAttribute::DISPLAY_DATETIME_FORMAT
 			);
 
 		} elseif (isset($fieldName)) {
-			$element .= Hash::get($this->_View->viewVars['user'], $fieldName);
+			$element .= h(Hash::get($this->_View->viewVars['user'], $fieldName));
 
 		} else {
 			$element .= '';
@@ -180,7 +181,7 @@ class UserLayoutHelper extends AppHelper {
 			if ($el) {
 				$element .=
 					'<div ng-show="activeLangId === \'' . $usersLanguage['language_id'] . '\'" ng-cloak>';
-				$element .= $el;
+				$element .= h($el);
 				$element .= '</div>';
 			}
 		}
