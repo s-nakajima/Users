@@ -363,14 +363,20 @@ class UserSearch extends UserSearchAppModel {
 		$sort = Hash::get($extra, 'sort');
 		$direction = Hash::get($extra, 'direction');
 
-		if (! $order && $sort && $direction) {
-			$order = array($sort => $direction);
-		} else {
-			$order = array();
+		if (! $order) {
+			if ($sort && $direction) {
+				$order = array($sort => $direction);
+			} elseif ($displayRooms) {
+				$order = array('room_role_level' => 'desc');
+				$sort = 'room_role_level';
+			} else {
+				$order = array();
+			}
 		}
-		$order += Hash::get($extra, 'defaultOrder', array('Role.id' => 'asc'));
+		$order += Hash::get($extra, 'defaultOrder', array()) +
+					array('Role.id' => 'asc', 'User.id' => 'asc');
 
-		if ($displayRooms && ($sort === 'room_role_level' || ! $sort)) {
+		if ($displayRooms && $sort === 'room_role_level') {
 			$convOrder = array();
 			foreach ($order as $key => $sort) {
 				if (isset($this->convRealToFieldKey[$key])) {
