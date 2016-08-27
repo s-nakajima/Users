@@ -15,9 +15,12 @@ App::uses('CurrentSystem', 'NetCommons.Utility');
 /**
  * SaveUser Behavior
  *
+ * ※PHPMのSuppressWarningsは暫定
+ *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model\Behavior
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class SaveUserBehavior extends ModelBehavior {
 
@@ -198,7 +201,20 @@ class SaveUserBehavior extends ModelBehavior {
 		}
 
 		//選択肢チェック
-		if (isset($userAttribute['UserAttributeChoice'])) {
+		if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_CHECKBOX) {
+			//チェックボックスタイプ
+			$valuePath = '{n}.code';
+			$inList = array_values(
+				Hash::combine($userAttribute['UserAttributeChoice'], '{n}.key', $valuePath)
+			);
+			$validates['inListByCheckbox'] = array(
+				'rule' => array('inListByCheckbox', $inList),
+				'message' => __d('net_commons', 'Invalid request.'),
+				'allowEmpty' => true,
+				'required' => false,
+			);
+		} elseif (isset($userAttribute['UserAttributeChoice'])) {
+			//それ以外
 			if ($userAttributeKey === 'role_key') {
 				$valuePath = '{n}.key';
 			} else {

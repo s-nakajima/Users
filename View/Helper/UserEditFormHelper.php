@@ -14,7 +14,7 @@ App::uses('AppHelper', 'View/Helper');
 /**
  * UserEditForm Helper
  *
- * 暫定で、ExcessiveClassComplexityでPHPMDをスキップする
+ * ※PHPMのSuppressWarningsは暫定
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\View\Helper
@@ -298,23 +298,6 @@ class UserEditFormHelper extends AppHelper {
 		}
 
 		$attributes['help'] = h(Hash::get($userAttribute, 'UserAttribute.description', ''));
-		$html .= $this->__inputDataType($fieldName, $userAttribute, $attributes);
-
-		return $html;
-	}
-
-/**
- * データタイプに対するinputタグのHTML出力
- * ※PHPMD除外は暫定
- *
- * @param string $fieldName フィールド名("Modelname.fieldname"形式)
- * @param array $userAttribute UserAttributeデータ
- * @param array $attributes HTMLタグ属性
- * @return string HTML 入力HTML
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
- */
-	private function __inputDataType($fieldName, $userAttribute, $attributes = array()) {
-		$output = '';
 
 		$noneDivOuters = [DataType::DATA_TYPE_IMG, DataType::DATA_TYPE_TEXTAREA];
 		if (in_array($attributes['type'], $noneDivOuters, true)) {
@@ -325,7 +308,27 @@ class UserEditFormHelper extends AppHelper {
 			$divOuterEnd = '</div>';
 		}
 
-		$output .= $divOuterStart;
+		$html .= $this->__inputDataType(
+			$fieldName, $userAttribute, $attributes, array('start' => $divOuterStart, 'end' => $divOuterEnd)
+		);
+
+		return $html;
+	}
+
+/**
+ * データタイプに対するinputタグのHTML出力
+ * ※PHPMのSuppressWarningsは暫定
+ *
+ * @param string $fieldName フィールド名("Modelname.fieldname"形式)
+ * @param array $userAttribute UserAttributeデータ
+ * @param array $attributes HTMLタグ属性
+ * @param array $divOuter 外側のDIVタグ
+ * @return string HTML 入力HTML
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ */
+	private function __inputDataType($fieldName, $userAttribute, $attributes, $divOuter) {
+		$output = '';
+		$output .= $divOuter['start'];
 
 		switch ($attributes['type']) {
 			case DataType::DATA_TYPE_IMG:
@@ -358,10 +361,19 @@ class UserEditFormHelper extends AppHelper {
 			case DataType::DATA_TYPE_CHECKBOX:
 				if ($attributes['type'] === DataType::DATA_TYPE_CHECKBOX) {
 					$default = Hash::get($this->_View->request->data, $fieldName, '');
-					$attributes['default'] = explode(',', $default);
+					if (is_string($default)) {
+						$attributes['default'] = explode(DataType::CHECKBOX_SEPARATOR, $default);
+					} else {
+						$attributes['default'] = $default;
+					}
+					$output .= $this->NetCommonsForm->hidden($fieldName, array(
+						'value' => false
+					));
+					$attributes['hiddenField'] = false;
 				} else {
 					$attributes = Hash::insert($attributes, 'empty', null);
 				}
+
 				$output .= '<div class="col-xs-12 col-sm-3 user-edit-label">';
 				$output .= $this->NetCommonsForm->label(
 					$fieldName,
@@ -375,6 +387,7 @@ class UserEditFormHelper extends AppHelper {
 				$attributes = Hash::merge(['inline' => true], $attributes);
 
 				$output .= '<div class="col-xs-12 col-sm-9 user-edit-choice">';
+
 				$output .= $this->NetCommonsForm->input($fieldName, $attributes);
 				$output .= '</div>';
 				break;
@@ -409,7 +422,7 @@ class UserEditFormHelper extends AppHelper {
 			$output .= $this->userMailReceptionForSelf($userAttribute);
 		}
 
-		$output .= $divOuterEnd;
+		$output .= $divOuter['end'];
 		return $output;
 	}
 
