@@ -297,7 +297,7 @@ class UserEditFormHelper extends AppHelper {
 			);
 		}
 
-		$attributes['help'] = Hash::get($userAttribute, 'UserAttribute.description', '');
+		$attributes['help'] = h(Hash::get($userAttribute, 'UserAttribute.description', ''));
 		$html .= $this->__inputDataType($fieldName, $userAttribute, $attributes);
 
 		return $html;
