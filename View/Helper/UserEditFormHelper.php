@@ -438,16 +438,25 @@ class UserEditFormHelper extends AppHelper {
 		$output = '';
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 
-		if ($this->_View->request->params['plugin'] === 'user_manager' &&
-				$this->_View->request->params['controller'] === 'user_manager') {
-			$attributes['url'] = array(
-				'plugin' => 'user_manager',
-				'controller' => 'user_manager',
-				'action' => 'download',
-				'key' => Hash::get($this->_View->request->data, 'User.id'),
-				'key2' => $userAttributeKey,
-				'medium',
-			);
+		if ($this->_View->request->params['plugin'] === 'user_manager') {
+			if ($this->_View->request->params['controller'] === 'user_add') {
+				$attributes['url'] = array(
+					'plugin' => 'user_manager',
+					'controller' => 'user_add',
+					'action' => 'download',
+					'key' => $userAttributeKey,
+					'medium',
+				);
+			} else {
+				$attributes['url'] = array(
+					'plugin' => 'user_manager',
+					'controller' => 'user_manager',
+					'action' => 'download',
+					'key' => Hash::get($this->_View->request->data, 'User.id'),
+					'key2' => $userAttributeKey,
+					'medium',
+				);
+			}
 		} else {
 			$attributes['url'] = array(
 				'plugin' => 'users',

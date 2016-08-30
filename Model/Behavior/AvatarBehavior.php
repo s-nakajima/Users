@@ -125,7 +125,7 @@ class AvatarBehavior extends ModelBehavior {
 			$noimage = User::AVATAR_IMG;
 		}
 		if (! class_exists('Imagick') || ! $model->Behaviors->hasMethod('createAvatarAutomatically')) {
-			return App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . $noimage;
+			return App::pluginPath('Users') . 'webroot' . DS . 'img' . DS . $noimage;
 		}
 
 		$path = TMP . $fieldName;
