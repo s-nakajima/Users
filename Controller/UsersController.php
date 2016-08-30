@@ -74,6 +74,7 @@ class UsersController extends UsersAppController {
  * Controller::beforeFilter()のあと、アクション前に実行する
  *
  * @return void
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	private function __prepare() {
 		$this->Auth->deny('index', 'view');
@@ -86,7 +87,7 @@ class UsersController extends UsersAppController {
 		}
 
 		$user = $this->User->getUser($userId);
-		if (! $user || $user['User']['is_deleted']) {
+		if (! $user || $user['User']['is_deleted'] && $this->params['action'] !== 'download') {
 			return $this->setAction('throwBadRequest');
 		}
 		$this->set('user', $user);
