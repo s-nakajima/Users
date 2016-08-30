@@ -356,6 +356,10 @@ class SaveUserBehavior extends ModelBehavior {
 			'PluginsRole' => 'PluginManager.PluginsRole',
 		]);
 
+		if (! Hash::get($model->data, 'User.role_key')) {
+			return true;
+		}
+
 		//参加ルームの登録
 		$count = $model->PluginsRole->find('count', array(
 			'recursive' => -1,
