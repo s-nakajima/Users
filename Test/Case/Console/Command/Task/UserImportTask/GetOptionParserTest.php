@@ -47,6 +47,19 @@ class UsersConsoleCommandTaskUserImportTaskGetOptionParserTest extends NetCommon
 
 		//チェック
 		$this->assertEquals('ConsoleOptionParser', get_class($result));
+
+		//引数ヘルプのチェック
+		$expected = array();
+		$actual = array();
+		$arguments = array(
+			'file' => 'Import file path.'
+		);
+		$index = 0;
+		foreach ($arguments as $arg => $helpMessage) {
+			$expected[] = $arg . ' ' . $helpMessage;
+			$actual[] = $result->arguments()[$index]->help(strlen($arg) + 1);
+		}
+		$this->assertEquals($expected, $actual);
 	}
 
 }

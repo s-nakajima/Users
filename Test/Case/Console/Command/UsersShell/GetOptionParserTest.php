@@ -17,7 +17,14 @@ App::uses('NetCommonsConsoleTestCase', 'NetCommons.TestSuite');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\Case\Console\Command\UsersShell
  */
-class ConsoleCommandUsersShellGetOptionParserTest extends NetCommonsConsoleTestCase {
+class UsersConsoleCommandUsersShellGetOptionParserTest extends NetCommonsConsoleTestCase {
+
+/**
+ * Fixtures
+ *
+ * @var array
+ */
+	public $fixtures = array();
 
 /**
  * Plugin name
@@ -40,19 +47,32 @@ class ConsoleCommandUsersShellGetOptionParserTest extends NetCommonsConsoleTestC
  */
 	public function testGetOptionParser() {
 		$shell = $this->_shellName;
-		$this->$shell = $this->loadShell($shell, 'h');
-		$this->$shell->UserImport = $this->getMock('ImportTask',
-				array('getOptionParser'), array(), '', false);
+		$this->$shell = $this->loadShell($shell);
 
-		//チェック
-		$this->$shell->UserImport->expects($this->once())->method('getOptionParser')
-			->will($this->returnValue(''));
+		//事前準備
+		$task = 'UserImport';
+		$this->$shell->$task = $this->getMock($task,
+				array('getOptionParser'), array(), '', false);
+		$this->$shell->$task->expects($this->once())->method('getOptionParser')
+			->will($this->returnValue(true));
 
 		//テスト実施
 		$result = $this->$shell->getOptionParser();
 
 		//チェック
 		$this->assertEquals('ConsoleOptionParser', get_class($result));
+
+		//サブタスクヘルプのチェック
+		$expected = array();
+		$actual = array();
+		$subCommands = array(
+			'user_import' => __d('user_manager', 'Import description'),
+		);
+		foreach ($subCommands as $subCommand => $helpMessage) {
+			$expected[] = $subCommand . ' ' . $helpMessage;
+			$actual[] = $result->subcommands()[$subCommand]->help(strlen($subCommand) + 1);
+		}
+		$this->assertEquals($expected, $actual);
 	}
 
 }
