@@ -50,7 +50,9 @@ class UsersShell extends AppShell {
 		$this->out(__d('users', '[H]elp'));
 		$this->out(__d('users', '[Q]uit'));
 
-		$choice = strtolower($this->in(__d('users', 'What would you like to do?'), ['I', 'H', 'Q'], 'Q'));
+		$choice = strtolower(
+			$this->in(__d('net_commons', 'What would you like to do?'), ['I', 'H', 'Q'], 'Q')
+		);
 		switch ($choice) {
 			case 'i':
 				$this->UserImport->execute();
@@ -62,8 +64,8 @@ class UsersShell extends AppShell {
 				return $this->_stop();
 			default:
 				$this->out(
-					__d('cake_console', 'You have made an invalid selection. ' .
-										'Please choose a command to execute by entering I, H, or Q.')
+					__d('net_commons', 'You have made an invalid selection. ' .
+								'Please choose a command to execute by entering %s.', '[I, H, Q]')
 				);
 		}
 		$this->hr();
