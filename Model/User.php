@@ -500,16 +500,18 @@ class User extends UsersAppModel {
 			$conditions[$this->UsersLanguage->alias . '.language_id'] = $languageId;
 		}
 
-		$usersLanguage = $this->UsersLanguage->find('all', array(
-			'recursive' => 0,
-			'fields' => array(
-				$this->UsersLanguage->alias . '.*'
-			),
-			'conditions' => $conditions,
-		));
-		$user[$this->UsersLanguage->alias] = Hash::extract(
-			$usersLanguage, '{n}.' . $this->UsersLanguage->alias
-		);
+		if ($user) {
+			$usersLanguage = $this->UsersLanguage->find('all', array(
+				'recursive' => 0,
+				'fields' => array(
+					$this->UsersLanguage->alias . '.*'
+				),
+				'conditions' => $conditions,
+			));
+			$user[$this->UsersLanguage->alias] = Hash::extract(
+				$usersLanguage, '{n}.' . $this->UsersLanguage->alias
+			);
+		}
 
 		return $user;
 	}

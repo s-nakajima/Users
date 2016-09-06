@@ -73,7 +73,7 @@ class UsersController extends UsersAppController {
  * アクションの前処理
  * Controller::beforeFilter()のあと、アクション前に実行する
  *
- * @return void
+ * @return bool
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	private function __prepare() {
@@ -87,10 +87,15 @@ class UsersController extends UsersAppController {
 		}
 
 		$user = $this->User->getUser($userId);
-		if (! $user || $user['User']['is_deleted'] && $this->params['action'] !== 'download') {
-			return $this->setAction('throwBadRequest');
-		}
 		$this->set('user', $user);
+		if (! $user || $user['User']['is_deleted']) {
+			if ($this->params['action'] === 'download') {
+				return false;
+			} else {
+				return $this->setAction('throwBadRequest');
+			}
+		}
+
 		$this->set('title', false);
 
 		//ルームデータチェック
@@ -110,6 +115,8 @@ class UsersController extends UsersAppController {
 			}
 			$this->set('roomId', $roomId);
 		}
+
+		return true;
 	}
 
 /**
@@ -237,7 +244,9 @@ class UsersController extends UsersAppController {
  * @throws NotFoundException
  */
 	public function download() {
-		$this->__prepare();
+		if (! $this->__prepare()) {
+			return $this->downloadNoImage();
+		}
 
 		$user = $this->viewVars['user'];
 		$fieldName = $this->params['field_name'];
@@ -249,26 +258,17 @@ class UsersController extends UsersAppController {
 		);
 
 		if (! $fileSetting) {
-			$this->response->file(
-				$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
-				array('name' => 'No Image')
-			);
-			return $this->response;
+			return $this->downloadNoImage();
 		}
 		$userAttribute = Hash::get($this->viewVars['userAttributes'],
 			$fileSetting[0]['row'] . '.' . $fileSetting[0]['col'] . '.' . $fileSetting[0]['weight']
 		);
 
 		if (! Hash::get($user, 'UploadFile.' . $fieldName . '.field_name')) {
-			$this->response->file(
-				$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
-				array('name' => 'No Image')
-			);
-			return $this->response;
+			return $this->downloadNoImage();
 		}
 
 		//以下の場合、アバター表示
-		// * 自動生成画像
 		// * 自分自身
 		if (Hash::get($user, 'User.id') === Current::read('User.id')) {
 			return $this->Download->doDownload($user['User']['id'],
@@ -284,24 +284,29 @@ class UsersController extends UsersAppController {
 					! Hash::get($user, 'User.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $fieldName)) ||
 				! $userAttribute['UserAttributesRole']['other_readable'] ||
 				! $userAttribute['UserAttributeSetting']['display']) {
-
-			if (Hash::get($this->viewVars['user'], 'User.is_avatar_auto_created')) {
-				return $this->Download->doDownload($user['User']['id'],
-					array('field' => $fieldName, 'size' => $fieldSize)
-				);
-			} else {
-				$this->response->file(
-					$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
-					array('name' => 'No Image')
-				);
-				return $this->response;
-			}
-
+			return $this->downloadNoImage();
 		} else {
 			return $this->Download->doDownload($user['User']['id'],
 				array('field' => $fieldName, 'size' => $fieldSize)
 			);
 		}
+	}
+
+/**
+ * download method
+ *
+ * @return void
+ */
+	public function downloadNoImage() {
+		$user = $this->viewVars['user'];
+		$fieldName = $this->params['field_name'];
+		$fieldSize = $this->params['size'];
+
+		$this->response->file(
+			$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
+			array('name' => 'No Image')
+		);
+		return $this->response;
 	}
 
 /**
