@@ -290,11 +290,14 @@ class User extends UsersAppModel {
 				'username' => array(
 					'notBlank' => array(
 						'rule' => array('notBlank'),
-						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'username')),
+						'message' => sprintf(
+							__d('net_commons', 'Please input %s.'),
+							__d('users', 'username')
+						),
 						'required' => true
 					),
-					'regex' => array(
-						'rule' => array('custom', '/[\w]+/'),
+					'alphaNumericSymbols' => array(
+						'rule' => array('alphaNumericSymbols', false),
 						'message' => sprintf(
 							__d('net_commons', 'Only alphabets, numbers and symbols are allowed to use for %s.'),
 							__d('users', 'username')
@@ -307,6 +310,7 @@ class User extends UsersAppModel {
 						'message' => __d('net_commons', 'Please choose at least %s characters string.', 4),
 						'required' => true
 					),
+					//notDuplicateテストは、SaveUserBehavior::__setValidates()でセットする
 				),
 			));
 		}
@@ -333,8 +337,8 @@ class User extends UsersAppModel {
 						'allowEmpty' => false,
 						'required' => true,
 					),
-					'regex' => array(
-						'rule' => array('custom', '/[\w]+/'),
+					'alphaNumericSymbols' => array(
+						'rule' => array('alphaNumericSymbols', false),
 						'message' => sprintf(
 							__d('net_commons', 'Only alphabets, numbers and symbols are allowed to use for %s.'),
 							__d('users', 'password')
@@ -386,6 +390,7 @@ class User extends UsersAppModel {
 			}
 
 		} elseif (isset($this->data['User']['password'])) {
+			//会員の編集時、パスワードを空にした場合、unsetする。
 			unset($this->data['User']['password']);
 		}
 	}

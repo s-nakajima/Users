@@ -46,8 +46,8 @@ class UsersValidationRuleBehavior extends ModelBehavior {
 
 		$value = array_shift($check);
 		$conditions = array();
-		if ($model->data[$model->alias]['id']) {
-			$conditions['id !='] = $model->data[$model->alias]['id'];
+		if (Hash::get($model->data[$model->alias], 'id')) {
+			$conditions['id !='] = Hash::get($model->data[$model->alias], 'id');
 		}
 		$conditions['is_deleted'] = false;
 		foreach ($fields as $field) {
