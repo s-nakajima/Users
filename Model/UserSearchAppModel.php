@@ -37,6 +37,14 @@ class UserSearchAppModel extends UsersAppModel {
 	const WITHIN_DAYS = 'within_days';
 
 /**
+ * Custom database table name, or null/false if no table association is desired.
+ *
+ * @var string
+ * @link http://book.cakephp.org/2.0/ja/models/model-attributes.html#usetable
+ */
+	public $useTable = false;
+
+/**
  * 閲覧可のフィールドセット
  * self::__prepare()から実行される
  *
