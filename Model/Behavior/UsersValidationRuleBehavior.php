@@ -18,7 +18,7 @@ App::uses('DataType', 'DataTypes.Model');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model\Behavior
  */
-class ValidationRuleBehavior extends ModelBehavior {
+class UsersValidationRuleBehavior extends ModelBehavior {
 
 /**
  * field1とfield2が同じかチェックする
@@ -46,8 +46,8 @@ class ValidationRuleBehavior extends ModelBehavior {
 
 		$value = array_shift($check);
 		$conditions = array();
-		if ($model->data[$model->alias]['id']) {
-			$conditions['id !='] = $model->data[$model->alias]['id'];
+		if (Hash::get($model->data[$model->alias], 'id')) {
+			$conditions['id !='] = Hash::get($model->data[$model->alias], 'id');
 		}
 		$conditions['is_deleted'] = false;
 		foreach ($fields as $field) {
@@ -81,6 +81,31 @@ class ValidationRuleBehavior extends ModelBehavior {
 		$model->data[$model->alias][$field] = implode(DataType::CHECKBOX_SEPARATOR, $values);
 
 		return true;
+	}
+
+/**
+ * 現在のパスワード
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param array $check チェック値
+ * @return bool
+ */
+	public function currentPassword(Model $model, $check) {
+		$User = ClassRegistry::init('Users.User');
+
+		$value = array_shift($check);
+
+		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
+		$passwordHasher = new SimplePasswordHasher();
+		$conditions = array(
+			'id' => $model->data[$model->alias]['id'],
+			'password' => $passwordHasher->hash($value),
+		);
+
+		return (bool)$User->find('count', array(
+			'recursive' => -1,
+			'conditions' => $conditions
+		));
 	}
 
 }

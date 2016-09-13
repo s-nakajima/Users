@@ -93,7 +93,7 @@ class User extends UsersAppModel {
 		'Users.Avatar',
 		'Users.DeleteUser',
 		'Users.ImportExport',
-		'Users.ValidationRule',
+		'Users.UsersValidationRule',
 		'Users.SaveUser',
 	);
 
@@ -290,13 +290,16 @@ class User extends UsersAppModel {
 				'username' => array(
 					'notBlank' => array(
 						'rule' => array('notBlank'),
-						'message' => sprintf(__d('net_commons', 'Please input %s.'), __d('users', 'username')),
+						'message' => sprintf(
+							__d('net_commons', 'Please input %s.'),
+							__d('users', 'username')
+						),
 						'required' => true
 					),
-					'regex' => array(
-						'rule' => array('custom', '/[\w]+/'),
+					'alphaNumericSymbols' => array(
+						'rule' => array('alphaNumericSymbols', false),
 						'message' => sprintf(
-							__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'),
+							__d('net_commons', 'Only alphabets, numbers and symbols are allowed to use for %s.'),
 							__d('users', 'username')
 						),
 						'allowEmpty' => false,
@@ -307,6 +310,7 @@ class User extends UsersAppModel {
 						'message' => __d('net_commons', 'Please choose at least %s characters string.', 4),
 						'required' => true
 					),
+					//notDuplicateテストは、SaveUserBehavior::__setValidates()でセットする
 				),
 			));
 		}
@@ -333,10 +337,10 @@ class User extends UsersAppModel {
 						'allowEmpty' => false,
 						'required' => true,
 					),
-					'regex' => array(
-						'rule' => array('custom', '/[\w]+/'),
+					'alphaNumericSymbols' => array(
+						'rule' => array('alphaNumericSymbols', false),
 						'message' => sprintf(
-							__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'),
+							__d('net_commons', 'Only alphabets, numbers and symbols are allowed to use for %s.'),
 							__d('users', 'password')
 						),
 						'allowEmpty' => false,
@@ -386,6 +390,7 @@ class User extends UsersAppModel {
 			}
 
 		} elseif (isset($this->data['User']['password'])) {
+			//会員の編集時、パスワードを空にした場合、unsetする。
 			unset($this->data['User']['password']);
 		}
 	}
@@ -592,30 +597,6 @@ class User extends UsersAppModel {
 		Current::$current['Room'] = $currentRoom;
 
 		return $user;
-	}
-
-/**
- * 現在のパスワード
- *
- * @param array $check チェック値
- * @return bool
- */
-	public function currentPassword($check) {
-		$User = ClassRegistry::init('Users.User');
-
-		$value = array_shift($check);
-
-		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-		$passwordHasher = new SimplePasswordHasher();
-		$conditions = array(
-			'id' => $this->data[$this->alias]['id'],
-			'password' => $passwordHasher->hash($value),
-		);
-
-		return (bool)$User->find('count', array(
-			'recursive' => -1,
-			'conditions' => $conditions
-		));
 	}
 
 }

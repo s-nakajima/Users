@@ -147,6 +147,16 @@ class UserFixture extends CakeTestFixture {
 	public function init() {
 		require_once App::pluginPath('Users') . 'Config' . DS . 'Schema' . DS . 'schema.php';
 		$this->fields = (new UsersSchema())->tables['users'];
+
+		Security::setHash('sha512');
+		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
+		$passwordHasher = new SimplePasswordHasher();
+
+		foreach ($this->records as $i => $record) {
+			$record['password'] = $passwordHasher->hash($record['password']);
+			$this->records[$i] = $record;
+		}
+
 		parent::init();
 	}
 

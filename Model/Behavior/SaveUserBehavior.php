@@ -66,8 +66,8 @@ class SaveUserBehavior extends ModelBehavior {
 			}
 
 			$userAttributeKey = $userAttribute['UserAttribute']['key'];
-			if ($model->data[$model->alias]['id'] &&
-					! isset($model->data[$model->alias][$userAttributeKey])) {
+			$userId = Hash::get($model->data[$model->alias], 'id');
+			if ($userId && ! isset($model->data[$model->alias][$userAttributeKey])) {
 				continue;
 			}
 			$this->__setValidates($model, $userAttribute);
@@ -136,10 +136,9 @@ class SaveUserBehavior extends ModelBehavior {
 		$userAttributesRole = $userAttributesRole[0];
 
 		//他人でother_editable=falseの場合、自分でself_editable=falseは、不正エラー
-		if ($model->data[$model->alias]['id'] !== Current::read('User.id') &&
-				! $userAttributesRole['other_editable'] &&
-				$model->data[$model->alias]['id'] === Current::read('User.id') &&
-				! $userAttributesRole['self_editable']) {
+		$userId = Hash::get($model->data[$model->alias], 'id');
+		if ($userId !== Current::read('User.id') && ! $userAttributesRole['other_editable'] ||
+				$userId === Current::read('User.id') && ! $userAttributesRole['self_editable']) {
 
 			throw new BadRequestException(__d('net_commons', 'Bad Request'));
 		}
