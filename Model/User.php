@@ -93,7 +93,7 @@ class User extends UsersAppModel {
 		'Users.Avatar',
 		'Users.DeleteUser',
 		'Users.ImportExport',
-		'Users.ValidationRule',
+		'Users.UsersValidationRule',
 		'Users.SaveUser',
 	);
 
@@ -592,30 +592,6 @@ class User extends UsersAppModel {
 		Current::$current['Room'] = $currentRoom;
 
 		return $user;
-	}
-
-/**
- * 現在のパスワード
- *
- * @param array $check チェック値
- * @return bool
- */
-	public function currentPassword($check) {
-		$User = ClassRegistry::init('Users.User');
-
-		$value = array_shift($check);
-
-		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-		$passwordHasher = new SimplePasswordHasher();
-		$conditions = array(
-			'id' => $this->data[$this->alias]['id'],
-			'password' => $passwordHasher->hash($value),
-		);
-
-		return (bool)$User->find('count', array(
-			'recursive' => -1,
-			'conditions' => $conditions
-		));
 	}
 
 }
