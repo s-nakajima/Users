@@ -156,7 +156,6 @@ class UserFixture extends CakeTestFixture {
 			$record['password'] = $passwordHasher->hash($record['password']);
 			$this->records[$i] = $record;
 		}
-		var_dump($this->records);
 
 		parent::init();
 	}
