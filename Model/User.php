@@ -296,7 +296,7 @@ class User extends UsersAppModel {
 					'regex' => array(
 						'rule' => array('custom', '/[\w]+/'),
 						'message' => sprintf(
-							__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'),
+							__d('net_commons', 'Only alphabets, numbers and symbols are allowed to use for %s.'),
 							__d('users', 'username')
 						),
 						'allowEmpty' => false,
@@ -336,7 +336,7 @@ class User extends UsersAppModel {
 					'regex' => array(
 						'rule' => array('custom', '/[\w]+/'),
 						'message' => sprintf(
-							__d('net_commons', 'Only alphabets and numbers are allowed to use for %s.'),
+							__d('net_commons', 'Only alphabets, numbers and symbols are allowed to use for %s.'),
 							__d('users', 'password')
 						),
 						'allowEmpty' => false,
