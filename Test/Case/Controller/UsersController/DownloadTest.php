@@ -170,7 +170,7 @@ class UsersControllerDownloadTest extends NetCommonsControllerTestCase {
 				'Users.User', 'temporaryAvatar', $avatarPath
 			);
 		} else {
-			$avatarPath = App::pluginPath('Users') . DS . 'webroot' . DS . 'img' . DS . User::AVATAR_THUMB;
+			$avatarPath = App::pluginPath('Users') . 'webroot' . DS . 'img' . DS . User::AVATAR_THUMB;
 		}
 
 		return $avatarPath;
