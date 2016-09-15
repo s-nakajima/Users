@@ -43,49 +43,49 @@ class UsersLanguage4userFixture extends UsersLanguageFixture {
 			'id' => '1',
 			'user_id' => '1',
 			'language_id' => '2',
-			'name' => 'System administrator',
-			'profile' => 'System administrator profile',
+			'name' => 'System Administrator Name',
+			'profile' => 'System Administrator Profile',
 			'search_keywords' => 'default'
 		),
 		array(
 			'id' => '2',
 			'user_id' => '2',
 			'language_id' => '2',
-			'name' => 'Chief editor',
-			'profile' => 'Chief editor profile',
+			'name' => 'Site Manager Name',
+			'profile' => 'Site Manager Profile',
 			'search_keywords' => 'default'
 		),
 		array(
 			'id' => '3',
 			'user_id' => '3',
 			'language_id' => '2',
-			'name' => 'Editor',
-			'profile' => 'Editor profile',
+			'name' => 'Chief Editor Name',
+			'profile' => 'Chief Editor Profile',
 			'search_keywords' => 'default'
 		),
 		array(
 			'id' => '4',
 			'user_id' => '4',
 			'language_id' => '2',
-			'name' => 'General user',
-			'profile' => 'General user profile',
+			'name' => 'Editor Name',
+			'profile' => 'Editor Profile',
 			'search_keywords' => 'default'
 		),
 		array(
 			'id' => '5',
 			'user_id' => '5',
 			'language_id' => '2',
-			'name' => 'Visitor',
-			'profile' => 'Visitor profile',
+			'name' => 'General User Name',
+			'profile' => 'General User Profile',
 			'search_keywords' => 'default'
 		),
 		array(
 			'id' => '6',
 			'user_id' => '6',
 			'language_id' => '2',
-			'name' => 'User 1',
-			'profile' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-			'search_keywords' => 'Lorem ipsum dolor sit amet'
+			'name' => 'Visitor Name',
+			'profile' => 'Visitor Profile',
+			'search_keywords' => 'default'
 		),
 	);
 
