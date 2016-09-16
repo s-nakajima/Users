@@ -1,6 +1,6 @@
 <?php
 /**
- * SaveUserBehaviorテスト用Model
+ * UserPermissionBehaviorテスト用Model
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -12,12 +12,12 @@
 App::uses('AppModel', 'Model');
 
 /**
- * SaveUserBehaviorテスト用Model
+ * UserPermissionBehaviorテスト用Model
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\test_app\Plugin\TestUsers\Model
  */
-class TestSaveUserBehaviorModel extends AppModel {
+class TestUserPermissionBehaviorModel extends AppModel {
 
 /**
  * テーブル名
@@ -32,7 +32,7 @@ class TestSaveUserBehaviorModel extends AppModel {
  * @var array
  */
 	public $actsAs = array(
-		'Users.SaveUser'
+		'Users.UserPermission'
 	);
 
 }

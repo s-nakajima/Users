@@ -15,12 +15,8 @@ App::uses('CurrentSystem', 'NetCommons.Utility');
 /**
  * SaveUser Behavior
  *
- * ※PHPMのSuppressWarningsは暫定
- *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model\Behavior
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class SaveUserBehavior extends ModelBehavior {
 
@@ -413,23 +409,6 @@ class SaveUserBehavior extends ModelBehavior {
 			if (! $result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
-		}
-
-		return true;
-	}
-
-/**
- * ユーザの編集出来るかどうか
- *
- * @param Model $model ビヘイビア呼び出し元モデル
- * @param array $user ユーザデータ
- * @return bool
- */
-	public function canUserEdit(Model $model, $user) {
-		if (! $user ||
-				Current::read('User.role_key') !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR &&
-					$user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
-			return false;
 		}
 
 		return true;

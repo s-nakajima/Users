@@ -1,6 +1,6 @@
 <?php
 /**
- * SaveUserBehavior::canUserEdit()のテスト
+ * UserPermissionBehavior::canUserEdit()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -13,12 +13,12 @@ App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
 App::uses('UserRole', 'UserRoles.Model');
 
 /**
- * SaveUserBehavior::canUserEdit()のテスト
+ * UserPermissionBehavior::canUserEdit()のテスト
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
- * @package NetCommons\Users\Test\Case\Model\Behavior\SaveUserBehavior
+ * @package NetCommons\Users\Test\Case\Model\Behavior\UserPermissionBehavior
  */
-class SaveUserBehaviorCanUserEditTest extends NetCommonsModelTestCase {
+class UserPermissionBehaviorCanUserEditTest extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
@@ -44,7 +44,7 @@ class SaveUserBehaviorCanUserEditTest extends NetCommonsModelTestCase {
 
 		//テストプラグインのロード
 		NetCommonsCakeTestCase::loadTestPlugin($this, 'Users', 'TestUsers');
-		$this->TestModel = ClassRegistry::init('TestUsers.TestSaveUserBehaviorModel');
+		$this->TestModel = ClassRegistry::init('TestUsers.TestUserPermissionBehaviorModel');
 	}
 
 /**
