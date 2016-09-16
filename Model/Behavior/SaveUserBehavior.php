@@ -426,8 +426,9 @@ class SaveUserBehavior extends ModelBehavior {
  * @return bool
  */
 	public function canUserEdit(Model $model, $user) {
-		if (Current::read('User.role_key') !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR &&
-				(! $user || $user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR)) {
+		if (! $user ||
+				Current::read('User.role_key') !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR &&
+					$user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 			return false;
 		}
 
