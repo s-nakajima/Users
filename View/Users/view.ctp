@@ -29,7 +29,7 @@
 		</li>
 	<?php endif; ?>
 
-	<?php if (isset($groups)) : ?>
+	<?php if (isset($groups) && Current::permission('group_creatable')) : ?>
 		<li<?php echo (Hash::get($this->request->query, 'tab') === 'user-groups' ? ' class="active"' : ''); ?>>
 			<a href="#user-groups" aria-controls="user-groups" role="tab" data-toggle="tab">
 				<?php echo __d('groups', 'Groups management'); ?>
@@ -57,7 +57,7 @@
 		</div>
 	<?php endif; ?>
 
-	<?php if (isset($groups)) : ?>
+	<?php if (isset($groups) && Current::permission('group_creatable')) : ?>
 		<div class="tab-pane<?php echo (Hash::get($this->request->query, 'tab') === 'user-groups' ? ' active' : ''); ?>" id="user-groups">
 			<?php echo $this->element('Groups.list'); ?>
 		</div>
