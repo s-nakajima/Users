@@ -16,20 +16,19 @@ if (Current::read('User.role_key') !== UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRA
 		$user['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
 	$editLink = false;
 }
-
 ?>
+
+<?php if ($editLink) : ?>
+	<div class="text-right nc-edit-link">
+		<?php echo $this->Button->editLink('',
+				array('block_id' => null, 'key' => $user['User']['id']),
+				array('tooltip' => true, 'iconSize' => ' btn-sm')
+			); ?>
+	</div>
+<?php endif; ?>
 
 <div class="panel panel-default">
 	<div class="panel-body">
-		<div class="text-right">
-			<?php if ($editLink) : ?>
-				<?php echo $this->Button->editLink('',
-						array('block_id' => null, 'key' => $user['User']['id']),
-						array('tooltip' => true, 'iconSize' => ' btn-xs')
-					); ?>
-			<?php endif; ?>
-		</div>
-
 		<div class="tab-content">
 			<div ng-init="activeLangId = '<?php echo h($activeLangId); ?>'">
 				<?php echo $this->UserAttributeLayout->renderRow('Users.Users/view_information_row'); ?>

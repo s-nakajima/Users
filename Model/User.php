@@ -93,6 +93,7 @@ class User extends UsersAppModel {
 		'Users.Avatar',
 		'Users.DeleteUser',
 		'Users.ImportExport',
+		'Users.UserPermission',
 		'Users.UsersValidationRule',
 		'Users.SaveUser',
 	);

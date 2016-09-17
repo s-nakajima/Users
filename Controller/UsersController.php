@@ -51,6 +51,9 @@ class UsersController extends UsersAppController {
 	public $components = array(
 		'Files.Download',
 		'M17n.SwitchLanguage',
+		'NetCommons.Permission' => array(
+			'type' => PermissionComponent::CHECK_TYEP_NOCHECK_PLUGIN,
+		),
 		'Rooms.Rooms',
 		'UserAttributes.UserAttributeLayout',
 		'Users.UserSearchComp',
@@ -74,7 +77,6 @@ class UsersController extends UsersAppController {
  * Controller::beforeFilter()のあと、アクション前に実行する
  *
  * @return bool
- * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	private function __prepare() {
 		$this->Auth->deny('index', 'view');
@@ -88,11 +90,11 @@ class UsersController extends UsersAppController {
 
 		$user = $this->User->getUser($userId);
 		$this->set('user', $user);
-		if (! $user || $user['User']['is_deleted']) {
+		if (! $this->User->canUserRead($user)) {
 			if ($this->params['action'] === 'download') {
 				return false;
 			} else {
-				return $this->setAction('throwBadRequest');
+				return $this->throwBadRequest();
 			}
 		}
 
@@ -125,7 +127,9 @@ class UsersController extends UsersAppController {
  * @return void
  */
 	public function view() {
-		$this->__prepare();
+		if (! $this->__prepare()) {
+			return;
+		}
 
 		//レイアウトの設定
 		if ($this->request->is('ajax')) {
