@@ -39,7 +39,6 @@ class DefaultRolePermission4userFixture extends DefaultRolePermissionFixture {
  * @return void
  */
 	public function init() {
-		$this->records = (new Records())->records[$this->name];
 		parent::init();
 
 		foreach ($this->records as $i => $record) {
