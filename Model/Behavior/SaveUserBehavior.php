@@ -70,7 +70,7 @@ class SaveUserBehavior extends ModelBehavior {
 		}
 
 		//emailの重複チェック
-		$emails = $this->__getEmailFields($model);
+		$emails = $this->getEmailFields($model);
 		$model->validate = Hash::merge($model->validate, array(
 			'email' => array(
 				'notDuplicate' => array(
@@ -93,7 +93,7 @@ class SaveUserBehavior extends ModelBehavior {
  * @param Model $model ビヘイビア呼び出し元モデル
  * @return array
  */
-	private function __getEmailFields(Model $model) {
+	public function getEmailFields(Model $model) {
 		$model->loadModels([
 			'DataType' => 'DataTypes.DataType',
 			'UserAttributeSetting' => 'UserAttributes.UserAttributeSetting',
