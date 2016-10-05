@@ -48,12 +48,20 @@ class SaveUserBehavior extends ModelBehavior {
 
 		//バリデーションルールのセット
 		foreach ($model->userAttributeData as $userAttribute) {
+			$userAttributeKey = $userAttribute['UserAttribute']['key'];
+
 			if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_LABEL) {
 				continue;
 			}
 
+			if (! isset($userAttribute['UserAttributesRole'])) {
+				$userAttributesRole = Hash::extract($userAttributesRoles,
+						'{n}.UserAttributesRole[user_attribute_key=' . $userAttributeKey . ']');
+				$userAttribute['UserAttributesRole'] = $userAttributesRole[0];
+			}
+
 			//強制エラーのセット
-			$this->__setInvalidates($model, $userAttribute, $userAttributesRoles);
+			$this->__setInvalidates($model, $userAttribute);
 
 			//バリデーションセット
 			if ($userAttribute['UserAttribute']['key'] === 'password') {
@@ -61,8 +69,7 @@ class SaveUserBehavior extends ModelBehavior {
 				continue;
 			}
 
-			$userAttributeKey = $userAttribute['UserAttribute']['key'];
-			$userId = Hash::get($model->data[$model->alias], 'id');
+			$userId = Hash::get($model->data, array($model->alias, 'id'));
 			if ($userId && ! isset($model->data[$model->alias][$userAttributeKey])) {
 				continue;
 			}
@@ -115,24 +122,26 @@ class SaveUserBehavior extends ModelBehavior {
  *
  * @param Model $model ビヘイビア呼び出し元モデル
  * @param array $userAttribute UserAttributeデータ
- * @param array $userAttributesRoles UserAttributesRoleデータ
  * @return void
  * @throws BadRequestException
  */
-	private function __setInvalidates(Model $model, $userAttribute, $userAttributesRoles) {
+	private function __setInvalidates(Model $model, $userAttribute) {
+		$model->loadModels([
+			'UsersLanguage' => 'Users.UsersLanguage',
+		]);
+
 		$userAttributeKey = $userAttribute['UserAttribute']['key'];
 		if ($model->UsersLanguage->hasField($userAttributeKey)) {
 			$modelName = $model->UsersLanguage->alias;
+			$pathKey = $modelName . '.{n}.' . $userAttributeKey;
 		} else {
 			$modelName = $model->alias;
+			$pathKey = $modelName . '.' . $userAttributeKey;
 		}
 
-		$userAttributesRole = Hash::extract($userAttributesRoles,
-				'{n}.UserAttributesRole[user_attribute_key=' . $userAttributeKey . ']');
-		$userAttributesRole = $userAttributesRole[0];
-
 		//他人でother_editable=falseの場合、自分でself_editable=falseは、不正エラー
-		$userId = Hash::get($model->data[$model->alias], 'id');
+		$userAttributesRole = $userAttribute['UserAttributesRole'];
+		$userId = Hash::get($model->data, array($model->alias, 'id'));
 		if ($userId !== Current::read('User.id') && ! $userAttributesRole['other_editable'] ||
 				$userId === Current::read('User.id') && ! $userAttributesRole['self_editable']) {
 
@@ -141,8 +150,7 @@ class SaveUserBehavior extends ModelBehavior {
 
 		//管理者しか許可しない項目のチェック⇒不正エラーとする
 		if ($userAttribute['UserAttributeSetting']['only_administrator_editable'] &&
-				! Current::allowSystemPlugin('user_manager') &&
-				isset($model->data[$modelName][$userAttributeKey])) {
+				! Current::allowSystemPlugin('user_manager') && Hash::extract($model->data, $pathKey)) {
 
 			throw new BadRequestException(__d('net_commons', 'Bad Request'));
 		}

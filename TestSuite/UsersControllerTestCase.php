@@ -11,6 +11,7 @@
 
 //@codeCoverageIgnoreStart
 App::uses('NetCommonsControllerTestCase', 'NetCommons.TestSuite');
+App::uses('UserAttribute', 'UserAttributes.Model');
 //@codeCoverageIgnoreEnd
 
 /**
@@ -56,5 +57,15 @@ class UsersControllerTestCase extends NetCommonsControllerTestCase {
  * @var string
  */
 	public $plugin = 'users';
+
+/**
+ * tearDown method
+ *
+ * @return void
+ */
+	public function tearDown() {
+		UserAttribute::$userAttributes = array();
+		parent::tearDown();
+	}
 
 }

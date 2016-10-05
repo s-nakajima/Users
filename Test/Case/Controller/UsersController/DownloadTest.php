@@ -12,6 +12,7 @@
 App::uses('NetCommonsControllerTestCase', 'NetCommons.TestSuite');
 App::uses('UserRole', 'UserRoles.Model');
 App::uses('User', 'Users.Model');
+App::uses('UsersControllerTestCase', 'Users.TestSuite');
 
 /**
  * UsersController::download()のテスト
@@ -19,28 +20,7 @@ App::uses('User', 'Users.Model');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\Case\Controller\UsersController
  */
-class UsersControllerDownloadTest extends NetCommonsControllerTestCase {
-
-/**
- * Fixtures
- *
- * @var array
- */
-	public $fixtures = array(
-		'plugin.user_attributes.user_attribute_layout',
-		'plugin.users.upload_file4user',
-		'plugin.users.upload_files_content4user',
-		'plugin.users.user',
-		'plugin.users.user_select_count',
-		'plugin.users.users_language',
-	);
-
-/**
- * Plugin name
- *
- * @var string
- */
-	public $plugin = 'users';
+class UsersControllerDownloadTest extends UsersControllerTestCase {
 
 /**
  * Controller name
@@ -75,6 +55,7 @@ class UsersControllerDownloadTest extends NetCommonsControllerTestCase {
  * @return void
  */
 	public function tearDown() {
+		UserAttribute::$userAttributes = array();
 		//ログアウト
 		TestAuthGeneral::logout($this);
 
