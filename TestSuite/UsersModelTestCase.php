@@ -10,12 +10,14 @@
  */
 
 App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
+App::uses('UserAttribute', 'UserAttributes.Model');
 
 /**
  * SaveUserBehavior::getEmailFields()のテスト
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\Case\Model\Behavior\SaveUserBehavior
+ * @codeCoverageIgnore
  */
 class UsersModelTestCase extends NetCommonsModelTestCase {
 
@@ -68,6 +70,16 @@ class UsersModelTestCase extends NetCommonsModelTestCase {
 		}
 		$this->fixtures = array_merge($this->_fixtures, $this->fixtures);
 		parent::__construct($name, $data, $dataName);
+	}
+
+/**
+ * tearDown method
+ *
+ * @return void
+ */
+	public function tearDown() {
+		UserAttribute::$userAttributes = array();
+		parent::tearDown();
 	}
 
 }
