@@ -422,14 +422,13 @@ class User extends UsersAppModel {
  * @return array
  */
 	public function createUser() {
-		$this->UserRole = ClassRegistry::init('UserRoles.UserRole');
+		$this->loadModels([
+			'UserRole' => 'UserRoles.UserRole',
+			'Language' => 'M17n.Language',
+		]);
 
 		if (! isset($this->languages)) {
-			$this->languages = $this->Language->find('list', array(
-				'recursive' => -1,
-				'fields' => array('Language.id', 'Language.code'),
-				'order' => 'weight'
-			));
+			$this->languages = $this->Language->getLanguage('list');
 		}
 
 		$results['UsersLanguage'] = array();
