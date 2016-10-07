@@ -62,15 +62,15 @@ class TestUser extends AppModel {
  *
  * @return void
  */
-	public function prepare() {
-		$this->loadModels([
-			'UserAttribute' => 'UserAttributes.UserAttribute',
-		]);
-
-		$userAttributes = $this->UserAttribute->getUserAttributesForLayout();
-		$this->userAttributeData = Hash::combine($userAttributes,
-			'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
-		);
-	}
+	//public function prepare() {
+	//	$this->loadModels([
+	//		'UserAttribute' => 'UserAttributes.UserAttribute',
+	//	]);
+	//
+	//	$userAttributes = $this->UserAttribute->getUserAttributesForLayout();
+	//	$this->userAttributeData = Hash::combine($userAttributes,
+	//		'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
+	//	);
+	//}
 
 }
