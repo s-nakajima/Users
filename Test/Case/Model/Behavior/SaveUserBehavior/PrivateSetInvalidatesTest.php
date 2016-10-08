@@ -39,7 +39,7 @@ class SaveUserBehaviorPrivateSetInvalidatesTest extends UsersModelTestCase {
 
 		//テストプラグインのロード
 		NetCommonsCakeTestCase::loadTestPlugin($this, 'Users', 'TestUsers');
-		$this->TestModel = ClassRegistry::init('TestUsers.TestUser');
+		$this->TestUser = ClassRegistry::init('TestUsers.TestUser');
 	}
 
 /**
@@ -452,7 +452,7 @@ class SaveUserBehaviorPrivateSetInvalidatesTest extends UsersModelTestCase {
 		$behavior = new SaveUserBehavior();
 
 		//テストデータ
-		$this->TestModel->set($data);
+		$this->TestUser->set($data);
 		Current::write('User.id', $loginUser);
 		if ($userManager) {
 			Current::write('PluginsRole.0.plugin_key', 'user_manager');
@@ -463,7 +463,7 @@ class SaveUserBehaviorPrivateSetInvalidatesTest extends UsersModelTestCase {
 			$this->setExpectedException('BadRequestException');
 		}
 		$result = $this->_testReflectionMethod(
-			$behavior, '__setInvalidates', array($this->TestModel, $userAttribute)
+			$behavior, '__setInvalidates', array($this->TestUser, $userAttribute)
 		);
 
 		//チェック
