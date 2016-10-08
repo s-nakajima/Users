@@ -9,7 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-App::uses('DefaultRolePermissionFixture', 'Roles.Test/Fixture');
+App::uses('DefaultRolePermission4testFixture', 'Roles.Test/Fixture');
 
 /**
  * 会員情報、会員管理用 DefaultRolePermissionFixture
@@ -17,7 +17,7 @@ App::uses('DefaultRolePermissionFixture', 'Roles.Test/Fixture');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\Fixture
  */
-class DefaultRolePermission4userFixture extends DefaultRolePermissionFixture {
+class DefaultRolePermission4userFixture extends DefaultRolePermission4testFixture {
 
 /**
  * Model name
