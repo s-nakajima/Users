@@ -41,12 +41,12 @@ class Room4userFixture extends RoomFixture {
 	public $records = array(
 		//パブリックスペース
 		array(
-			'id' => '1',
+			'id' => '2',
 			'space_id' => '2',
 			'page_id_top' => '4',
-			'parent_id' => null,
+			'parent_id' => '1',
 			'lft' => '1',
-			'rght' => '2',
+			'rght' => '4',
 			'active' => true,
 			'default_role_key' => 'visitor',
 			'need_approval' => '1',
@@ -54,13 +54,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => '1',
 			'theme' => 'Default',
 		),
-		//パブリックスペース、パブリックルーム(room_id=4)
+		//パブリックスペース、パブリックルーム(room_id=5)
 		array(
-			'id' => '4',
+			'id' => '5',
 			'space_id' => '2',
 			'page_id_top' => '3',
-			'root_id' => '1',
-			'parent_id' => '1',
+			'root_id' => '2',
+			'parent_id' => '2',
 			'lft' => '2',
 			'rght' => '3',
 			'active' => true,
@@ -73,10 +73,10 @@ class Room4userFixture extends RoomFixture {
 
 		//プライベート
 		array(
-			'id' => '2',
+			'id' => '3',
 			'space_id' => '3',
 			'page_id_top' => null,
-			'parent_id' => null,
+			'parent_id' => '1',
 			'lft' => '5',
 			'rght' => '18',
 			'active' => '1',
@@ -86,13 +86,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => '0',
 			'theme' => 'Default',
 		),
-		//プライベートルーム、管理者(room_id=5)
+		//プライベートルーム、管理者(room_id=6)
 		array(
-			'id' => '5',
+			'id' => '6',
 			'space_id' => '3',
 			'page_id_top' => '0',
-			'root_id' => '2',
-			'parent_id' => '2',
+			'root_id' => '3',
+			'parent_id' => '3',
 			'lft' => '6',
 			'rght' => '7',
 			'active' => true,
@@ -102,13 +102,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => '0',
 			'theme' => null,
 		),
-		//プライベートルーム、編集長(room_id=6)
+		//プライベートルーム、編集長(room_id=7)
 		array(
-			'id' => '6',
+			'id' => '7',
 			'space_id' => '3',
 			'page_id_top' => '0',
-			'root_id' => '2',
-			'parent_id' => '2',
+			'root_id' => '3',
+			'parent_id' => '3',
 			'lft' => '8',
 			'rght' => '9',
 			'active' => true,
@@ -118,13 +118,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => '0',
 			'theme' => null,
 		),
-		//プライベートルーム、編集者(room_id=7)
+		//プライベートルーム、編集者(room_id=8)
 		array(
-			'id' => '7',
+			'id' => '8',
 			'space_id' => '3',
 			'page_id_top' => '0',
-			'root_id' => '2',
-			'parent_id' => '2',
+			'root_id' => '3',
+			'parent_id' => '3',
 			'lft' => '10',
 			'rght' => '11',
 			'active' => true,
@@ -134,13 +134,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => '0',
 			'theme' => null,
 		),
-		//プライベートルーム、一般1(room_id=8)
+		//プライベートルーム、一般1(room_id=9)
 		array(
-			'id' => '8',
+			'id' => '9',
 			'space_id' => '3',
 			'page_id_top' => '0',
-			'root_id' => '2',
-			'parent_id' => '2',
+			'root_id' => '3',
+			'parent_id' => '3',
 			'lft' => '12',
 			'rght' => '13',
 			'active' => true,
@@ -150,13 +150,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => '0',
 			'theme' => null,
 		),
-		//プライベートルーム、参観者(room_id=9)
+		//プライベートルーム、参観者(room_id=10)
 		array(
-			'id' => '9',
+			'id' => '10',
 			'space_id' => '3',
 			'page_id_top' => '0',
-			'root_id' => '2',
-			'parent_id' => '2',
+			'root_id' => '3',
+			'parent_id' => '3',
 			'lft' => '14',
 			'rght' => '15',
 			'active' => true,
@@ -166,13 +166,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => '0',
 			'theme' => null,
 		),
-		//プライベートルーム、一般2(room_id=12)
+		//プライベートルーム、一般2(room_id=13)
 		array(
-			'id' => '12',
+			'id' => '13',
 			'space_id' => '3',
 			'page_id_top' => '0',
-			'root_id' => '2',
-			'parent_id' => '2',
+			'root_id' => '3',
+			'parent_id' => '3',
 			'lft' => '16',
 			'rght' => '17',
 			'active' => true,
@@ -185,10 +185,10 @@ class Room4userFixture extends RoomFixture {
 
 		//コミュニティスペース
 		array(
-			'id' => '3',
+			'id' => '4',
 			'space_id' => '4',
 			'page_id_top' => null,
-			'parent_id' => null,
+			'parent_id' => '1',
 			'lft' => '19',
 			'rght' => '24',
 			'active' => '1',
@@ -198,13 +198,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => '1',
 			'theme' => 'Default',
 		),
-		//コミュニティスペース、ルーム1(room_id=10)
+		//コミュニティスペース、ルーム1(room_id=11)
 		array(
-			'id' => '10',
+			'id' => '11',
 			'space_id' => '4',
 			'page_id_top' => '0',
-			'root_id' => '3',
-			'parent_id' => '3',
+			'root_id' => '4',
+			'parent_id' => '4',
 			'lft' => '20',
 			'rght' => '21',
 			'active' => '1',
@@ -214,13 +214,13 @@ class Room4userFixture extends RoomFixture {
 			'page_layout_permitted' => null,
 			'theme' => null,
 		),
-		//コミュニティスペース、ルーム2(room_id=11)
+		//コミュニティスペース、ルーム2(room_id=12)
 		array(
-			'id' => '11',
+			'id' => '12',
 			'space_id' => '4',
 			'page_id_top' => '0',
-			'root_id' => '3',
-			'parent_id' => '3',
+			'root_id' => '4',
+			'parent_id' => '4',
 			'lft' => '22',
 			'rght' => '23',
 			'active' => '1',

@@ -261,7 +261,7 @@ class UsersControllerViewTest extends UsersControllerTestCase {
 		if ($loginUserId === '1' || $loginUserId === '2' || $loginUserId === Hash::get($expected, 'User.id')) {
 			$this->assertTextContains('>' . __d('users', 'Rooms') . '<', $view);
 			$this->assertTextContains('<td>Public</td>', $view);
-			$this->assertTextContains('<td>Public room</td>', $view);
+			$this->assertTextContains('<td><span class="rooms-tree"></span>Public room</td>', $view);
 
 			if (Hash::get($expected, 'User.id') === '1' || Hash::get($expected, 'User.id') === '2') {
 				$this->assertTextContains('<td>Community room 1</td>', $view);
