@@ -28,7 +28,7 @@ class UsersControllerTestCase extends NetCommonsControllerTestCase {
  *
  * @var array
  */
-	public $fixtures = array(
+	private $__fixtures = array(
 		'plugin.mails.mail_setting_fixed_phrase',
 		'plugin.users.plugin4user',
 		'plugin.users.plugins_role4user',
@@ -57,6 +57,22 @@ class UsersControllerTestCase extends NetCommonsControllerTestCase {
  * @var string
  */
 	public $plugin = 'users';
+
+/**
+ * Fixtures load
+ *
+ * @param string $name The name parameter on PHPUnit_Framework_TestCase::__construct()
+ * @param array  $data The data parameter on PHPUnit_Framework_TestCase::__construct()
+ * @param string $dataName The dataName parameter on PHPUnit_Framework_TestCase::__construct()
+ * @return void
+ */
+	public function __construct($name = null, array $data = array(), $dataName = '') {
+		if (! isset($this->fixtures)) {
+			$this->fixtures = array();
+		}
+		$this->fixtures = array_merge($this->__fixtures, $this->fixtures);
+		parent::__construct($name, $data, $dataName);
+	}
 
 /**
  * tearDown method
