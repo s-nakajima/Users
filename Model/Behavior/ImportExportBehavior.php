@@ -236,7 +236,10 @@ class ImportExportBehavior extends ModelBehavior {
 
 		$convData['User'] = Hash::get($data, 'User');
 
-		$languages = (new CurrentSystem())->getLanguages();
+		$model->loadModels([
+			'Language' => 'M17n.Language',
+		]);
+		$languages = $model->Language->getLanguages();
 		foreach ($languages as $i => $lang) {
 			$modelName = 'UsersLanguage' . ucwords($lang['Language']['code']);
 			if (Hash::get($data, $modelName)) {
@@ -318,7 +321,11 @@ class ImportExportBehavior extends ModelBehavior {
  * @link http://book.cakephp.org/2.0/ja/models/associations-linking-models-together.html#dynamic-associations
  */
 	protected function _bindModel(Model $model, $reset = true, $retIdFields = false) {
-		$languages = (new CurrentSystem())->getLanguages();
+		$model->loadModels([
+			'Language' => 'M17n.Language',
+		]);
+		$languages = $model->Language->getLanguages();
+
 		$idFields = array();
 		foreach ($languages as $lang) {
 			$modelName = 'UsersLanguage' . ucwords($lang['Language']['code']);
@@ -387,7 +394,10 @@ class ImportExportBehavior extends ModelBehavior {
  * @return void
  */
 	private function __prepareCsvHeader(Model $model, $attrKey, $userAttribute) {
-		$languages = (new CurrentSystem())->getLanguages();
+		$model->loadModels([
+			'Language' => 'M17n.Language',
+		]);
+		$languages = $model->Language->getLanguages();
 
 		if ($model->hasField($attrKey)) {
 			//Userテーブル
