@@ -325,9 +325,11 @@ class SaveUserBehavior extends ModelBehavior {
 		if (! isset($model->data['RolesRoomsUser'])) {
 			$model->data['RolesRoomsUser'] = $model->Room->getDefaultRolesRoomsUser();
 		}
-		$model->data['RolesRoomsUser'] = Hash::remove(
-			$model->data['RolesRoomsUser'], '{n}[roles_room_id=0]'
-		);
+		foreach ($model->data['RolesRoomsUser'] as $i => $rolesRoomsUser) {
+			if (! $rolesRoomsUser['roles_room_id']) {
+				unset($model->data['RolesRoomsUser'][$i]);
+			}
+		}
 		$model->data['RolesRoomsUser'] = Hash::insert(
 			$model->data['RolesRoomsUser'], '{n}.user_id', $model->data['User']['id']
 		);

@@ -11,6 +11,7 @@
 
 App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
 App::uses('UserAttribute', 'UserAttributes.Model');
+App::uses('Current', 'NetCommons.Utility');
 
 /**
  * SaveUserBehavior::getEmailFields()のテスト
@@ -28,19 +29,27 @@ class UsersModelTestCase extends NetCommonsModelTestCase {
  */
 	protected $_fixtures = array(
 		'plugin.mails.mail_setting_fixed_phrase',
-		'plugin.users.plugin4user',
-		'plugin.users.plugins_role4user',
+		'plugin.pages.box4pages',
+		'plugin.pages.boxes_page_container4pages',
+		'plugin.pages.frame4pages',
+		'plugin.pages.pages_language4pages',
+		'plugin.pages.page_container4pages',
+		'plugin.pages.page4pages',
 		'plugin.user_attributes.user_attribute4test',
 		'plugin.user_attributes.user_attribute_choice4test',
 		'plugin.user_attributes.user_attribute_layout',
 		'plugin.user_attributes.user_attribute_setting4test',
 		'plugin.user_attributes.user_attributes_role4test',
-		'plugin.user_roles.user_role',
-		'plugin.users.room4user',
+		'plugin.users.role4user',
 		'plugin.users.default_role_permission4user',
-		'plugin.users.rooms_language4user',
-		'plugin.users.roles_room4user',
-		'plugin.users.roles_rooms_user4user',
+		'plugin.users.plugin4user',
+		'plugin.users.plugins_role4user',
+		'plugin.rooms.plugins_room4test',
+		'plugin.rooms.room_role_permission4test',
+		'plugin.rooms.room4test',
+		'plugin.rooms.rooms_language4test',
+		'plugin.rooms.roles_room4test',
+		'plugin.rooms.roles_rooms_user4test',
 		'plugin.users.upload_file4user',
 		'plugin.users.upload_files_content4user',
 		'plugin.users.user4user',

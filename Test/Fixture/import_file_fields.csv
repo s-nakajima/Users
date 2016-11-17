@@ -1,0 +1,4 @@
+User.username,User.password,User.handlename,UsersLanguage.0.name,UsersLanguage.1.name,User.email,User.moblie_mail,User.sex,User.timezone,User.role_key,User.status,UsersLanguage.0.profile,UsersLanguage.1.profile,UsersLanguage.0.search_keywords,UsersLanguage.1.search_keywords
+test001,test001,test001ƒnƒ“ƒhƒ‹,test001–¼y‰pŒêz,test001–¼y“ú–{Œêz,test001@example.com,,no_setting,Asia/Tokyo,common_user,1,test001ƒvƒƒtƒB[ƒ‹y‰pŒêz,test001ƒvƒƒtƒB[ƒ‹y“ú–{Œêz,test001ƒL[ƒ[ƒhy‰pŒêz,test001ƒL[ƒ[ƒhy“ú–{Œêz
+test002,test002,test002ƒnƒ“ƒhƒ‹,test002–¼y‰pŒêz,test002–¼y“ú–{Œêz,test002@example.com,,no_setting,Asia/Tokyo,common_user,1,test002ƒvƒƒtƒB[ƒ‹y‰pŒêz,test002ƒvƒƒtƒB[ƒ‹y“ú–{Œêz,test002ƒL[ƒ[ƒhy‰pŒêz,test002ƒL[ƒ[ƒhy“ú–{Œêz
+test003,test003,test003ƒnƒ“ƒhƒ‹,test003–¼y‰pŒêz,test003–¼y“ú–{Œêz,test003@example.com,,no_setting,Asia/Tokyo,common_user,1,test003ƒvƒƒtƒB[ƒ‹y‰pŒêz,test003ƒvƒƒtƒB[ƒ‹y“ú–{Œêz,test003ƒL[ƒ[ƒhy‰pŒêz,test003ƒL[ƒ[ƒhy“ú–{Œêz
