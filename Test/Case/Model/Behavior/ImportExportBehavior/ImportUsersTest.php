@@ -45,6 +45,8 @@ class ImportExportBehaviorImportUsersTest extends UsersModelTestCase {
 		NetCommonsCakeTestCase::loadTestPlugin($this, 'Users', 'TestUsers');
 		$this->TestModel = ClassRegistry::init('Users.User');
 
+		OriginalKeyBehavior::$isUnitRandomKey = true;
+
 		Current::write('Language.id', '2');
 		Current::write('User.role_key', 'system_administrator');
 		Current::write('PluginsRole.1.plugin_key', 'user_manager');
