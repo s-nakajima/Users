@@ -11,6 +11,7 @@
 
 App::uses('ModelBehavior', 'Model');
 App::uses('CurrentSystem', 'NetCommons.Utility');
+App::uses('Space', 'Rooms.Model');
 
 /**
  * SaveUser Behavior
@@ -333,21 +334,23 @@ class SaveUserBehavior extends ModelBehavior {
 		$model->data['RolesRoomsUser'] = Hash::insert(
 			$model->data['RolesRoomsUser'], '{n}.user_id', $model->data['User']['id']
 		);
+CakeLog::debug(var_export($model->data['RolesRoomsUser'], true));
 		if ($model->data['RolesRoomsUser']) {
 			$result = $model->RolesRoomsUser->saveMany($model->data['RolesRoomsUser']);
 			if (! $result) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
-		$publicRoom = Hash::extract(
-			$model->data['RolesRoomsUser'], '{n}[room_id=' . Room::PUBLIC_PARENT_ID . ']'
-		);
-		if ($publicRoom) {
-			$spaceRolesRoomIds = $model->RolesRoomsUser->getSpaceRolesRoomsUsers();
-			if (! $model->RolesRoomsUser->saveSpaceRoomForRooms($publicRoom[0], $spaceRolesRoomIds, true)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-		}
+		//$publicRoom = Hash::extract(
+		//	$model->data['RolesRoomsUser'],
+		//	'{n}[room_id=' . Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID) . ']'
+		//);
+		//if ($publicRoom) {
+		//	$spaceRolesRoomIds = $model->RolesRoomsUser->getSpaceRolesRoomsUsers();
+		//	if (! $model->RolesRoomsUser->saveSpaceRoomForRooms($publicRoom[0], $spaceRolesRoomIds, true)) {
+		//		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		//	}
+		//}
 
 		return true;
 	}

@@ -10,7 +10,7 @@
  */
 ?>
 
-<?php echo $this->Rooms->spaceTabs(Space::ROOM_SPACE_ID, 'pills', array(
+<?php echo $this->Rooms->spaceTabs(Space::COMMUNITY_SPACE_ID, 'pills', array(
 	Space::PUBLIC_SPACE_ID => array(
 		'url' => '#user-public-space',
 		'attributes' => array(
@@ -19,7 +19,7 @@
 			'data-toggle' => 'tab',
 		),
 	),
-	Space::ROOM_SPACE_ID => array(
+	Space::COMMUNITY_SPACE_ID => array(
 		'url' => '#user-room-space',
 		'attributes' => array(
 			'aria-controls' => 'user-room-space',
@@ -48,7 +48,7 @@
 
 	<div id="user-room-space" class="tab-pane active">
 		<article class="rooms-manager">
-			<?php echo $this->Rooms->roomsRender(Space::ROOM_SPACE_ID,
+			<?php echo $this->Rooms->roomsRender(Space::COMMUNITY_SPACE_ID,
 					array(
 						'dataElemen' => 'Users.Users/view_rooms_index',
 						'headElement' => 'Users.Users/view_rooms_header'
@@ -56,7 +56,7 @@
 					array(
 						'paginator' => false,
 						'displaySpace' => false,
-						'roomTreeList' => $roomTreeLists[Space::ROOM_SPACE_ID]
+						'roomTreeList' => $roomTreeLists[Space::COMMUNITY_SPACE_ID]
 					)
 				); ?>
 		</article>

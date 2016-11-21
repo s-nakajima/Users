@@ -331,9 +331,9 @@ class UsersController extends UsersAppController {
 		$roomId = Hash::get($this->request->query, 'room_id');
 		$query = Hash::remove($this->request->query, 'room_id');
 
-		if ($roomId === Room::ROOM_PARENT_ID) {
+		if ($roomId === Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)) {
 			$conditions = array(
-				'Room.id' => Room::ROOM_PARENT_ID
+				'Room.id' => Space::getRoomIdRoot(Space::COMMUNITY_SPACE_ID)
 			);
 		} else {
 			$conditions = array(
