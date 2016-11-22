@@ -334,7 +334,6 @@ class SaveUserBehavior extends ModelBehavior {
 		$model->data['RolesRoomsUser'] = Hash::insert(
 			$model->data['RolesRoomsUser'], '{n}.user_id', $model->data['User']['id']
 		);
-CakeLog::debug(var_export($model->data['RolesRoomsUser'], true));
 		if ($model->data['RolesRoomsUser']) {
 			$result = $model->RolesRoomsUser->saveMany($model->data['RolesRoomsUser']);
 			if (! $result) {
