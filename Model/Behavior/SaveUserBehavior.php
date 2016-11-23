@@ -11,6 +11,7 @@
 
 App::uses('ModelBehavior', 'Model');
 App::uses('CurrentSystem', 'NetCommons.Utility');
+App::uses('Space', 'Rooms.Model');
 
 /**
  * SaveUser Behavior
@@ -339,15 +340,16 @@ class SaveUserBehavior extends ModelBehavior {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
-		$publicRoom = Hash::extract(
-			$model->data['RolesRoomsUser'], '{n}[room_id=' . Room::PUBLIC_PARENT_ID . ']'
-		);
-		if ($publicRoom) {
-			$spaceRolesRoomIds = $model->RolesRoomsUser->getSpaceRolesRoomsUsers();
-			if (! $model->RolesRoomsUser->saveSpaceRoomForRooms($publicRoom[0], $spaceRolesRoomIds, true)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-		}
+		//$publicRoom = Hash::extract(
+		//	$model->data['RolesRoomsUser'],
+		//	'{n}[room_id=' . Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID) . ']'
+		//);
+		//if ($publicRoom) {
+		//	$spaceRolesRoomIds = $model->RolesRoomsUser->getSpaceRolesRoomsUsers();
+		//	if (! $model->RolesRoomsUser->saveSpaceRoomForRooms($publicRoom[0], $spaceRolesRoomIds, true)) {
+		//		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		//	}
+		//}
 
 		return true;
 	}
