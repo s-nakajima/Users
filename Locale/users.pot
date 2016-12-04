@@ -13,19 +13,130 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: UserManager/View/UserManager/index.ctp:27
-msgid "%s of %s (Total: %s)"
+#: Groups/View/Groups/edit.ctp:23
+#: UserManager/View/UserManager/view.ctp:16;23
+#: Users/View/Users/edit.ctp:18
+#: Users/View/Users/view.ctp:14;20
+msgid "User information"
 msgstr ""
 
-#: UserManager/View/UserManager/index.ctp:38
-msgid "Search for the members"
+#: Groups/View/Groups/edit.ctp:29
+#: UserManager/View/UserManager/view.ctp:28
+#: Users/Test/Case/Controller/UsersController/ViewTest.php:262;279
+#: Users/View/Users/edit.ctp:24
+#: Users/View/Users/view.ctp:27
+msgid "Rooms"
 msgstr ""
 
-#: Users/Model/User.php:138;145
+#: Groups/View/Groups/select.ctp:69
+#: Users/View/Users/select.ctp:84
+msgid "Not found the select user."
+msgstr ""
+
+#: Rooms/Test/Case/View/Helper/RoomsRolesFormHelper/SelectDefaultRoomRolesTest.php:76;98;120;148;173;196;203
+#: Rooms/View/Elements/RoomsRolesUsers/edit_form.ctp:26;126
+#: UserManager/Controller/UserAddController.php:237
+#: UserManager/Controller/UsersRolesRoomsController.php:94
+msgid "Non members"
+msgstr ""
+
+#: UserManager/Test/Case/Controller/UserAddController/BasicTest.php:242
+#: UserManager/Test/Case/Controller/UserManagerController/EditTest.php:295
+#: Users/Model/User.php:296;304
+#: Users/Test/Case/Model/User/PrivateSetUsernameValidateTest.php:126;134;145;166
 msgid "username"
 msgstr ""
 
-#: Users/Model/User.php:165;172
+#: UserManager/View/UserManager/index.ctp:21
+msgid "%s of %s (Total: %s)"
+msgstr ""
+
+#: Users/Console/Command/UsersShell.php:39
+#: Users/Test/Case/Console/Command/UsersShell/StartupTest.php:47
+msgid "NetCommons Users Shell"
+msgstr ""
+
+#: Users/Console/Command/UsersShell.php:49
+#: Users/Test/Case/Console/Command/UsersShell/MainTest.php:45
+msgid "[I]mport"
+msgstr ""
+
+#: Users/Console/Command/UsersShell.php:50
+#: Users/Test/Case/Console/Command/UsersShell/MainTest.php:47
+msgid "[H]elp"
+msgstr ""
+
+#: Users/Console/Command/UsersShell.php:51
+#: Users/Test/Case/Console/Command/UsersShell/MainTest.php:49
+msgid "[Q]uit"
+msgstr ""
+
+#: Users/Console/Command/UsersShell.php:80
+msgid "The Users shell."
+msgstr ""
+
+#: Users/Console/Command/Task/UserImportTask.php:46
+msgid "<warning>Not found file.</warning>"
+msgstr ""
+
+#: Users/Console/Command/Task/UserImportTask.php:59
+msgid "<error>Import error.</error>"
+msgstr ""
+
+#: Users/Console/Command/Task/UserImportTask.php:62
+msgid "<success>Import success.</success>"
+msgstr ""
+
+#: Users/Console/Command/Task/UserImportTask.php:74
+msgid "NetCommons UserImport shell"
+msgstr ""
+
+#: Users/Model/User.php:159
+msgid "Confidential"
+msgstr ""
+
+#: Users/Model/User.php:160
+msgid "Disclose to all"
+msgstr ""
+
+#: Users/Model/User.php:336;345
+#: Users/Test/Case/Model/User/PrivateSetPasswordValidateTest.php:166;195
 msgid "password"
+msgstr ""
+
+#: Users/Model/Behavior/SaveUserBehavior.php:88
+msgid "E-mail"
+msgstr ""
+
+#: Users/View/Elements/Users/delete_form.ctp:29;35
+msgid "User"
+msgstr ""
+
+#: Users/View/Helper/UserEditFormHelper.php:240
+msgid "Yes, I receive by e-mail."
+msgstr ""
+
+#: Users/View/Helper/UserSearchFormHelper.php:386
+msgid "Not search condition."
+msgstr ""
+
+#: Users/View/Helper/UserSearchFormHelper.php:419
+msgid "Search condition clear"
+msgstr ""
+
+#: Users/View/Users/select.ctp:35
+msgid "User select"
+msgstr ""
+
+#: Users/View/Users/select.ctp:46
+msgid "Please enter handle name."
+msgstr ""
+
+#: Users/View/Users/select.ctp:66
+msgid "Too many results to show. Can you think of more specific search keywords?"
+msgstr ""
+
+#: Users/View/Users/select.ctp:69
+msgid "Not found the search result."
 msgstr ""
 
