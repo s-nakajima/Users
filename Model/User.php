@@ -376,7 +376,7 @@ class User extends UsersAppModel {
 							'rule' => array('notBlank'),
 							'allowEmpty' => false,
 							'message' => sprintf(
-								__d('net_commons', 'Please input %s.'), __d('net_commons', 'Current passowrd')
+								__d('net_commons', 'Please input %s.'), __d('net_commons', 'Current password')
 							),
 							'required' => true,
 						),

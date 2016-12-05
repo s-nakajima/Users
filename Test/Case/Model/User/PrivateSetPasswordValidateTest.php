@@ -181,7 +181,7 @@ class UserPrivateSetPasswordValidateTest extends NetCommonsModelTestCase {
 					'username' => 'aaaaa', 'password' => 'aaaa', 'password_again' => 'aaaa',
 					'password_current' => '',
 				),
-				'expected' => sprintf(__d('net_commons', 'Please input %s.'), __d('net_commons', 'Current passowrd')),
+				'expected' => sprintf(__d('net_commons', 'Please input %s.'), __d('net_commons', 'Current password')),
 				'options' => array('self' => true),
 			),
 			//alphaNumericSymbolsテスト
