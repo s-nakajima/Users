@@ -229,7 +229,8 @@ NetCommonsApp.controller('User.select',
           options['params']['room_id'] = $scope.roomId;
 
           $http.get(searchUrl, options)
-              .success(function(data) {
+              .then(function(response) {
+                var data = response.data;
                 $scope.searchResults = data['users'];
                 $scope.searched = true;
                 $scope.keyword = keyword;
@@ -241,8 +242,8 @@ NetCommonsApp.controller('User.select',
                 for (var i = startPage; i <= endPage; i++) {
                   $scope.pages.push(i);
                 }
-              })
-              .error(function(data, status) {
+              },
+              function(response) {
                 $scope.searchResults = [];
                 $scope.keyword = null;
                 $scope.paginator = {};
@@ -260,7 +261,8 @@ NetCommonsApp.controller('User.select',
           var promise = deferred.promise;
 
           $http.get(NC3_URL + '/net_commons/net_commons/csrfToken.json')
-              .success(function(token) {
+              .then(function(response) {
+                var token = response.data;
                 $scope.data._Token.key = token.data._Token.key;
 
                 //POSTリクエスト
@@ -271,18 +273,23 @@ NetCommonsApp.controller('User.select',
                       headers:
                           {'Content-Type': 'application/x-www-form-urlencoded'}
                     }
-                )
-                .success(function(data) {
-                      //success condition
-                      deferred.resolve(data);
-                    })
-                .error(function(data, status) {
-                      //error condition
-                      deferred.reject(data, status);
-                    });
-              })
-              .error(function(data, status) {
+                ).then(
+                function(response) {
+                  //success condition
+                  var data = response.data;
+                  deferred.resolve(data);
+                },
+                function(response) {
+                  //error condition
+                  var data = response.data;
+                  var status = response.status;
+                  deferred.reject(data, status);
+                });
+              },
+              function(response) {
                 //Token error condition
+                var data = response.data;
+                var status = response.status;
                 deferred.reject(data, status);
               });
 
