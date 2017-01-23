@@ -85,7 +85,9 @@ class UserSearch extends UserSearchAppModel {
 			'DataType' => 'DataTypes.DataType',
 		]);
 
-		$this->__prepare();
+		if (Configure::read('NetCommons.installed')) {
+			$this->__prepare();
+		}
 	}
 
 /**
