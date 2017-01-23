@@ -16,6 +16,7 @@ App::uses('UserSearchAppModel', 'Users.Model');
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class UserSearch extends UserSearchAppModel {
 
