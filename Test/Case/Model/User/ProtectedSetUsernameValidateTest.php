@@ -1,6 +1,6 @@
 <?php
 /**
- * User::__setUsernameValidate()のテスト
+ * User::_setUsernameValidate()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -12,7 +12,7 @@
 App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
 
 /**
- * User::__setUsernameValidate()のテスト
+ * User::_setUsernameValidate()のテスト
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\Case\Model\User
@@ -49,7 +49,7 @@ class UserPrivateSetUsernameValidateTest extends NetCommonsModelTestCase {
  *
  * @var string
  */
-	protected $_methodName = '__setUsernameValidate';
+	protected $_methodName = '_setUsernameValidate';
 
 /**
  * setUp method
@@ -61,7 +61,7 @@ class UserPrivateSetUsernameValidateTest extends NetCommonsModelTestCase {
 	}
 
 /**
- * __setUsernameValidate()テストのDataProvider
+ * _setUsernameValidate()テストのDataProvider
  *
  * ### 戻り値
  *  - data データ
@@ -76,7 +76,7 @@ class UserPrivateSetUsernameValidateTest extends NetCommonsModelTestCase {
 	}
 
 /**
- * __setUsernameValidate()のテスト
+ * _setUsernameValidate()のテスト
  *
  * @param array $data データ
  * @dataProvider dataProvider
@@ -106,7 +106,7 @@ class UserPrivateSetUsernameValidateTest extends NetCommonsModelTestCase {
 	}
 
 /**
- * __setUsernameValidate()テストのDataProvider
+ * _setUsernameValidate()テストのDataProvider
  *
  * ### 戻り値
  *  - data テストデータ
@@ -187,7 +187,7 @@ class UserPrivateSetUsernameValidateTest extends NetCommonsModelTestCase {
 	}
 
 /**
- * __setUsernameValidate()のValidationErrorテスト
+ * _setUsernameValidate()のValidationErrorテスト
  *
  * @param array $data テストデータ
  * @param string|bool $expected 期待値
