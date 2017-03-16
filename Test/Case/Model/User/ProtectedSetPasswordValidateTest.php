@@ -1,6 +1,6 @@
 <?php
 /**
- * User::__setPasswordValidate()のテスト
+ * User::_setPasswordValidate()のテスト
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -12,12 +12,12 @@
 App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
 
 /**
- * User::__setPasswordValidate()のテスト
+ * User::_setPasswordValidate()のテスト
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Test\Case\Model\User
  */
-class UserPrivateSetPasswordValidateTest extends NetCommonsModelTestCase {
+class UserProtectedSetPasswordValidateTest extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
@@ -49,7 +49,7 @@ class UserPrivateSetPasswordValidateTest extends NetCommonsModelTestCase {
  *
  * @var string
  */
-	protected $_methodName = '__setPasswordValidate';
+	protected $_methodName = '_setPasswordValidate';
 
 /**
  * setUp method
@@ -61,7 +61,7 @@ class UserPrivateSetPasswordValidateTest extends NetCommonsModelTestCase {
 	}
 
 /**
- * __setPasswordValidate()テストのDataProvider
+ * _setPasswordValidate()テストのDataProvider
  *
  * ### 戻り値
  *  - data データ
@@ -101,7 +101,7 @@ class UserPrivateSetPasswordValidateTest extends NetCommonsModelTestCase {
 	}
 
 /**
- * __setPasswordValidate()のテスト
+ * _setPasswordValidate()のテスト
  *
  * @param array $data データ
  * @param array $options Model::save()のオプション
@@ -145,7 +145,7 @@ class UserPrivateSetPasswordValidateTest extends NetCommonsModelTestCase {
 	}
 
 /**
- * __setPasswordValidate()テストのDataProvider
+ * _setPasswordValidate()テストのDataProvider
  *
  * ### 戻り値
  *  - field テストフィールド
@@ -248,7 +248,7 @@ class UserPrivateSetPasswordValidateTest extends NetCommonsModelTestCase {
 	}
 
 /**
- * __setPasswordValidate()のValidationErrorテスト
+ * _setPasswordValidate()のValidationErrorテスト
  *
  * @param string $field テストフィールド
  * @param array $data テストデータ

@@ -171,6 +171,7 @@ class UsersControllerViewTest extends UsersControllerTestCase {
  */
 	private function __assertUser($expected) {
 		//チェック
+		debug($this->vars['user']);
 		$this->assertEquals($this->vars['user']['User']['id'], Hash::get($expected, 'User.id'));
 		$this->assertEquals($this->vars['user']['UsersLanguage'][0]['id'], Hash::get($expected, 'UsersLanguage.0.id'));
 		//$this->assertEquals($this->vars['user']['UsersLanguage'][1]['id'], Hash::get($expected, 'UsersLanguage.1.id'));

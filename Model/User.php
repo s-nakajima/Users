@@ -256,10 +256,10 @@ class User extends UsersAppModel {
 		]);
 
 		//ログインID
-		$this->__setUsernameValidate();
+		$this->_setUsernameValidate();
 
 		//パスワード
-		$this->__setPasswordValidate($options);
+		$this->_setPasswordValidate($options);
 
 		//ログイン、パスワード以外のUserモデルのバリデーションルールのセットは、ビヘイビアで行う
 		//（ログインとパスワードは、インストール時に使用するため）
@@ -284,7 +284,7 @@ class User extends UsersAppModel {
  *
  * @return void
  */
-	private function __setUsernameValidate() {
+	protected function _setUsernameValidate() {
 		//ログインID
 		if (! Hash::get($this->data, 'User.id')) {
 			$this->validate = Hash::merge($this->validate, array(
@@ -323,7 +323,7 @@ class User extends UsersAppModel {
  * @param array $options Model::save()のオプション
  * @return void
  */
-	private function __setPasswordValidate($options = array()) {
+	protected function _setPasswordValidate($options = array()) {
 		//パスワード
 		if (Hash::get($this->data['User'], 'password') || ! isset($this->data['User']['id']) ||
 				Hash::get($options, 'validatePassword', false)) {
