@@ -284,22 +284,22 @@ class SaveUserBehavior extends ModelBehavior {
 		}
 
 		if ($created) {
-			//プライベートルームの登録
+			//プライベートルーム等のユーザ登録時に登録するルーム
 			$model->loadModels([
-				'PrivateSpace' => 'PrivateSpace.PrivateSpace',
-				'Room' => 'Rooms.Room',
+				'Space' => 'Rooms.Space',
 			]);
-			$room = $model->PrivateSpace->createRoom();
-			$room['RolesRoomsUser']['user_id'] = $model->data['User']['id'];
-			$room = $model->Room->saveRoom($room);
-			if (! $room) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-
-			//プライベートルームのデフォルトでプラグイン設置
-			$result = $model->PrivateSpace->saveDefaultFrames($room);
-			if (! $result) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			$spapces = $model->Space->getSpaces();
+			foreach ($spapces as $space) {
+				if ($space['Space']['after_user_save_model']) {
+					list(, $spaceModel) = pluginSplit($space['Space']['after_user_save_model']);
+					$model->loadModels([
+						$spaceModel => $space['Space']['after_user_save_model'],
+					]);
+					if ($model->{$spaceModel} instanceof Model &&
+							method_exists($model->{$spaceModel}, 'afterUserSave')) {
+						$model->{$spaceModel}->afterUserSave($model->data);
+					}
+				}
 			}
 
 			//参加ルームの登録
