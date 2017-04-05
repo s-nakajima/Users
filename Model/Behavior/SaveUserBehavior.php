@@ -324,6 +324,7 @@ class SaveUserBehavior extends ModelBehavior {
 
 		//参加ルームの登録
 		if (! isset($model->data['RolesRoomsUser'])) {
+			//新規登録やインポート時にデフォルト参加データを取得する
 			$model->data['RolesRoomsUser'] = $model->Room->getDefaultRolesRoomsUser();
 		}
 		foreach ($model->data['RolesRoomsUser'] as $i => $rolesRoomsUser) {
@@ -340,16 +341,17 @@ class SaveUserBehavior extends ModelBehavior {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
-		//$publicRoom = Hash::extract(
-		//	$model->data['RolesRoomsUser'],
-		//	'{n}[room_id=' . Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID) . ']'
-		//);
-		//if ($publicRoom) {
-		//	$spaceRolesRoomIds = $model->RolesRoomsUser->getSpaceRolesRoomsUsers();
-		//	if (! $model->RolesRoomsUser->saveSpaceRoomForRooms($publicRoom[0], $spaceRolesRoomIds, true)) {
-		//		throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-		//	}
-		//}
+		//会員管理から登録する際、コミュニティやプライベートスペースの参加データを登録する
+		$publicRoom = Hash::extract(
+			$model->data['RolesRoomsUser'],
+			'{n}[room_id=' . Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID) . ']'
+		);
+		if ($publicRoom) {
+			$spaceRolesRoomIds = $model->RolesRoomsUser->getSpaceRolesRoomsUsers();
+			if (! $model->RolesRoomsUser->saveSpaceRoomForRooms($publicRoom[0], $spaceRolesRoomIds)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
 
 		return true;
 	}
