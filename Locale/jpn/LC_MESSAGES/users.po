@@ -81,3 +81,12 @@ msgstr "検索条件のクリア"
 
 msgid "Not search condition."
 msgstr "条件なし"
+
+msgid "Selected users"
+msgstr "選択した会員"
+
+msgid "Members who choose well"
+msgstr "良く選択する会員"
+
+msgid "Result search"
+msgstr "検索結果"

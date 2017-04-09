@@ -74,6 +74,11 @@ NetCommonsApp.controller('User.select',
         $scope.searched = false;
 
         /**
+         * 検索でエラーかどうかを保持する変数
+         */
+        $scope.searchError = false;
+
+        /**
          * 検索結果を保持する配列
          */
         $scope.searchResults = [];
@@ -103,7 +108,6 @@ NetCommonsApp.controller('User.select',
           $scope.field = field;
           $scope.data = data;
           if (angular.isArray(searchResults) && searchResults.length > 0) {
-            $scope.searched = true;
             $scope.searchResults = searchResults;
           }
         };
@@ -242,12 +246,20 @@ NetCommonsApp.controller('User.select',
                 for (var i = startPage; i <= endPage; i++) {
                   $scope.pages.push(i);
                 }
+                if (!$scope.searchResults.length ||
+                        $scope.paginator && $scope.paginator.endPage > 1) {
+                  $scope.searchError = true;
+                } else {
+                  $scope.searchError = false;
+                }
               },
               function(response) {
                 $scope.searchResults = [];
                 $scope.keyword = null;
                 $scope.paginator = {};
                 $scope.pages = [];
+                $scope.searched = true;
+                $scope.searchError = true;
               });
         };
 
