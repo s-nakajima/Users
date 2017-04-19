@@ -15,6 +15,7 @@
 App::uses('UsersAppController', 'Users.Controller');
 App::uses('UserSelectCount', 'Users.Model');
 App::uses('UserAttribute', 'UserAttributes.Model');
+App::uses('NetCommonsMail', 'Mails.Utility');
 
 /**
  * Users Controller
@@ -23,6 +24,15 @@ App::uses('UserAttribute', 'UserAttributes.Model');
  * @package NetCommons\Users\Controller
  */
 class UsersController extends UsersAppController {
+
+/**
+ * NetCommonsMail
+ *
+ * ※テスト用に変数を定義する
+ *
+ * @var mixed
+ */
+	public $mail = null;
 
 /**
  * 会員一覧の表示する項目
@@ -237,7 +247,33 @@ class UsersController extends UsersAppController {
 			return $this->throwBadRequest();
 		}
 
-		$this->User->deleteUser($this->viewVars['user']);
+		//$this->User->deleteUser($this->viewVars['user']);
+
+		if (SiteSettingUtil::read('UserCancel.notify_administrators')) {
+			//メール通知の場合、NetCommonsMailUtilityをメンバー変数にセットする。Mockであれば、newをしない。
+			//テストでMockに差し替えが必要なための処理であるので、カバレッジレポートから除外する。
+			//@codeCoverageIgnoreStart
+			if (substr(get_class($this->mail), 0, 4) !== 'Mock') {
+				$this->mail = new NetCommonsMail();
+			}
+			//@codeCoverageIgnoreEnd
+
+			$data['subject'] = SiteSettingUtil::read('UserCancel.mail_subject');
+			$data['body'] = SiteSettingUtil::read('UserCancel.mail_body');
+			$data['email'] = $this->User->getMailAddressForAdmin();
+			foreach ($data['email'] as $email) {
+				$this->mail->mailAssignTag->setFixedPhraseSubject($data['subject']);
+				$this->mail->mailAssignTag->setFixedPhraseBody($data['body']);
+				$this->mail->mailAssignTag->assignTags(array('X-HANDLE' => $this->viewVars['user']['User']['handlename']));
+				$this->mail->mailAssignTag->initPlugin(Current::read('Language.id'));
+				$this->mail->initPlugin(Current::read('Language.id'));
+				$this->mail->to($email);
+				$this->mail->setFrom(Current::read('Language.id'));
+
+				$this->mail->sendMailDirect();
+			}
+		}
+
 		$this->redirect('/auth/logout');
 	}
 
@@ -412,6 +448,54 @@ class UsersController extends UsersAppController {
 			}
 			$this->set('searchResults', $users);
 		}
+	}
+
+/**
+ * 退会規約 method
+ *
+ * @return void
+ */
+	public function delete_disclaimer() {
+		if (! $this->__prepare()) {
+			return;
+		}
+
+		if (! SiteSettingUtil::read('UserCancel.use_cancel_feature', false)) {
+			return $this->throwBadRequest();
+		}
+
+		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
+				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+			return $this->throwBadRequest();
+		}
+
+		//レイアウトの設定
+		$this->viewClass = 'View';
+		$this->layout = 'NetCommons.modal';
+	}
+
+/**
+ * 退会直前確認 method
+ *
+ * @return void
+ */
+	public function delete_confirm() {
+		if (! $this->__prepare()) {
+			return;
+		}
+
+		if (! SiteSettingUtil::read('UserCancel.use_cancel_feature', false)) {
+			return $this->throwBadRequest();
+		}
+
+		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
+				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+			return $this->throwBadRequest();
+		}
+
+		//レイアウトの設定
+		$this->viewClass = 'View';
+		$this->layout = 'NetCommons.modal';
 	}
 
 }
