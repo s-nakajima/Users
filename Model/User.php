@@ -16,6 +16,7 @@
 App::uses('UsersAppModel', 'Users.Model');
 App::uses('NetCommonsTime', 'NetCommons.Utility');
 App::uses('Current', 'NetCommons.Utility');
+App::uses('UserAttribute', 'UserAttributes.Model');
 
 /**
  * User Model
@@ -519,6 +520,57 @@ class User extends UsersAppModel {
 		}
 
 		return $user;
+	}
+
+/**
+ * 管理者ユーザのメールアドレス取得
+ * ここでいう管理者権限とは、会員管理が使える権限のこと。
+ *
+ * @return array
+ */
+	public function getMailAddressForAdmin() {
+		$this->loadModels([
+			'PluginsRole' => 'PluginManager.PluginsRole',
+			'User' => 'Users.User',
+		]);
+		$roleKeys = $this->PluginsRole->find('list', array(
+			'recursive' => -1,
+			'fields' => array('id', 'role_key'),
+			'conditions' => array(
+				'plugin_key' => 'user_manager',
+			),
+		));
+
+		$conditions = array(
+			'role_key' => $roleKeys
+		);
+		$emailFields = $this->User->getEmailFields();
+		$fields = $emailFields;
+		$conditions['OR'] = array();
+		foreach ($emailFields as $field) {
+			$fields[] = sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $field);
+			$conditions['OR'][] = array(
+				$field . ' !=' => '',
+				sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $field) => true
+			);
+		}
+		$mails = $this->User->find('all', array(
+			'recursive' => -1,
+			'fields' => $fields,
+			'conditions' => $conditions,
+		));
+
+		$result = array();
+		foreach ($mails as $mail) {
+			foreach ($emailFields as $field) {
+				if ($mail['User'][sprintf(UserAttribute::MAIL_RECEPTION_FIELD_FORMAT, $field)] &&
+						$mail['User'][$field]) {
+					$result[] = $mail['User'][$field];
+				}
+			}
+		}
+
+		return $result;
 	}
 
 /**
