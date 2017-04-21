@@ -91,5 +91,5 @@ msgstr "良く選択する会員"
 msgid "Result search"
 msgstr "検索結果"
 
-msgid "Danger Zone"
+msgid "User cancel"
 msgstr "退会処理"

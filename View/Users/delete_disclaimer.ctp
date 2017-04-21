@@ -11,5 +11,5 @@
 ?>
 
 <?php $this->start('title_for_modal'); ?>
-<?php echo __d('users', 'User information'); ?>
+<?php echo __d('users', 'User cancel'); ?>
 <?php $this->end(); ?>

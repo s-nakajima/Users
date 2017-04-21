@@ -19,7 +19,7 @@ echo $this->NetCommonsHtml->script([
 		<div uib-accordion-group is-open="dangerZone" class="panel-danger">
 			<uib-accordion-heading class="clearfix">
 				<span style="cursor: pointer">
-					<?php echo __d('users', 'Danger Zone'); ?>
+					<?php echo __d('users', 'User cancel'); ?>
 				</span>
 				<span class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': dangerZone, 'glyphicon-chevron-right': ! dangerZone}"></span>
 			</uib-accordion-heading>
@@ -28,14 +28,20 @@ echo $this->NetCommonsHtml->script([
 				<?php echo sprintf(__d('net_commons', 'Delete all data associated with the %s.'), __d('users', 'User')); ?>
 			</div>
 
-			<?php echo $this->Button->delete(
+			<?php
+				if ($isCancelDisclaimer) {
+					$ngClick = 'showDisclaimer($event, ' . $user['User']['id'] . ')';
+				} else {
+					$ngClick = 'showConfirm($event, ' . $user['User']['id'] . ')';
+				}
+				echo $this->Button->delete(
 					__d('net_commons', 'Delete'),
 					'',
 					array(
 						'type' => 'button',
 						'addClass' => 'pull-right',
 						'onclick' => null,
-						'ng-click' => 'showDisclaimer($event, ' . $user['User']['id'] . ')'
+						'ng-click' => $ngClick
 					)
 				); ?>
 		</div>

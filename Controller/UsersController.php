@@ -222,6 +222,7 @@ class UsersController extends UsersAppController {
 		}
 
 		$this->set('userCancel', SiteSettingUtil::read('UserCancel.use_cancel_feature', false));
+		$this->set('isCancelDisclaimer', (bool)SiteSettingUtil::read('UserCancel.disclaimer', false));
 		$this->set('redirectUrl', $redirectUrl);
 		$this->set('activeUserId', Hash::get($this->viewVars['user'], 'User.id'));
 	}
