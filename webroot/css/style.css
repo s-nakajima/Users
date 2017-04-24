@@ -133,3 +133,18 @@ label.user-search-conditions-datetime-bottom {
 .user-search-conditions-frame div.pull-left label {
 	margin-right: 4px;
 }
+
+/**
+ * 会員退会
+ */
+.user-cancel-disclaimer {
+	max-height: 280px;
+	overflow: auto;
+}
+.user-disclaimer-check .checkbox-inline{
+	padding-left: 0px;
+}
+.panel-danger > form > .panel-footer {
+	background-color: #f2dede;
+	border-color: #ebccd1;
+}

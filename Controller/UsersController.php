@@ -15,14 +15,25 @@
 App::uses('UsersAppController', 'Users.Controller');
 App::uses('UserSelectCount', 'Users.Model');
 App::uses('UserAttribute', 'UserAttributes.Model');
+App::uses('NetCommonsMail', 'Mails.Utility');
 
 /**
  * Users Controller
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Controller
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class UsersController extends UsersAppController {
+
+/**
+ * NetCommonsMail
+ *
+ * ※テスト用に変数を定義する
+ *
+ * @var mixed
+ */
+	public $mail = null;
 
 /**
  * 会員一覧の表示する項目
@@ -66,6 +77,7 @@ class UsersController extends UsersAppController {
  * @var array
  */
 	public $helpers = array(
+		'NetCommons.MessageFlash',
 		'NetCommons.Token',
 		'UserAttributes.UserAttributeLayout',
 		'Users.UserLayout',
@@ -209,9 +221,13 @@ class UsersController extends UsersAppController {
 			$this->User->languages = $this->viewVars['languages'];
 			$this->request->data = $this->viewVars['user'];
 			$redirectUrl = $this->request->referer(true);
+			if (preg_match('/^auth/', $redirectUrl)) {
+				$redirectUrl = '/';
+			}
 		}
 
-		$this->set('userCancel', SiteSettingUtil::read('UserCancel.use_cancel_feature', false));
+		$this->set('useCancel', SiteSettingUtil::read('UserCancel.use_cancel_feature', false));
+		$this->set('isCancelDisclaimer', (bool)SiteSettingUtil::read('UserCancel.disclaimer', false));
 		$this->set('redirectUrl', $redirectUrl);
 		$this->set('activeUserId', Hash::get($this->viewVars['user'], 'User.id'));
 	}
@@ -224,12 +240,7 @@ class UsersController extends UsersAppController {
 	public function delete() {
 		$this->__prepare();
 
-		if (! SiteSettingUtil::read('UserCancel.use_cancel_feature', false)) {
-			return $this->throwBadRequest();
-		}
-
-		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
-				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+		if (! $this->__useCancel()) {
 			return $this->throwBadRequest();
 		}
 
@@ -238,7 +249,108 @@ class UsersController extends UsersAppController {
 		}
 
 		$this->User->deleteUser($this->viewVars['user']);
+
+		if (SiteSettingUtil::read('UserCancel.notify_administrators')) {
+			//メール通知の場合、NetCommonsMailUtilityをメンバー変数にセットする。Mockであれば、newをしない。
+			//テストでMockに差し替えが必要なための処理であるので、カバレッジレポートから除外する。
+			//@codeCoverageIgnoreStart
+			if (substr(get_class($this->mail), 0, 4) !== 'Mock') {
+				$this->mail = new NetCommonsMail();
+			}
+			//@codeCoverageIgnoreEnd
+
+			$data['subject'] = SiteSettingUtil::read('UserCancel.mail_subject');
+			$data['body'] = SiteSettingUtil::read('UserCancel.mail_body');
+			$data['email'] = $this->User->getMailAddressForAdmin();
+			foreach ($data['email'] as $email) {
+				$this->mail->mailAssignTag->setFixedPhraseSubject($data['subject']);
+				$this->mail->mailAssignTag->setFixedPhraseBody($data['body']);
+				$this->mail->mailAssignTag->assignTags(
+					array('X-HANDLE' => $this->viewVars['user']['User']['handlename'])
+				);
+				$this->mail->mailAssignTag->initPlugin(Current::read('Language.id'));
+				$this->mail->initPlugin(Current::read('Language.id'));
+				$this->mail->to($email);
+				$this->mail->setFrom(Current::read('Language.id'));
+
+				$this->mail->sendMailDirect();
+			}
+		}
+
+		$this->NetCommons->setFlashNotification(
+			__d('net_commons', 'Successfully deleted.'), array('class' => 'success')
+		);
+
 		$this->redirect('/auth/logout');
+	}
+
+/**
+ * 退会処理が可能かどうかチェック
+ *
+ * @return bool
+ */
+	private function __useCancel() {
+		if (! SiteSettingUtil::read('UserCancel.use_cancel_feature', false)) {
+			return false;
+		}
+
+		if (Hash::get($this->viewVars['user'], 'User.id') !== Current::read('User.id') ||
+				$this->viewVars['user']['User']['role_key'] === UserRole::USER_ROLE_KEY_SYSTEM_ADMINISTRATOR) {
+			return false;
+		}
+
+		return true;
+	}
+
+/**
+ * 退会規約 method
+ *
+ * @return void
+ */
+	public function delete_disclaimer() {
+		if (! $this->__prepare()) {
+			return;
+		}
+		if (! $this->__useCancel()) {
+			return $this->throwBadRequest();
+		}
+
+		if (! SiteSettingUtil::read('UserCancel.disclaimer', false)) {
+			return $this->throwBadRequest();
+		}
+
+		if ($this->request->is('put')) {
+			$this->NetCommons->renderJson();
+			return;
+		}
+
+		$this->request->data['User']['id'] = $this->viewVars['user']['User']['id'];
+
+		//レイアウトの設定
+		$this->viewClass = 'View';
+		$this->layout = 'NetCommons.modal';
+
+		$this->set('userCancelDisclaimer', SiteSettingUtil::read('UserCancel.disclaimer', ''));
+	}
+
+/**
+ * 退会直前確認 method
+ *
+ * @return void
+ */
+	public function delete_confirm() {
+		if (! $this->__prepare()) {
+			return;
+		}
+		if (! $this->__useCancel()) {
+			return $this->throwBadRequest();
+		}
+
+		$this->request->data['User']['id'] = $this->viewVars['user']['User']['id'];
+
+		//レイアウトの設定
+		$this->viewClass = 'View';
+		$this->layout = 'NetCommons.modal';
 	}
 
 /**
