@@ -18,6 +18,7 @@ App::uses('Space', 'Rooms.Model');
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model\Behavior
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class SaveUserBehavior extends ModelBehavior {
 
@@ -125,6 +126,7 @@ class SaveUserBehavior extends ModelBehavior {
  * @param array $userAttribute UserAttributeデータ
  * @return void
  * @throws BadRequestException
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	private function __setInvalidates(Model $model, $userAttribute) {
 		$model->loadModels([
@@ -144,16 +146,16 @@ class SaveUserBehavior extends ModelBehavior {
 		$userAttributesRole = $userAttribute['UserAttributesRole'];
 		$userId = Hash::get($model->data, array($model->alias, 'id'));
 		if ($userId !== Current::read('User.id') && ! $userAttributesRole['other_editable'] ||
-				$userId === Current::read('User.id') && ! $userAttributesRole['self_editable']) {
-
-			throw new BadRequestException(__d('net_commons', 'Bad Request'));
+				$userId === Current::read('User.id') && !
+					$userAttributesRole['self_editable'] && Hash::extract($model->data, $pathKey)) {
+			throw new BadRequestException(__d('net_commons', 'Bad Request 2'));
 		}
 
 		//管理者しか許可しない項目のチェック⇒不正エラーとする
 		if ($userAttribute['UserAttributeSetting']['only_administrator_editable'] &&
 				! Current::allowSystemPlugin('user_manager') && Hash::extract($model->data, $pathKey)) {
 
-			throw new BadRequestException(__d('net_commons', 'Bad Request'));
+			throw new BadRequestException(__d('net_commons', 'Bad Request 1'));
 		}
 	}
 

@@ -93,3 +93,26 @@ msgstr "検索結果"
 
 msgid "User cancel"
 msgstr "退会処理"
+
+msgid "Delete"
+msgstr "退会"
+
+msgid "User cancel disclaimer"
+msgstr "退会規約"
+
+msgid "User cancel confirm"
+msgstr "退会処理の再確認"
+
+msgid "Confirm the contents of your withdrawal agreement, check \"I agree\", and click [NEXT]."
+msgstr "退会規約の内容を確認し、「以上の内容を了解する」をチェックし、[次 >>]をクリックしてください。"
+
+msgid "Check \"I agree\", and click [Delete]."
+msgstr "「以上の内容を了解する」をチェックし、[退会]をクリックしてください。"
+
+msgid "By pressing [Delete] button below, you will be automatically logged out, and your user profile will be deleted. "
+"You will never be able to login this NetCommons.<br>Are you sure to proceed?"
+msgstr "下記、[退会]をクリックしますと、退会処理を行います。その後、自動ログアウトされ、二度とログインできなくなります。<br>退会処理を行うと二度と元に戻すことができません。<br><br>"
+"退会処理を行います。よろしいですか？"
+
+msgid "I agree"
+msgstr "以上の内容を了解する"

@@ -14,7 +14,7 @@ echo $this->NetCommonsHtml->script([
 ]);
 ?>
 
-<div class="nc-danger-zone" ng-init="dangerZone=false;" ng-controller="UserDelete.controller">
+<div class="nc-danger-zone" ng-init="dangerZone=false;" ng-controller="UserDelete.controller" ng-cloak>
 	<uib-accordion close-others="false">
 		<div uib-accordion-group is-open="dangerZone" class="panel-danger">
 			<uib-accordion-heading class="clearfix">
@@ -35,7 +35,7 @@ echo $this->NetCommonsHtml->script([
 					$ngClick = 'showConfirm($event, ' . $user['User']['id'] . ')';
 				}
 				echo $this->Button->delete(
-					__d('net_commons', 'Delete'),
+					__d('users', 'Delete'),
 					'',
 					array(
 						'type' => 'button',

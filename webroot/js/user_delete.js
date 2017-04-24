@@ -22,14 +22,16 @@ NetCommonsApp.controller('UserDelete.controller',
             NetCommonsModal.show(
                 $scope, 'UserDelete.confirm',
                 NC3_URL + '/users/users/delete_disclaimer/' + LOGIN_USER.id
-            ).result.then(function(type) {
-              console.log(type);
-            });
+            ).result.then(
+                function() {
+                  //Success
+                  $scope.showConfirm($event, id);
+                },
+                function() {
+                  //Error
+                }
+            );
           }
-//          if (angular.isObject($event)) {
-//            $event.preventDefault();
-//            $event.stopPropagation();
-//          }
         };
 
         /**
@@ -43,14 +45,8 @@ NetCommonsApp.controller('UserDelete.controller',
             NetCommonsModal.show(
                 $scope, 'UserDelete.confirm',
                 NC3_URL + '/users/users/delete_confirm/' + LOGIN_USER.id
-            ).result.then(function(type) {
-              console.log(type);
-            });
+            );
           }
-//          if (angular.isObject($event)) {
-//            $event.preventDefault();
-//            $event.stopPropagation();
-//          }
         };
       }]);
 
@@ -62,11 +58,34 @@ NetCommonsApp.controller('UserDelete.confirm',
     ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
 
       /**
+       * Post data
+       */
+      $scope.data = null;
+
+      /**
+       * 初期処理
+       *
+       * @return {void}
+       */
+      $scope.initialize = function(data) {
+        $scope.data = data;
+      };
+
+      /**
        * dialog cancel
        *
        * @return {void}
        */
       $scope.cancel = function() {
         $uibModalInstance.dismiss('cancel');
+      };
+
+      /**
+       * dialog disclaimer
+       *
+       * @return {void}
+       */
+      $scope.disclaimer = function() {
+        $uibModalInstance.close('disclaimer');
       };
     }]);
