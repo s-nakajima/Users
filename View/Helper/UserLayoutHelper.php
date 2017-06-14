@@ -140,13 +140,27 @@ class UserLayoutHelper extends AppHelper {
 			$element .= '</div>';
 
 		} elseif (isset($userAttribute['UserAttributeChoice'])) {
-			if ($userAttributeKey === 'role_key') {
-				$keyPath = '{n}[key=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
+			if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_CHECKBOX) {
+				$selectList = explode("\n", Hash::get($this->_View->viewVars['user'], $fieldName));
+				$eles = [];
+				foreach ($selectList as $selected) {
+					if ($selected) {
+						$keyPath = '{n}[code=' . $selected . ']';
+						$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
+						$eles[] = h($option[0]['name']);
+					}
+				}
+				$element .= implode('<br />', $eles);
+
 			} else {
-				$keyPath = '{n}[code=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
+				if ($userAttributeKey === 'role_key') {
+					$keyPath = '{n}[key=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
+				} else {
+					$keyPath = '{n}[code=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
+				}
+				$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
+				$element .= h($option[0]['name']);
 			}
-			$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
-			$element .= h($option[0]['name']);
 
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			$element .= $this->__displayLanguageField($fieldName);
