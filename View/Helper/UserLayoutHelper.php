@@ -141,16 +141,7 @@ class UserLayoutHelper extends AppHelper {
 
 		} elseif (isset($userAttribute['UserAttributeChoice'])) {
 			if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_CHECKBOX) {
-				$selectList = explode("\n", Hash::get($this->_View->viewVars['user'], $fieldName));
-				$eles = [];
-				foreach ($selectList as $selected) {
-					if ($selected) {
-						$keyPath = '{n}[code=' . $selected . ']';
-						$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
-						$eles[] = h($option[0]['name']);
-					}
-				}
-				$element .= implode('<br />', $eles);
+				$element .= $this->_getUserElementByCheckboxType($fieldName, $userAttribute);
 
 			} else {
 				if ($userAttributeKey === 'role_key') {
@@ -246,6 +237,27 @@ class UserLayoutHelper extends AppHelper {
 			UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']
 		);
 		return Hash::get($this->_View->viewVars['user']['User'], $isPublicField);
+	}
+
+/**
+ * チェックボックスタイプの表示内容取得
+ *
+ * @param string $fieldName フィールド名
+ * @param array $userAttribute UserAttribute
+ * @return string 表示内容
+ */
+	protected function _getUserElementByCheckboxType($fieldName, $userAttribute) {
+		$selectList = explode("\n", Hash::get($this->_View->viewVars['user'], $fieldName));
+		$eles = [];
+		foreach ($selectList as $selected) {
+			if ($selected) {
+				$keyPath = '{n}[code=' . $selected . ']';
+				$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
+				$eles[] = h($option[0]['name']);
+			}
+		}
+		$element = implode('<br />', $eles);
+		return $element;
 	}
 
 }
