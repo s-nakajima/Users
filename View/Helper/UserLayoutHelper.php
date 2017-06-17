@@ -140,13 +140,18 @@ class UserLayoutHelper extends AppHelper {
 			$element .= '</div>';
 
 		} elseif (isset($userAttribute['UserAttributeChoice'])) {
-			if ($userAttributeKey === 'role_key') {
-				$keyPath = '{n}[key=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
+			if ($userAttribute['UserAttributeSetting']['data_type_key'] === DataType::DATA_TYPE_CHECKBOX) {
+				$element .= $this->_getUserElementByCheckboxType($fieldName, $userAttribute);
+
 			} else {
-				$keyPath = '{n}[code=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
+				if ($userAttributeKey === 'role_key') {
+					$keyPath = '{n}[key=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
+				} else {
+					$keyPath = '{n}[code=' . Hash::get($this->_View->viewVars['user'], $fieldName) . ']';
+				}
+				$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
+				$element .= h($option[0]['name']);
 			}
-			$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
-			$element .= h($option[0]['name']);
 
 		} elseif ($this->UsersLanguage->hasField($userAttributeKey)) {
 			$element .= $this->__displayLanguageField($fieldName);
@@ -232,6 +237,27 @@ class UserLayoutHelper extends AppHelper {
 			UserAttribute::PUBLIC_FIELD_FORMAT, $userAttribute['UserAttribute']['key']
 		);
 		return Hash::get($this->_View->viewVars['user']['User'], $isPublicField);
+	}
+
+/**
+ * チェックボックスタイプの表示内容取得
+ *
+ * @param string $fieldName フィールド名
+ * @param array $userAttribute UserAttribute
+ * @return string 表示内容
+ */
+	protected function _getUserElementByCheckboxType($fieldName, $userAttribute) {
+		$selectList = explode("\n", Hash::get($this->_View->viewVars['user'], $fieldName));
+		$eles = [];
+		foreach ($selectList as $selected) {
+			if ($selected) {
+				$keyPath = '{n}[code=' . $selected . ']';
+				$option = Hash::extract($userAttribute['UserAttributeChoice'], $keyPath);
+				$eles[] = h($option[0]['name']);
+			}
+		}
+		$element = implode('<br />', $eles);
+		return $element;
 	}
 
 }
