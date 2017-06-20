@@ -85,6 +85,108 @@ class UsersController extends UsersAppController {
 	);
 
 /**
+ * Loads Model classes based on the uses property
+ * see Controller::loadModel(); for more info.
+ * Loads Components and prepares them for initialization.
+ *
+ * @return mixed true if models found and instance created.
+ * @see Controller::loadModel()
+ * @link http://book.cakephp.org/2.0/en/controllers.html#Controller::constructClasses
+ * @throws MissingModelException
+ */
+	public function constructClasses() {
+		if ($this->request->params['action'] !== 'download') {
+			return parent::constructClasses();
+		}
+
+		$this->components['NetCommons.AccessCtrl']['enabled'] = false;
+		$this->components['Auth']['enabled'] = false;
+		$this->components['Flash']['enabled'] = false;
+		$this->components['MobileDetect.MobileDetect']['enabled'] = false;
+		$this->components['NetCommons.Asset']['enabled'] = false;
+		$this->components['NetCommons.Permission']['enabled'] = false;
+		$this->components['NetCommons.NetCommons']['enabled'] = false;
+		$this->components['NetCommons.NetCommonsTime']['enabled'] = false;
+		$this->components['RequestHandler']['enabled'] = false;
+		$this->components['Session']['enabled'] = false;
+		$this->components['Workflow.Workflow']['enabled'] = false;
+		$this->components['Security']['enabled'] = false;
+		//$this->components['Files.Download']['enabled'] = false;
+		$this->components['M17n.SwitchLanguage']['enabled'] = false;
+		$this->components['Rooms.Rooms']['enabled'] = false;
+		$this->components['UserAttributes.UserAttributeLayout']['enabled'] = false;
+		$this->components['Users.UserSearchComp']['enabled'] = false;
+		$this->components['Groups.Groups']['enabled'] = false;
+
+		return parent::constructClasses();
+	}
+
+/**
+ * Called before the controller action. You can use this method to configure and customize components
+ * or perform logic that needs to happen before each controller action.
+ *
+ * @return void
+ * @link http://book.cakephp.org/2.0/en/controllers.html#request-life-cycle-callbacks
+ */
+	public function beforeFilter() {
+		if ($this->request->params['action'] !== 'download') {
+			parent::beforeFilter();
+			return;
+		}
+		$fieldName = $this->request->params['field_name'];
+		$userId = $this->request->params['user_id'];
+
+		/* @var $User AppModel */
+		// シンプルにしたかったためAppModelを利用。インスタンス生成時少し速かった。
+		$settings = [
+			'table' => 'users',
+			'alias' => 'User',
+		];
+		$User = new AppModel($settings);
+
+		$params = [
+			'belongsTo' => [
+				'TrackableCreator',
+				'TrackableUpdater',
+			]
+		];
+		$User->unbindModel($params);
+		$User->Behaviors->unload('Trackable');
+
+		$params = [
+			'hasOne' => [
+				'UploadFile' => [
+					'className' => 'UploadFile',
+					'foreignKey' => false,
+					'conditions' => [
+						'UploadFile.plugin_key' => $this->plugin,
+						'UploadFile.content_key = User.id',
+						'UploadFile.field_name' => $fieldName,
+					],
+					'fields' => ['id']
+				]
+			],
+		];
+		$User->bindModel($params);
+
+		$query = [
+			'conditions' => [
+				'User.id' => $userId,
+				//@see https://github.com/NetCommons3/Users/blob/3.1.2/Controller/UsersController.php#L105-L111
+				//@see https://github.com/NetCommons3/Users/blob/3.1.2/Model/Behavior/UserPermissionBehavior.php#L31-L33
+				'User.is_deleted' => '0',
+			],
+			'recursive' => 0,
+			'callbacks' => false,
+		];
+		$user = $User->find('first', $query);
+		ClassRegistry::removeObject('User');
+		ClassRegistry::removeObject('UploadFile');
+
+		$this->set('user', $user);
+	}
+
+/**
  * アクションの前処理
  * Controller::beforeFilter()のあと、アクション前に実行する
  *
@@ -360,52 +462,79 @@ class UsersController extends UsersAppController {
  * @throws NotFoundException
  */
 	public function download() {
-		if (! $this->__prepare()) {
-			return $this->downloadNoImage();
-		}
-
 		$user = $this->viewVars['user'];
-		$fieldName = $this->params['field_name'];
-		$fieldSize = $this->params['size'];
-
-		$fileSetting = Hash::extract(
-			$this->viewVars['userAttributes'],
-			'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
-		);
-
-		if (! $fileSetting) {
-			return $this->downloadNoImage();
+		if (!$user) {
+			return;
 		}
-		$userAttribute = Hash::get($this->viewVars['userAttributes'],
-			$fileSetting[0]['row'] . '.' . $fileSetting[0]['col'] . '.' . $fileSetting[0]['weight']
-		);
 
-		if (! Hash::get($user, 'UploadFile.' . $fieldName . '.field_name')) {
+		if (!$user['UploadFile']['id']) {
 			return $this->downloadNoImage();
 		}
 
-		//以下の場合、アバター表示
-		// * 自分自身
-		if (Hash::get($user, 'User.id') === Current::read('User.id')) {
-			return $this->Download->doDownload($user['User']['id'],
-				array('field' => $fieldName, 'size' => $fieldSize)
-			);
+		$options = [
+			'size' => $this->params['size'],
+		];
+
+		if ($user['User']['id'] === AuthComponent::user('id')) {
+			return $this->Download->doDownloadByUploadFileId($user['UploadFile']['id'], $options);
 		}
+
+		/* @var $UserAttributeSetting AppModel */
+		$settings = [
+			'table' => 'user_attribute_settings',
+			'alias' => 'UserAttributeSetting',
+		];
+		$UserAttributeSetting = new AppModel($settings);
+		$params = [
+			'belongsTo' => [
+				'TrackableCreator',
+				'TrackableUpdater',
+			]
+		];
+		$UserAttributeSetting->unbindModel($params);
+		$UserAttributeSetting->Behaviors->unload('Trackable');
+
+		$params = [
+			'hasOne' => [
+				'UserAttributesRole' => [
+					'className' => 'UserAttributesRole',
+					'foreignKey' => false,
+					'conditions' => [
+						'UserAttributesRole.role_key' => $user['User']['role_key'],
+						'UserAttributesRole.user_attribute_key = UserAttributeSetting.user_attribute_key',
+					]
+				]
+			],
+		];
+		$UserAttributeSetting->bindModel($params);
+
+		$fieldName = $this->request->params['field_name'];
+		$query = [
+			'conditions' => [
+				'UserAttributeSetting.user_attribute_key' => $fieldName,
+			],
+			'recursive' => 0,
+			'callbacks' => false,
+		];
+		$userAttributeSetting = $UserAttributeSetting->find('first', $query);
+		ClassRegistry::removeObject('UserAttributeSetting');
+		ClassRegistry::removeObject('UserAttributesRole');
+
+		$fieldName = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $fieldName);
 
 		// 以下の条件の場合、ハンドル画像を表示する(他人)
 		// * 各自で公開・非公開が設定可 && 非公開
 		// * 権限設定の個人情報設定で閲覧不可、
 		// * 会員項目設定で非表示(display=OFF)項目、
-		if ($userAttribute['UserAttributeSetting']['self_public_setting'] &&
-					! Hash::get($user, 'User.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $fieldName)) ||
-				! $userAttribute['UserAttributesRole']['other_readable'] ||
-				! $userAttribute['UserAttributeSetting']['display']) {
+		if (($userAttributeSetting['UserAttributeSetting']['self_public_setting'] &&
+				!$user['User'][$fieldName]) ||
+			!$userAttributeSetting['UserAttributeSetting']['display'] ||
+			!$userAttributeSetting['UserAttributesRole']['other_readable']
+		) {
 			return $this->downloadNoImage();
-		} else {
-			return $this->Download->doDownload($user['User']['id'],
-				array('field' => $fieldName, 'size' => $fieldSize)
-			);
 		}
+
+		return $this->Download->doDownloadByUploadFileId($user['UploadFile']['id'], $options);
 	}
 
 /**
@@ -417,6 +546,14 @@ class UsersController extends UsersAppController {
 		$user = $this->viewVars['user'];
 		$fieldName = $this->params['field_name'];
 		$fieldSize = $this->params['size'];
+
+		//$this->response->etag(md5(serialize($this->viewVars['user'])));
+		if ($this->response->checkNotModified($this->request)) {
+			//$this->response->maxAge(30);
+			//$this->response->expires('now');
+			//return $this->response;
+		}
+		//$this->response->disableCache();
 
 		$this->response->file(
 			$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
