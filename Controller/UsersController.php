@@ -354,6 +354,78 @@ class UsersController extends UsersAppController {
 	}
 
 /**
+ * download method
+ *
+ * @return void
+ * @throws NotFoundException
+ */
+	public function download() {
+		if (! $this->__prepare()) {
+			return $this->downloadNoImage();
+		}
+
+		$user = $this->viewVars['user'];
+		$fieldName = $this->params['field_name'];
+		$fieldSize = $this->params['size'];
+
+		$fileSetting = Hash::extract(
+			$this->viewVars['userAttributes'],
+			'{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $fieldName . ']'
+		);
+
+		if (! $fileSetting) {
+			return $this->downloadNoImage();
+		}
+		$userAttribute = Hash::get($this->viewVars['userAttributes'],
+			$fileSetting[0]['row'] . '.' . $fileSetting[0]['col'] . '.' . $fileSetting[0]['weight']
+		);
+
+		if (! Hash::get($user, 'UploadFile.' . $fieldName . '.field_name')) {
+			return $this->downloadNoImage();
+		}
+
+		//以下の場合、アバター表示
+		// * 自分自身
+		if (Hash::get($user, 'User.id') === Current::read('User.id')) {
+			return $this->Download->doDownload($user['User']['id'],
+				array('field' => $fieldName, 'size' => $fieldSize)
+			);
+		}
+
+		// 以下の条件の場合、ハンドル画像を表示する(他人)
+		// * 各自で公開・非公開が設定可 && 非公開
+		// * 権限設定の個人情報設定で閲覧不可、
+		// * 会員項目設定で非表示(display=OFF)項目、
+		if ($userAttribute['UserAttributeSetting']['self_public_setting'] &&
+					! Hash::get($user, 'User.' . sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $fieldName)) ||
+				! $userAttribute['UserAttributesRole']['other_readable'] ||
+				! $userAttribute['UserAttributeSetting']['display']) {
+			return $this->downloadNoImage();
+		} else {
+			return $this->Download->doDownload($user['User']['id'],
+				array('field' => $fieldName, 'size' => $fieldSize)
+			);
+		}
+	}
+
+/**
+ * download method
+ *
+ * @return void
+ */
+	public function downloadNoImage() {
+		$user = $this->viewVars['user'];
+		$fieldName = $this->params['field_name'];
+		$fieldSize = $this->params['size'];
+
+		$this->response->file(
+			$this->User->temporaryAvatar($user, $fieldName, $fieldSize),
+			array('name' => 'No Image')
+		);
+		return $this->response;
+	}
+
+/**
  * search method
  *
  * @return void
