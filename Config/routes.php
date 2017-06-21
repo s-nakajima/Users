@@ -10,6 +10,17 @@
 
 Router::connect(
 	'/users/users/download/:user_id/:field_name/:size',
+	['plugin' => 'users', 'controller' => 'users_avatar', 'action' => 'download'],
+	['user_id' => '[0-9]+', 'field_name' => 'avatar', 'size' => 'big|medium|small|thumb']
+);
+Router::connect(
+	'/users/users/download/:user_id/:field_name',
+	['plugin' => 'users', 'controller' => 'users_avatar', 'action' => 'download', 'size' => 'medium'],
+	['user_id' => '[0-9]+', 'field_name' => 'avatar', 'size' => 'medium']
+);
+
+Router::connect(
+	'/users/users/download/:user_id/:field_name/:size',
 	['plugin' => 'users', 'controller' => 'users', 'action' => 'download'],
 	['user_id' => '[0-9]+', 'size' => 'big|medium|small|thumb']
 );
