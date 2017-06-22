@@ -47,7 +47,7 @@ class RoutesTest extends NetCommonsRoutesTestCase {
 			array(
 				'url' => '/users/users/download/1/avatar/thumb',
 				'expected' => array(
-					'plugin' => 'users', 'controller' => 'users', 'action' => 'download',
+					'plugin' => 'users', 'controller' => 'users_avatar', 'action' => 'download',
 					'user_id' => '1', 'field_name' => 'avatar', 'size' => 'thumb',
 				)
 			),
@@ -67,7 +67,7 @@ class RoutesTest extends NetCommonsRoutesTestCase {
 			array(
 				'url' => '/users/users/download/1/avatar',
 				'expected' => array(
-					'plugin' => 'users', 'controller' => 'users', 'action' => 'download',
+					'plugin' => 'users', 'controller' => 'users_avatar', 'action' => 'download',
 					'user_id' => '1', 'field_name' => 'avatar', 'size' => 'medium',
 				)
 			),
