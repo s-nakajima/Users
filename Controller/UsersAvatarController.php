@@ -29,6 +29,19 @@ class UsersAvatarController extends Controller {
 	);
 
 /**
+ * beforeRender
+ *
+ * @return void
+ */
+	public function beforeRender() {
+		// WysiwygImageControllerDownloadTest::testDownloadGet 用の処理
+		// @see https://github.com/NetCommons3/NetCommons/blob/3.1.2/Controller/NetCommonsAppController.php#L241
+		// @see https://github.com/NetCommons3/NetCommons/blob/3.1.2/Controller/Component/NetCommonsComponent.php#L58
+		App::uses('NetCommonsAppController', 'NetCommons.Controller');
+		$this->NetCommons->renderJson();
+	}
+
+/**
  * download method
  *
  * @return void
@@ -40,45 +53,21 @@ class UsersAvatarController extends Controller {
 		// シンプルにしたかったためAppModelを利用。インスタンス生成時少し速かった。
 		$User = $this->__getSimpleModel('User');
 		$User->Behaviors->load('Users.Avatar');
-		$UserAttributeSetting = $this->__getSimpleModel('UserAttributeSetting');
+		// @see https://github.com/NetCommons3/Users/blob/3.1.2/Model/Behavior/AvatarBehavior.php#L42
+		$User->plugin = 'Users';
+		ClassRegistry::removeObject('User');
+		ClassRegistry::removeObject('AvatarBehavior');
 
-		$fieldName = $this->request->params['field_name'];
-		$userId = $this->request->params['user_id'];
-		$params = [
-			'hasOne' => [
-				'UploadFile' => [
-					'className' => 'UploadFile',
-					'foreignKey' => false,
-					'conditions' => [
-						'UploadFile.plugin_key' => $this->plugin,
-						'UploadFile.content_key = User.id',
-						'UploadFile.field_name' => $fieldName,
-					],
-					'fields' => ['id']
-				]
-			],
-		];
+		$params = $this->__getBindParamsForUser();
 		$User->bindModel($params);
 
-		$query = [
-			'conditions' => [
-				'User.id' => $userId,
-				//@see https://github.com/NetCommons3/Users/blob/3.1.2/Controller/UsersController.php#L105-L111
-				//@see https://github.com/NetCommons3/Users/blob/3.1.2/Model/Behavior/UserPermissionBehavior.php#L31-L33
-				'User.is_deleted' => '0',
-			],
-			'recursive' => 0,
-			'callbacks' => false,
-		];
+		$query = $this->__getQueryForUser();
 		$user = $User->find('first', $query);
-		ClassRegistry::removeObject('User');
 		ClassRegistry::removeObject('UploadFile');
 
-		if (!$user) {
-			return;
-		}
-
-		if (!$user['UploadFile']['id']) {
+		if (!$user ||
+			!$user['UploadFile']['id']
+		) {
 			return $this->__downloadNoImage($User, $user);
 		}
 
@@ -90,34 +79,18 @@ class UsersAvatarController extends Controller {
 			return $this->Download->doDownloadByUploadFileId($user['UploadFile']['id'], $options);
 		}
 
-		$params = [
-			'hasOne' => [
-				'UserAttributesRole' => [
-					'className' => 'UserAttributesRole',
-					'foreignKey' => false,
-					'conditions' => [
-						'UserAttributesRole.role_key' => $user['User']['role_key'],
-						'UserAttributesRole.user_attribute_key = UserAttributeSetting.user_attribute_key',
-					]
-				]
-			],
-		];
+		$UserAttributeSetting = $this->__getSimpleModel('UserAttributeSetting');
+		ClassRegistry::removeObject('UserAttributeSetting');
+
+		$params = $this->__getBindParamsForUserAttributeSetting($user);
 		$UserAttributeSetting->bindModel($params);
 
-		$fieldName = $this->request->params['field_name'];
-		$query = [
-			'conditions' => [
-				'UserAttributeSetting.user_attribute_key' => $fieldName,
-			],
-			'recursive' => 0,
-			'callbacks' => false,
-		];
+		$query = $this->__getQueryForUserAttributeSetting();
 		$userAttributeSetting = $UserAttributeSetting->find('first', $query);
-		ClassRegistry::removeObject('UserAttributeSetting');
 		ClassRegistry::removeObject('UserAttributesRole');
 
 		App::uses('UserAttribute', 'UserAttributes.Model');
-		$fieldName = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $fieldName);
+		$fieldName = sprintf(UserAttribute::PUBLIC_FIELD_FORMAT, $this->request->params['field_name']);
 
 		// 以下の条件の場合、ハンドル画像を表示する(他人)
 		// * 各自で公開・非公開が設定可 && 非公開
@@ -152,7 +125,6 @@ class UsersAvatarController extends Controller {
 			$User->temporaryAvatar($user, $fieldName, $fieldSize),
 			array('name' => 'No Image')
 		);
-		ClassRegistry::removeObject('User');
 
 		return $this->response;
 	}
@@ -164,6 +136,8 @@ class UsersAvatarController extends Controller {
  * @return void
  */
 	private function __getSimpleModel($modelName) {
+		// TestでAvatarBehavior::temporaryAvatar をMock にしているため、removeObjectしない。
+		// ClassRegistry::removeObject($modelName);
 		$Model = ClassRegistry::init($modelName);
 		$params = [
 			'belongsTo' => [
@@ -174,8 +148,91 @@ class UsersAvatarController extends Controller {
 		$Model->unbindModel($params);
 		$Model->Behaviors->unload('Trackable');
 
-		ClassRegistry::removeObject($modelName);
-
 		return $Model;
 	}
+
+/**
+ * get bind params for User
+ *
+ * @return void
+ */
+	private function __getBindParamsForUser() {
+		$params = [
+			'hasOne' => [
+				'UploadFile' => [
+					'className' => 'UploadFile',
+					'foreignKey' => false,
+					'conditions' => [
+						'UploadFile.plugin_key' => $this->plugin,
+						'UploadFile.content_key = User.id',
+						'UploadFile.field_name' => $this->request->params['field_name'],
+					],
+					'fields' => ['id']
+				]
+			],
+		];
+
+		return $params;
+	}
+
+/**
+ * get query for User
+ *
+ * @return void
+ */
+	private function __getQueryForUser() {
+		$query = [
+			'conditions' => [
+				'User.id' => $this->request->params['user_id'],
+				//@see https://github.com/NetCommons3/Users/blob/3.1.2/Controller/UsersController.php#L105-L111
+				//@see https://github.com/NetCommons3/Users/blob/3.1.2/Model/Behavior/UserPermissionBehavior.php#L31-L33
+				'User.is_deleted' => '0',
+			],
+			'recursive' => 0,
+			'callbacks' => false,
+		];
+
+		return $query;
+	}
+
+/**
+ * get bind params for UserAttributeSetting
+ *
+ * @param array $user User data
+ * @return void
+ */
+	private function __getBindParamsForUserAttributeSetting($user) {
+		$params = [
+			'hasOne' => [
+				'UserAttributesRole' => [
+					'className' => 'UserAttributesRole',
+					'foreignKey' => false,
+					'conditions' => [
+						'UserAttributesRole.role_key' => $user['User']['role_key'],
+						'UserAttributesRole.user_attribute_key = UserAttributeSetting.user_attribute_key',
+					]
+				]
+			],
+		];
+
+		return $params;
+	}
+
+/**
+ * get query for UserAttributeSetting
+ *
+ * @return void
+ */
+	private function __getQueryForUserAttributeSetting() {
+		$query = [
+			'conditions' => [
+				'UserAttributeSetting.user_attribute_key' => $this->request->params['field_name'],
+			],
+			'recursive' => 0,
+			'callbacks' => false,
+		];
+
+		return $query;
+	}
+
 }
