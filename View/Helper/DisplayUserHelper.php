@@ -59,7 +59,8 @@ class DisplayUserHelper extends AppHelper {
 			Hash::merge(array(
 				'escape' => false,
 				'ng-controller' => 'Users.controller',
-				'ng-click' => 'showUser($event, ' . $userId . ')'
+				'ng-click' => 'showUser($event, ' . $userId . ')',
+				'title' => h(Hash::get($user, $model . '.handlename')),
 			), $attributes),
 			Hash::merge(array(
 				'escape' => false
