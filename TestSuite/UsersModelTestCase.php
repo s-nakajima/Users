@@ -20,7 +20,7 @@ App::uses('Current', 'NetCommons.Utility');
  * @package NetCommons\Users\Test\Case\Model\Behavior\SaveUserBehavior
  * @codeCoverageIgnore
  */
-class UsersModelTestCase extends NetCommonsModelTestCase {
+abstract class UsersModelTestCase extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
