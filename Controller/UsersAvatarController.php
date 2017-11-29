@@ -51,24 +51,24 @@ class UsersAvatarController extends Controller {
 		/* @var $User AppModel */
 		/* @var $UserAttributeSetting AppModel */
 		// シンプルにしたかったためAppModelを利用。インスタンス生成時少し速かった。
-		$User = $this->__getSimpleModel('User');
+		$User = $this->_getSimpleModel('User');
 		$User->Behaviors->load('Users.Avatar');
 		// @see https://github.com/NetCommons3/Users/blob/3.1.2/Model/Behavior/AvatarBehavior.php#L42
 		$User->plugin = 'Users';
 		ClassRegistry::removeObject('User');
 		ClassRegistry::removeObject('AvatarBehavior');
 
-		$params = $this->__getBindParamsForUser();
+		$params = $this->_getBindParamsForUser();
 		$User->bindModel($params);
 
-		$query = $this->__getQueryForUser();
+		$query = $this->_getQueryForUser();
 		$user = $User->find('first', $query);
 		ClassRegistry::removeObject('UploadFile');
 
 		if (!$user ||
 			!$user['UploadFile']['id']
 		) {
-			return $this->__downloadNoImage($User, $user);
+			return $this->_downloadNoImage($User, $user);
 		}
 
 		$options = [
@@ -79,13 +79,13 @@ class UsersAvatarController extends Controller {
 			return $this->Download->doDownloadByUploadFileId($user['UploadFile']['id'], $options);
 		}
 
-		$UserAttributeSetting = $this->__getSimpleModel('UserAttributeSetting');
+		$UserAttributeSetting = $this->_getSimpleModel('UserAttributeSetting');
 		ClassRegistry::removeObject('UserAttributeSetting');
 
-		$params = $this->__getBindParamsForUserAttributeSetting($user);
+		$params = $this->_getBindParamsForUserAttributeSetting($user);
 		$UserAttributeSetting->bindModel($params);
 
-		$query = $this->__getQueryForUserAttributeSetting();
+		$query = $this->_getQueryForUserAttributeSetting();
 		$userAttributeSetting = $UserAttributeSetting->find('first', $query);
 		ClassRegistry::removeObject('UserAttributesRole');
 
@@ -101,7 +101,7 @@ class UsersAvatarController extends Controller {
 			!$userAttributeSetting['UserAttributeSetting']['display'] ||
 			!$userAttributeSetting['UserAttributesRole']['other_readable']
 		) {
-			return $this->__downloadNoImage($User, $user);
+			return $this->_downloadNoImage($User, $user);
 		}
 
 		return $this->Download->doDownloadByUploadFileId($user['UploadFile']['id'], $options);
@@ -114,7 +114,7 @@ class UsersAvatarController extends Controller {
  * @param array $user User data
  * @return void
  */
-	private function __downloadNoImage($User, $user) {
+	protected function _downloadNoImage($User, $user) {
 		$fieldName = $this->request->params['field_name'];
 		$fieldSize = $this->request->params['size'];
 
@@ -135,7 +135,7 @@ class UsersAvatarController extends Controller {
  * @param string $modelName Model name
  * @return void
  */
-	private function __getSimpleModel($modelName) {
+	protected function _getSimpleModel($modelName) {
 		// TestでAvatarBehavior::temporaryAvatar をMock にしているため、removeObjectしない。
 		// ClassRegistry::removeObject($modelName);
 		$Model = ClassRegistry::init($modelName);
@@ -156,7 +156,7 @@ class UsersAvatarController extends Controller {
  *
  * @return void
  */
-	private function __getBindParamsForUser() {
+	protected function _getBindParamsForUser() {
 		$params = [
 			'hasOne' => [
 				'UploadFile' => [
@@ -180,7 +180,7 @@ class UsersAvatarController extends Controller {
  *
  * @return void
  */
-	private function __getQueryForUser() {
+	protected function _getQueryForUser() {
 		$query = [
 			'conditions' => [
 				'User.id' => $this->request->params['user_id'],
@@ -201,7 +201,7 @@ class UsersAvatarController extends Controller {
  * @param array $user User data
  * @return void
  */
-	private function __getBindParamsForUserAttributeSetting($user) {
+	protected function _getBindParamsForUserAttributeSetting($user) {
 		$params = [
 			'hasOne' => [
 				'UserAttributesRole' => [
@@ -223,7 +223,7 @@ class UsersAvatarController extends Controller {
  *
  * @return void
  */
-	private function __getQueryForUserAttributeSetting() {
+	protected function _getQueryForUserAttributeSetting() {
 		$query = [
 			'conditions' => [
 				'UserAttributeSetting.user_attribute_key' => $this->request->params['field_name'],
