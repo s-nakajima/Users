@@ -63,7 +63,7 @@ class UsersController extends UsersAppController {
 		'Files.Download',
 		'M17n.SwitchLanguage',
 		'NetCommons.Permission' => array(
-			'type' => PermissionComponent::CHECK_TYEP_NOCHECK_PLUGIN,
+			'type' => PermissionComponent::CHECK_TYPE_NOCHECK_PLUGIN,
 		),
 		'Rooms.Rooms',
 		'UserAttributes.UserAttributeLayout',
