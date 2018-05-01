@@ -369,7 +369,8 @@ class UserSearchFormHelper extends AppHelper {
 			'/users/js/user_search.js'
 		));
 
-		if ($this->_View->request->query) {
+		if ($this->_View->request->query &&
+				$this->_View->request->query !== ['room_id' => null]) {
 			$conditions = '';
 			foreach ($this->_View->request->query as $key => $value) {
 				if ($UserSearch->getOriginalField($key)) {

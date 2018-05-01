@@ -54,6 +54,20 @@ class UserSearch extends UserSearchAppModel {
  *
  * @var array
  */
+	private static $__readableFields = null;
+
+/**
+ * 事前準備を実行したかどうか
+ *
+ * @var bool
+ */
+	private static $__doPrepare = false;
+
+/**
+ * 閲覧できるフィールドリスト
+ *
+ * @var array
+ */
 	public $convRealToFieldKey = null;
 
 /**
@@ -97,7 +111,8 @@ class UserSearch extends UserSearchAppModel {
  * @return void
  */
 	private function __prepare() {
-		if (isset($this->readableFields)) {
+		if (self::$__doPrepare) {
+			$this->readableFields = self::$__readableFields;
 			return;
 		}
 
@@ -130,11 +145,17 @@ class UserSearch extends UserSearchAppModel {
 		$result = $this->Room->find('all', $this->Room->getReadableRoomsConditions(array(
 			'Room.space_id !=' => Space::PRIVATE_SPACE_ID
 		)));
-		$this->readableFields['room_id']['options'] = Hash::combine(
-			$result,
-			'{n}.Room.id',
-			'{n}.RoomsLanguage.{n}[language_id=' . Current::read('Language.id') . '].name'
-		);
+		$this->readableFields['room_id']['options'] = [];
+		foreach ($result as $room) {
+			$roomId = $room['Room']['id'];
+			$roomName = '';
+			foreach ($room['RoomsLanguage'] as $roomLanguage) {
+				if ($roomLanguage['language_id'] === Current::read('Language.id')) {
+					$roomName = $roomLanguage['name'];
+				}
+			}
+			$this->readableFields['room_id']['options'][$roomId] = $roomName;
+		}
 
 		//自分自身のグループ
 		$this->readableFields['group_id']['field'] = $this->GroupsUser->alias . '.group_id';
@@ -174,6 +195,9 @@ class UserSearch extends UserSearchAppModel {
 				$this->convRealToFieldKey[$this->readableFields[$key]['field']] = $value;
 			}
 		}
+
+		self::$__readableFields = $this->readableFields;
+		self::$__doPrepare = true;
 	}
 
 /**
@@ -181,65 +205,26 @@ class UserSearch extends UserSearchAppModel {
  *
  * @param array $joinModels JOINモデルリスト
  * @param array $conditions 条件(Conditions)リスト
+ * @param array $fields 取得カラムリスト
+ * @param string $join JOIN種別(INNER or LEFT)
  * @return array Findで使用するJOIN配列
  */
-	public function getSearchJoinTables($joinModels, $conditions = array()) {
+	public function getSearchJoinTables($joinModels, $conditions = [], $fields = [], $join = '') {
+		if (!$join) {
+			$join = 'INNER';
+		}
+
 		$joinModels = Hash::merge(
 			$joinModels,
 			$this->_getSearchJoinTablesByConditions($conditions)
 		);
 
-		$joins = array(
-			array(
-				'table' => $this->UsersLanguage->table,
-				'alias' => $this->UsersLanguage->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->UsersLanguage->alias . '.user_id' . ' = ' . $this->alias . '.id',
-					$this->UsersLanguage->alias . '.language_id' => Current::read('Language.id'),
-				),
-			),
-			Hash::merge(array(
-				'table' => $this->Role->table,
-				'alias' => $this->Role->alias,
-				'type' => 'INNER',
-				'conditions' => array(
-					$this->alias . '.role_key' . ' = ' . $this->Role->alias . '.key',
-					$this->Role->alias . '.language_id' => Current::read('Language.id'),
-				),
-			), Hash::get($joinModels, 'Role', array())),
-			Hash::merge(array(
-				'table' => $this->RolesRoomsUser->table,
-				'alias' => $this->RolesRoomsUser->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->RolesRoomsUser->alias . '.user_id' . ' = ' . $this->alias . '.id',
-				),
-			), Hash::get($joinModels, 'RolesRoomsUser', array())),
-			Hash::merge(array(
-				'table' => $this->RolesRoom->table,
-				'alias' => $this->RolesRoom->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->RolesRoomsUser->alias . '.roles_room_id' . ' = ' . $this->RolesRoom->alias . '.id',
-				),
-			), Hash::get($joinModels, 'RolesRoom', array())),
-			Hash::merge(array(
-				'table' => $this->RoomRole->table,
-				'alias' => $this->RoomRole->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->RolesRoom->alias . '.role_key' . ' = ' . $this->RoomRole->alias . '.role_key',
-				),
-			), Hash::get($joinModels, 'RolesRoom', array())),
-			Hash::merge(array(
-				'table' => $this->Room->table,
-				'alias' => $this->Room->alias,
-				'type' => 'LEFT',
-				'conditions' => array(
-					$this->RolesRoomsUser->alias . '.room_id' . ' = ' . $this->Room->alias . '.id',
-				),
-			), Hash::get($joinModels, 'Room', array()))
+		$joins = $this->__getSearchJoinTablesForUser($joinModels, $join);
+
+		//ルームの条件があるときのみルームに必要なJOINをする。
+		$joins = array_merge(
+			$joins,
+			$this->__getSearchJoinTablesForRoom($joinModels, $conditions, $fields, $join)
 		);
 
 		if (Hash::get($joinModels, 'Group')) {
@@ -279,6 +264,97 @@ class UserSearch extends UserSearchAppModel {
 		foreach ($uploads as $upload) {
 			$joins[] = $upload;
 		}
+
+		return $joins;
+	}
+
+/**
+ * Roomを条件にする場合のJOINテーブルを取得
+ *
+ * @param array $joinModels JOINモデルリスト
+ * @param array $conditions 条件配列
+ * @param array $fields 取得カラムリスト
+ * @param string $join JOIN種別(INNER or LEFT)
+ * @return array Findで使用するJOIN配列
+ */
+	private function __getSearchJoinTablesForRoom($joinModels, $conditions, $fields, $join) {
+		if ($fields !== true) {
+			$fieldRooms = preg_grep('/^(RolesRoom|RoomRole|roles_room|room_role)/', $fields);
+		} else {
+			$fieldRooms = [$fields];
+		}
+
+		$conditionRooms = preg_grep('/^(RolesRoom|RoomRole)/', array_keys($conditions));
+		if (count($fieldRooms) === 0 && count($conditionRooms) === 0) {
+			return [];
+		}
+
+		$joins = array(
+			Hash::merge(array(
+				'table' => $this->RolesRoom->table,
+				'alias' => $this->RolesRoom->alias,
+				'type' => $join,
+				'conditions' => array(
+					$this->RolesRoomsUser->alias . '.roles_room_id' . ' = ' . $this->RolesRoom->alias . '.id',
+				),
+			), Hash::get($joinModels, 'RolesRoom', array())),
+			Hash::merge(array(
+				'table' => $this->RoomRole->table,
+				'alias' => $this->RoomRole->alias,
+				'type' => $join,
+				'conditions' => array(
+					$this->RolesRoom->alias . '.role_key' . ' = ' . $this->RoomRole->alias . '.role_key',
+				),
+			), Hash::get($joinModels, 'RoomRole', array())),
+		);
+
+		return $joins;
+	}
+
+/**
+ * Userを条件にする場合のJOINテーブルを取得
+ *
+ * @param array $joinModels JOINモデルリスト
+ * @param string $join JOIN種別(INNER or LEFT)
+ * @return array Findで使用するJOIN配列
+ */
+	private function __getSearchJoinTablesForUser($joinModels, $join) {
+		$joins = array(
+			array(
+				'table' => $this->UsersLanguage->table,
+				'alias' => $this->UsersLanguage->alias,
+				'type' => 'LEFT',
+				'conditions' => array(
+					$this->UsersLanguage->alias . '.user_id' . ' = ' . $this->alias . '.id',
+					$this->UsersLanguage->alias . '.language_id' => Current::read('Language.id'),
+				),
+			),
+			Hash::merge(array(
+				'table' => $this->Role->table,
+				'alias' => $this->Role->alias,
+				'type' => 'INNER',
+				'conditions' => array(
+					$this->alias . '.role_key' . ' = ' . $this->Role->alias . '.key',
+					$this->Role->alias . '.language_id' => Current::read('Language.id'),
+				),
+			), Hash::get($joinModels, 'Role', array())),
+			Hash::merge(array(
+				'table' => $this->RolesRoomsUser->table,
+				'alias' => $this->RolesRoomsUser->alias,
+				'type' => $join,
+				'conditions' => array(
+					$this->RolesRoomsUser->alias . '.user_id' . ' = ' . $this->alias . '.id',
+				),
+			), Hash::get($joinModels, 'RolesRoomsUser', array())),
+			Hash::merge(array(
+				'table' => $this->Room->table,
+				'alias' => $this->Room->alias,
+				'type' => $join,
+				'conditions' => array(
+					$this->RolesRoomsUser->alias . '.room_id' . ' = ' . $this->Room->alias . '.id',
+				),
+			), Hash::get($joinModels, 'Room', array())),
+		);
 
 		return $joins;
 	}
@@ -352,12 +428,18 @@ class UserSearch extends UserSearchAppModel {
  * @param int $recursive findのrecursive
  * @param array $extra findのオプション
  * @return array 検索結果
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	public function paginate($conditions, $fields, $order, $limit, $page = 1,
 			$recursive = null, $extra = array()) {
 		$displayRooms = Hash::get($extra, 'extra.plugin') === 'rooms';
 
-		$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions);
+		if ($displayRooms) {
+			$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions, true, 'LEFT');
+		} else {
+			$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions, $fields);
+		}
+
 		$conditions = $this->getSearchConditions($conditions);
 
 		$recursive = -1;
@@ -376,10 +458,9 @@ class UserSearch extends UserSearchAppModel {
 				$order = array();
 			}
 		}
-		$order += Hash::get($extra, 'defaultOrder', array()) +
-					array('Role.id' => 'asc', 'User.id' => 'asc');
-
 		if ($displayRooms && $sort === 'room_role_level') {
+			$order += Hash::get($extra, 'defaultOrder', array()) +
+						array('user_id' => 'asc', 'role_id' => 'asc');
 			$convOrder = array();
 			foreach ($order as $key => $sort) {
 				if (isset($this->convRealToFieldKey[$key])) {
@@ -404,6 +485,8 @@ class UserSearch extends UserSearchAppModel {
 			);
 		} else {
 			$fields = $this->_getSearchFields($fields);
+			$order += Hash::get($extra, 'defaultOrder', array()) +
+						array('Role.id' => 'asc', 'User.id' => 'asc');
 			$result = $this->find(
 				'all',
 				compact('conditions', 'fields', 'joins', 'order', 'limit', 'page', 'recursive', 'group')
@@ -561,15 +644,20 @@ class UserSearch extends UserSearchAppModel {
 	public function paginateCount($conditions = null, $recursive = 0, $extra = array()) {
 		$displayRooms = Hash::get($extra, 'extra.plugin') === 'rooms';
 
-		$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions);
-		$conditions = $this->getSearchConditions($conditions);
+		if ($displayRooms) {
+			$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions, true, 'LEFT');
+		} else {
+			$joins = $this->getSearchJoinTables(Hash::get($extra, 'joins', []), $conditions);
+		}
 		$recursive = -1;
 		$group = 'User.id';
 		$sort = Hash::get($extra, 'sort');
 
 		if ($displayRooms && ($sort === 'room_role_level' || !$sort)) {
+			$conditions = $this->getSearchConditions($conditions);
 			$count = $this->__paginateCountByRoomRoleKey($conditions, $joins, $recursive, $group, $extra);
 		} else {
+			$conditions = $this->getSearchConditions($conditions);
 			$count = $this->find('count', compact('conditions', 'joins', 'recursive', 'group'));
 		}
 
