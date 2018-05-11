@@ -612,12 +612,14 @@ class User extends UsersAppModel {
 			$data['User']['is_avatar_auto_created'] = (bool)$isAvatarAutoCreated;
 		}
 
-		$data['User']['language'] = Hash::get($data, 'User.language', Current::read('Language.code'));
-
 		//バリデーション
 		$this->set($data);
 		if (! $this->validates(array('self' => $self))) {
 			return false;
+		}
+		// もしも言語の値が未設定の場合はデフォルトの現在値を設定する
+		if (empty($this->data['User']['language'])) {
+			$this->data['User']['language'] = Current::read('Language.code');
 		}
 
 		try {
