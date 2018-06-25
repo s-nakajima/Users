@@ -72,12 +72,12 @@ class UsersSchema extends CakeSchema {
  */
 	public $users = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'username' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_bin', 'comment' => 'ログインID', 'charset' => 'utf8'),
+		'username' => array('type' => 'string', 'null' => false, 'default' => null, 'key' => 'index', 'collate' => 'utf8_bin', 'comment' => 'ログインID', 'charset' => 'utf8'),
 		'password' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'パスワード', 'charset' => 'utf8'),
 		'key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'リンク識別子', 'charset' => 'utf8'),
 		'activate_key' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'アクティベートキー', 'charset' => 'utf8'),
 		'activated' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'アクティベート日時', 'charset' => 'utf8'),
-		'is_deleted' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
+		'is_deleted' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'key' => 'index'),
 		'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_avatar_auto_created' => array('type' => 'boolean', 'null' => false, 'default' => '1'),
 		'handlename' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'ハンドル', 'charset' => 'utf8'),
@@ -116,7 +116,9 @@ class UsersSchema extends CakeSchema {
 		'is_profile_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_search_keywords_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+			'username' => array('column' => 'username', 'unique' => 0),
+			'userlist' => array('column' => array('is_deleted', 'id'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
