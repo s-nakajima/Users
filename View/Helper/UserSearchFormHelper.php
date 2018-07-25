@@ -137,7 +137,7 @@ class UserSearchFormHelper extends AppHelper {
 	private function __inputRadio($dataTypeKey, $userAttribute, $options) {
 		$html = '';
 
-		$options = array('' => __d('user_manager', 'Not specified')) + $options;
+		$options = array('' => __d('net_commons', 'Not condition specified')) + $options;
 
 		$input = $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
 			'type' => 'radio',
@@ -183,7 +183,7 @@ class UserSearchFormHelper extends AppHelper {
 
 		//入力部品
 		if ($options) {
-			$options = array('' => __d('user_manager', '-- Not specify --')) + $options;
+			$options = array('' => __d('net_commons', '-- Not specified --')) + $options;
 		}
 		$html .= $this->NetCommonsForm->input($userAttribute['UserAttribute']['key'], array(
 			'type' => 'select',
@@ -300,7 +300,7 @@ class UserSearchFormHelper extends AppHelper {
 	public function userSearchRoomsSelect() {
 		$html = '';
 
-		$options = ['' => __d('user_manager', '-- Not specify --')] + $this->_View->viewVars['rooms'];
+		$options = ['' => __d('net_commons', '-- Not specified --')] + $this->_View->viewVars['rooms'];
 
 		$html .= '<div class="form-group row user-search-conditions-row">';
 
@@ -330,7 +330,7 @@ class UserSearchFormHelper extends AppHelper {
 	public function userSearchGroupsSelect() {
 		$html = '';
 
-		$options = ['' => __d('user_manager', '-- Not specify --')] + $this->_View->viewVars['groups'];
+		$options = ['' => __d('net_commons', '-- Not specified --')] + $this->_View->viewVars['groups'];
 
 		$html .= '<div class="form-group row user-search-conditions-row">';
 
