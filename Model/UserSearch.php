@@ -260,9 +260,11 @@ class UserSearch extends UserSearchAppModel {
 			);
 		}
 
-		$uploads = Hash::extract($joinModels, '{s}[table=' . $this->UploadFile->table . ']');
-		foreach ($uploads as $upload) {
-			$joins[] = $upload;
+		foreach ($joinModels as $joinModel) {
+			if (isset($joinModel['table']) &&
+					$joinModel['table'] === $this->UploadFile->table) {
+				$joins[] = $joinModel;
+			}
 		}
 
 		return $joins;

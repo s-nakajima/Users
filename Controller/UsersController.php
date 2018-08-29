@@ -113,12 +113,11 @@ class UsersController extends UsersAppController {
 		$this->set('title', false);
 
 		//ルームデータチェック
-		if (Hash::get($this->data, 'Room.id')) {
-			$roomId = Hash::get($this->data, 'Room.id');
-		} elseif (Hash::get($this->request->query, 'room_id')) {
-			$roomId = Hash::get($this->request->query, 'room_id');
-		} else {
-			$roomId = null;
+		$roomId = null;
+		if (isset($this->data['Room']['id'])) {
+			$roomId = $this->data['Room']['id'];
+		} elseif (isset($this->request->query['room_id'])) {
+			$roomId = $this->request->query['room_id'];
 		}
 		if ($roomId) {
 			//ルームデータ取得
@@ -153,21 +152,22 @@ class UsersController extends UsersAppController {
 			$this->PageLayout = $this->Components->load('Pages.PageLayout');
 		}
 
-		if (! Hash::get($this->request->query, 'tab')) {
-			$this->request->query = Hash::insert($this->request->query, 'tab', 'user-infomation');
+		if (! isset($this->request->query['tab'])) {
+			$this->request->query['tab'] = 'user-infomation';
 		}
 
 		//自分自身の場合、ルーム・グループデータ取得する
-		if (Hash::get($this->viewVars['user'], 'User.id') === Current::read('User.id')) {
+		if (isset($this->viewVars['user']['User']['id']) &&
+			$this->viewVars['user']['User']['id'] === Current::read('User.id')) {
 			//ルームデータ取得
-			$this->Rooms->setReadableRooms(Hash::get($this->viewVars['user'], 'User.id'));
+			$this->Rooms->setReadableRooms($this->viewVars['user']['User']['id']);
 
 			// グループデータ取得・設定
 			$this->Groups->setGroupList($this);
 		} else {
 			if (Current::allowSystemPlugin('rooms')) {
 				//ルームデータ取得
-				$this->Rooms->setReadableRooms(Hash::get($this->viewVars['user'], 'User.id'));
+				$this->Rooms->setReadableRooms($this->viewVars['user']['User']['id']);
 			}
 		}
 	}
