@@ -17,6 +17,9 @@ App::uses('NetCommonsTime', 'NetCommons.Utility');
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\Users\Model
+ *
+ * 速度改善の修正に伴って発生したため抑制
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  */
 class UserSearchAppModel extends UsersAppModel {
 
@@ -51,17 +54,28 @@ class UserSearchAppModel extends UsersAppModel {
  * @param string $attrKey 会員項目キー
  * @param array $userAttributes 会員項目データ
  * @return void
+ *
+ * 速度改善の修正に伴って発生したため抑制
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	protected function _setReadableField($attrKey, $userAttributes) {
-		$userAttrSetting = Hash::extract(
-			$userAttributes, '{n}.{n}.{n}.UserAttributeSetting[user_attribute_key=' . $attrKey . ']'
-		);
-		$dataTypeKey = Hash::get($userAttrSetting, '0.data_type_key', '');
+		$dataTypeKey = '';
+		$userAttr = [];
+		foreach ($userAttributes as $arr) {
+			foreach ($arr as $item) {
+				foreach ($item as $userAttribute) {
+					if ($userAttribute['UserAttribute']['key'] === $attrKey) {
+						$dataTypeKey = $userAttribute['UserAttributeSetting']['data_type_key'];
+						$userAttr = $userAttribute['UserAttribute'];
+						break;
+					}
+				}
+			}
+		}
 
-		$userAttr = Hash::extract(
-			$userAttributes, '{n}.{n}.{n}.UserAttribute[key=' . $attrKey . ']'
-		);
-		$label = Hash::get($userAttr, '0.name', '');
+		$label = $userAttr['name'];
 
 		//Fieldのチェック
 		if ($dataTypeKey === DataType::DATA_TYPE_IMG) {
@@ -120,14 +134,22 @@ class UserSearchAppModel extends UsersAppModel {
 			$this->readableFields[$attrKey]['data_type'] = $dataTypeKey;
 		}
 
-		$userAttrChoices = Hash::extract(
-			$userAttributes,
-			'{n}.{n}.{n}.UserAttributeChoice.{n}[user_attribute_id=' . Hash::get($userAttr, '0.id', '') . ']'
-		);
+		$userAttrChoices = [];
+		foreach ($userAttributes as $arr) {
+			foreach ($arr as $item) {
+				foreach ($item as $userAttribute) {
+					if (isset($userAttribute['UserAttributeChoice'])) {
+						foreach ($userAttribute['UserAttributeChoice'] as $choice) {
+							if ($choice['user_attribute_id'] == $userAttr['id']) {
+								$userAttrChoices[$choice['key']] = $choice['name'];
+							}
+						}
+					}
+				}
+			}
+		}
 		if ($userAttrChoices) {
-			$this->readableFields[$attrKey]['options'] = Hash::combine(
-				$userAttrChoices, '{n}.key', '{n}.name'
-			);
+			$this->readableFields[$attrKey]['options'] = $userAttrChoices;
 			if ($attrKey === 'role_key') {
 				$this->readableFields[$attrKey]['option_field'] = 'key';
 			} else {

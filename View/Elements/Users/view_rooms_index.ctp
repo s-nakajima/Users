@@ -20,7 +20,7 @@ if (!isset($rolesRoomsUsers)) {
 	</td>
 
 	<td>
-		<?php echo $this->Rooms->roomRoleName(Hash::get($rolesRoomsUsers, $room['Room']['id'])); ?>
+		<?php echo $this->Rooms->roomRoleName($rolesRoomsUsers[$room['Room']['id']]); ?>
 	</td>
 
 	<td>
@@ -28,6 +28,6 @@ if (!isset($rolesRoomsUsers)) {
 	</td>
 
 	<td class="row-datetime">
-		<?php echo $this->Rooms->roomAccessed(Hash::get($rolesRoomsUsers, $room['Room']['id'])); ?>
+		<?php echo $this->Rooms->roomAccessed($rolesRoomsUsers[$room['Room']['id']]); ?>
 	</td>
 </tr>
