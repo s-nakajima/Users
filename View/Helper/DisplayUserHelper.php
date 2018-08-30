@@ -45,24 +45,24 @@ class DisplayUserHelper extends AppHelper {
 			return $html;
 		}
 
-		$attributes = Hash::remove($attributes, 'avatar');
+		unset($attributes['avatar']);
 
-		if (Hash::get($user, 'ngModel')) {
-			$userId = Hash::get($user, 'ngModel') . '.id';
+		if (isset($user['ngModel'])) {
+			$userId = $user['ngModel']['id'];
 		} else {
-			$userId = '\'' . Hash::get($user, $model . '.id') . '\'';
+			$userId = '\'' . $user[$model]['id'] . '\'';
 		}
 		if (! Current::read('User.id')) {
 			$attributes['ng-click'] = null;
 		}
 		$html .= $this->NetCommonsHtml->link($handlename, '#',
-			Hash::merge(array(
+			array_merge(array(
 				'escape' => false,
 				'ng-controller' => 'Users.controller',
 				'ng-click' => 'showUser($event, ' . $userId . ')',
 				'title' => h(Hash::get($user, $model . '.handlename')),
 			), $attributes),
-			Hash::merge(array(
+			array_merge(array(
 				'escape' => false
 			), $options)
 		);
@@ -83,7 +83,6 @@ class DisplayUserHelper extends AppHelper {
 
 		if (Hash::get($user, 'ngModel')) {
 			if (Hash::get($attributes, 'avatar')) {
-				$attributes = Hash::remove($attributes, 'avatar');
 				$handlename .=
 					'<img ng-src="{{' . Hash::get($user, 'ngModel') . '.avatar}}" class="user-avatar-xs"> ';
 			}
@@ -164,8 +163,8 @@ class DisplayUserHelper extends AppHelper {
 
 		$avatar = $this->avatar($user, $attr, $modelId);
 
-		if (Hash::get($user, 'ngModel')) {
-			$userId = Hash::get($user, 'ngModel') . '.id';
+		if (isset($user['ngModel'])) {
+			$userId = $user['ngModel']['id'];
 		} else {
 			$userId = '\'' . Hash::get($user, $modelId) . '\'';
 		}
@@ -173,12 +172,12 @@ class DisplayUserHelper extends AppHelper {
 			$attr['ng-click'] = null;
 		}
 		$html .= $this->NetCommonsHtml->link($avatar, '#',
-			Hash::merge(array(
+			array_merge(array(
 				'escape' => false,
 				'ng-controller' => 'Users.controller',
 				'ng-click' => 'showUser($event, ' . $userId . ')'
 			), $attr),
-			Hash::merge(array(
+			array_merge(array(
 				'escape' => false
 			), $options)
 		);

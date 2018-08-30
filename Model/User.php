@@ -213,9 +213,16 @@ class User extends UsersAppModel {
 
 		if ($force || ! $this->userAttributeData) {
 			$userAttributes = $this->UserAttribute->getUserAttributesForLayout($force);
-			$this->userAttributeData = Hash::combine($userAttributes,
-				'{n}.{n}.{n}.UserAttribute.id', '{n}.{n}.{n}'
-			);
+			$this->userAttributeData = [];
+			foreach ($userAttributes as $arr) {
+				foreach ($arr as $item) {
+					foreach ($item as $userAttribute) {
+						if (isset($userAttribute['UserAttribute'])) {
+							$this->userAttributeData[$userAttribute['UserAttribute']['id']] = $userAttribute;
+						}
+					}
+				}
+			}
 		}
 
 		if (Configure::read('NetCommons.installed')) {
@@ -514,9 +521,10 @@ class User extends UsersAppModel {
 				),
 				'conditions' => $conditions,
 			));
-			$user[$this->UsersLanguage->alias] = Hash::extract(
-				$usersLanguage, '{n}.' . $this->UsersLanguage->alias
-			);
+			$user[$this->UsersLanguage->alias] = [];
+			foreach ($usersLanguage as $item) {
+				$user[$this->UsersLanguage->alias][] = $item['UsersLanguage'];
+			}
 		}
 
 		return $user;
