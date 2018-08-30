@@ -48,7 +48,7 @@ class DisplayUserHelper extends AppHelper {
 		unset($attributes['avatar']);
 
 		if (isset($user['ngModel'])) {
-			$userId = $user['ngModel']['id'];
+			$userId = $user['ngModel'] . '.id';
 		} else {
 			$userId = '\'' . $user[$model]['id'] . '\'';
 		}
