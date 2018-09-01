@@ -80,7 +80,7 @@ class UsersSchema extends CakeSchema {
 		'is_deleted' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'key' => 'index'),
 		'is_avatar_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_avatar_auto_created' => array('type' => 'boolean', 'null' => false, 'default' => '1'),
-		'handlename' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'ハンドル', 'charset' => 'utf8'),
+		'handlename' => array('type' => 'string', 'null' => true, 'default' => null, 'key' => 'index', 'collate' => 'utf8_general_ci', 'comment' => 'ハンドル', 'charset' => 'utf8'),
 		'is_handlename_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'is_name_public' => array('type' => 'boolean', 'null' => false, 'default' => '0'),
 		'email' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'eメール', 'charset' => 'utf8'),
@@ -118,7 +118,8 @@ class UsersSchema extends CakeSchema {
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
 			'username' => array('column' => 'username', 'unique' => 0),
-			'userlist' => array('column' => array('is_deleted', 'id'), 'unique' => 0)
+			'userlist' => array('column' => array('is_deleted', 'id'), 'unique' => 0),
+			'handlename' => array('column' => array('handlename', 'is_deleted'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
