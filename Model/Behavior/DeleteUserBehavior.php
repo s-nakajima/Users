@@ -32,6 +32,10 @@ class DeleteUserBehavior extends ModelBehavior {
 		$model->begin();
 		$model->prepare();
 
+		$model->loadModels([
+			'UploadFile' => 'Files.UploadFile',
+		]);
+
 		try {
 			//Userデータの削除->論理削除
 			$user = $model->create(array(
@@ -46,6 +50,9 @@ class DeleteUserBehavior extends ModelBehavior {
 
 			//関連DBの削除
 			$model->deleteUserAssociations($user['User']['id']);
+
+			//アバターの削除
+			$model->UploadFile->deleteLink($model->plugin, $user['User']['id']);
 
 			//トランザクションCommit
 			$model->commit();
