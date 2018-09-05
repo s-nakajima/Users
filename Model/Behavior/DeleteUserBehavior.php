@@ -51,7 +51,7 @@ class DeleteUserBehavior extends ModelBehavior {
 			//関連DBの削除
 			$model->deleteUserAssociations($user['User']['id']);
 
-			// afterDeleteだと$model->idで消したデータのIDがとれるだけ
+			//アバターの削除
 			$model->UploadFile->deleteLink($model->plugin, $user['User']['id']);
 
 			//トランザクションCommit
