@@ -317,6 +317,7 @@ class SaveUserBehavior extends ModelBehavior {
  * @param Model $model Model using this behavior
  * @return bool
  * @throws InternalErrorException
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	private function __saveDefaultRolesRoomsUser(Model $model) {
 		$model->loadModels([
