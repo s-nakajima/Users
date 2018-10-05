@@ -96,7 +96,7 @@ class UsersValidationRuleBehavior extends ModelBehavior {
 		$value = array_shift($check);
 
 		App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-		$passwordHasher = new SimplePasswordHasher();
+		$passwordHasher = new SimplePasswordHasher(['hashType' => $User::PASSWORD_HASH_TYPE]);
 		$conditions = array(
 			'id' => $model->data[$model->alias]['id'],
 			'password' => $passwordHasher->hash($value),
