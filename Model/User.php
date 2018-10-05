@@ -27,6 +27,13 @@ App::uses('UserAttribute', 'UserAttributes.Model');
 class User extends UsersAppModel {
 
 /**
+ * パスワードのHashType
+ *
+ * @var string
+ */
+	const PASSWORD_HASH_TYPE = 'sha512';
+
+/**
  * 表示ページ数の定数
  *
  * @var const
@@ -413,7 +420,7 @@ class User extends UsersAppModel {
 		//パスワードのハッシュ化
 		if (Hash::get($this->data['User'], 'password')) {
 			App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-			$passwordHasher = new SimplePasswordHasher();
+			$passwordHasher = new SimplePasswordHasher(['hashType' => self::PASSWORD_HASH_TYPE]);
 			$this->data['User']['password'] = $passwordHasher->hash($this->data['User']['password']);
 
 			$passwordAgain = $this->data['User']['password_again'];
